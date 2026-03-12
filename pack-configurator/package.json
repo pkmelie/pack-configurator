@@ -1,0 +1,9 @@
+{
+  "name": "pack-configurator",
+  "version": "1.0.0",
+  "description": "Pack configurator with admin panel",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
