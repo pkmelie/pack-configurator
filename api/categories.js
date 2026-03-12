@@ -2,9 +2,9 @@
 // Stockage des catégories en mémoire (persist tant que la fonction est "chaude")
 // Pour de la vraie persistance → connecte une DB (Supabase, PlanetScale, etc.)
 
-let categoriesStore = null; // null = utilise les données par défaut du frontend
+let categoriesStore = null;
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');

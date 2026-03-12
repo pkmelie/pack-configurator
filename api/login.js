@@ -3,7 +3,7 @@
 // Le mot de passe est lu depuis les variables d'environnement Vercel
 // → jamais exposé dans le code frontend
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
