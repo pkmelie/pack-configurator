@@ -236,8 +236,6 @@ function summaryHTML() {
     <div class="summary-wrap">
       <h1>Récap & Export</h1>
       <p class="summary-sub">Vérifie tes sélections puis génère le fichier JSON pour ton bot.</p>
-      <p></p>
-      <p class="summary-sub">Une fois que vous avez réalisé votre JSON, venez sur discord et ouvrez un ticket.</p>
       <div class="pack-name-row">
         <label>Nom du pack</label>
         <input id="packName" type="text" value="mon-pack" oninput="refreshJSON()">
@@ -275,6 +273,11 @@ function goTo(i) {
   const old=document.getElementById(oldId);
   if(old){old.classList.add('exit');setTimeout(()=>{old.classList.remove('exit','active');},420);}
   currentPage=i;
+  // Régénère le résumé à chaque fois qu'on y arrive
+  if(i===categories.length){
+    const s=document.getElementById('page-summary');
+    if(s) s.innerHTML=summaryHTML();
+  }
   const newEl=document.getElementById(i===categories.length?'page-summary':'page-'+i);
   if(newEl) setTimeout(()=>newEl.classList.add('active'),10);
   renderStepper();renderNav();updateGlow();
