@@ -352,39 +352,56 @@ const SEV_LABELS = {critical:'CRITIQUE',high:'ÉLEVÉ',medium:'MOYEN',low:'FAIBL
 async function initData() {
   showLoading(true);
   try {
+    // Charger crashes et catégories en parallèle
     const [crashRes, catRes] = await Promise.all([
       fetch('/api/crashes'),
       fetch('/api/categories'),
     ]);
 
-    if (crashRes.ok) {
-      const data = await crashRes.json();
-      // Normaliser : l'API utilise 'description', le template utilise 'desc'
-      CRASH_DB = (data.crashes || []).map(c => ({
-        ...c,
-        desc: c.description || c.desc || '',
-        updatedAt: (c.updated_at || '').slice(0, 10) || '—',
-      }));
-    }
-
+    // Catégories
     if (catRes.ok) {
       const data = await catRes.json();
       CATEGORIES = data.categories || [];
-      renderCatFilters();
     }
+    renderCatFilters();
 
-    // Mettre à jour les stats
+    // Crashes
+    if (!crashRes.ok) {
+      const err = await crashRes.text();
+      throw new Error('API crashes: ' + crashRes.status + ' — ' + err.slice(0, 100));
+    }
+    const crashData = await crashRes.json();
+    CRASH_DB = (crashData.crashes || []).map(c => ({
+      ...c,
+      desc: c.description || c.desc || '',
+      updatedAt: (c.updated_at || '').slice(0, 10) || '—',
+    }));
+
+    // Stats
     document.getElementById('st-count').textContent = CRASH_DB.length;
-    const crit = CRASH_DB.filter(c => c.severity === 'critical').length;
-    document.getElementById('st-crit').textContent = crit;
 
   } catch (e) {
-    console.warn('[API] Erreur chargement, utilisation données locales:', e.message);
-    // Fallback: garder le DOM vide, afficher un message
+    console.error('[API]', e.message);
+    showApiError(e.message);
   } finally {
     showLoading(false);
     renderCrashes();
   }
+}
+
+function showApiError(msg) {
+  // Afficher l'erreur dans la grille pour que ce soit visible
+  document.getElementById('crash-grid').innerHTML = `
+    <div style="grid-column:1/-1;background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.3);border-radius:10px;padding:24px;font-family:'Share Tech Mono',monospace;font-size:11px;">
+      <div style="color:var(--danger);font-size:14px;margin-bottom:10px;">⚠ ERREUR DE CHARGEMENT</div>
+      <div style="color:var(--text-dim);margin-bottom:12px;">${msg}</div>
+      <div style="color:var(--text-dim);">
+        Vérifier :<br>
+        · Table <span style="color:var(--accent)">crashes</span> créée dans Supabase (lancer supabase-schema.sql)<br>
+        · Variables <span style="color:var(--accent)">SUPABASE_URL</span> et <span style="color:var(--accent)">SUPABASE_KEY</span> définies sur Vercel<br>
+        · RLS activé avec policy lecture publique sur la table crashes
+      </div>
+    </div>`;
 }
 
 function showLoading(show) {

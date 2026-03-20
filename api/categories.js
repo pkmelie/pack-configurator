@@ -1,10 +1,7 @@
 // api/categories.js — Vercel Serverless Function
-// Garde la même structure que l'original (config table, key='categories')
-//
-// GET    /api/categories          → lire la liste (public)
-// POST   /api/categories          → remplacer toute la liste (admin) — compatible avec l'ancien
-// PUT    /api/categories          → modifier une catégorie (admin)
-// DELETE /api/categories?id=X     → supprimer une catégorie (admin)
+// Utilise config(key='crash_categories') pour ne pas
+// entrer en conflit avec l'autre projet (pack-configurator)
+// qui utilise config(key='categories')
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,7 +12,7 @@ module.exports = async function handler(req, res) {
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
   if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return res.status(500).json({ error: 'Supabase non configuré (SUPABASE_URL / SUPABASE_KEY manquants)' });
+    return res.status(500).json({ error: 'Supabase non configuré' });
   }
 
   const sb = {
@@ -24,112 +21,98 @@ module.exports = async function handler(req, res) {
     'Authorization': `Bearer ${SUPABASE_KEY}`,
   };
 
-  // Lire les catégories depuis config
-  async function readCategories() {
+  // Clé dédiée au crash analyzer — différente du pack-configurator
+  const CONFIG_KEY = 'crash_categories';
+
+  async function read() {
     const r = await fetch(
-      `${SUPABASE_URL}/rest/v1/config?key=eq.categories&select=value`,
+      `${SUPABASE_URL}/rest/v1/config?key=eq.${CONFIG_KEY}&select=value`,
       { headers: sb }
     );
     if (!r.ok) throw new Error('Erreur lecture Supabase');
     const rows = await r.json();
-    return (rows && rows.length > 0) ? (rows[0].value || []) : [];
+    return (rows && rows.length > 0) ? (rows[0].value || []) : DEFAULT_CATEGORIES;
   }
 
-  // Sauvegarder toute la liste de catégories dans config
-  async function saveCategories(categories) {
+  async function save(categories) {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/config`, {
       method: 'POST',
       headers: { ...sb, 'Prefer': 'resolution=merge-duplicates' },
-      body: JSON.stringify({ key: 'categories', value: categories }),
+      body: JSON.stringify({ key: CONFIG_KEY, value: categories }),
     });
     if (!r.ok) throw new Error('Erreur sauvegarde: ' + await r.text());
   }
 
-  // ── GET — public ──────────────────────────────────────────────
+  // GET — public
   if (req.method === 'GET') {
     try {
-      const categories = await readCategories();
-      return res.status(200).json({ categories });
+      return res.status(200).json({ categories: await read() });
     } catch (e) {
-      return res.status(500).json({ error: e.message, categories: [] });
+      return res.status(200).json({ categories: DEFAULT_CATEGORIES });
     }
   }
 
-  // ── Auth ──────────────────────────────────────────────────────
   if (!verifyToken(req)) return res.status(401).json({ error: 'Non autorisé' });
 
-  // ── POST — remplacer toute la liste (compatible ancien comportement) ──
+  // POST — ajouter ou remplacer toute la liste
   if (req.method === 'POST') {
-    // Deux modes : { categories: [...] } (ancien) ou { id, name, ... } (nouvelle catégorie)
     const body = req.body;
-
+    // Mode ancien : { categories: [...] }
     if (body.categories && Array.isArray(body.categories)) {
-      // Ancien mode — remplacer toute la liste
-      try {
-        await saveCategories(body.categories);
-        return res.status(200).json({ success: true });
-      } catch (e) {
-        return res.status(500).json({ error: e.message });
-      }
+      try { await save(body.categories); return res.status(200).json({ success: true }); }
+      catch (e) { return res.status(500).json({ error: e.message }); }
     }
-
-    // Nouveau mode — ajouter une catégorie
+    // Mode nouveau : { id, name, ... } → ajouter une catégorie
     if (!body.id || !body.name) return res.status(400).json({ error: 'id et name requis' });
     try {
-      const categories = await readCategories();
-      if (categories.find(c => c.id === body.id)) {
-        return res.status(409).json({ error: 'Une catégorie avec cet id existe déjà' });
-      }
-      const newCat = {
-        id:    body.id.toLowerCase().replace(/\s+/g, '_'),
-        name:  body.name,
-        icon:  body.icon  || '📁',
-        color: body.color || '#00d4ff',
-        desc:  body.desc  || '',
-      };
-      categories.push(newCat);
-      await saveCategories(categories);
+      const cats = await read();
+      if (cats.find(c => c.id === body.id)) return res.status(409).json({ error: 'ID déjà existant' });
+      const newCat = { id: body.id.toLowerCase().replace(/\s+/g,'_'), name: body.name, icon: body.icon||'📁', color: body.color||'#00d4ff', desc: body.desc||'' };
+      cats.push(newCat);
+      await save(cats);
       return res.status(201).json({ success: true, category: newCat });
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
-    }
+    } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
-  // ── PUT — modifier une catégorie ──────────────────────────────
+  // PUT — modifier
   if (req.method === 'PUT') {
     const { id, ...updates } = req.body;
     if (!id) return res.status(400).json({ error: 'id requis' });
     try {
-      const categories = await readCategories();
-      const idx = categories.findIndex(c => c.id === id);
+      const cats = await read();
+      const idx = cats.findIndex(c => c.id === id);
       if (idx === -1) return res.status(404).json({ error: 'Catégorie non trouvée' });
-      categories[idx] = { ...categories[idx], ...updates, id }; // id ne change pas
-      await saveCategories(categories);
-      return res.status(200).json({ success: true, category: categories[idx] });
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
-    }
+      cats[idx] = { ...cats[idx], ...updates, id };
+      await save(cats);
+      return res.status(200).json({ success: true, category: cats[idx] });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
-  // ── DELETE — supprimer une catégorie ─────────────────────────
+  // DELETE
   if (req.method === 'DELETE') {
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: 'id requis' });
     try {
-      const categories = await readCategories();
-      const filtered = categories.filter(c => c.id !== id);
-      if (filtered.length === categories.length) {
-        return res.status(404).json({ error: 'Catégorie non trouvée' });
-      }
-      await saveCategories(filtered);
+      const cats = await read();
+      const filtered = cats.filter(c => c.id !== id);
+      await save(filtered);
       return res.status(200).json({ success: true });
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
-    }
+    } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
 };
+
+// Catégories par défaut si la clé n'existe pas encore en DB
+const DEFAULT_CATEGORIES = [
+  { id:'gpu',       icon:'🖥️', name:'GPU/DirectX',  color:'#a855f7', desc:'Erreurs liées au GPU et DirectX' },
+  { id:'memory',    icon:'💾',  name:'Mémoire',       color:'#ff6b35', desc:'RAM, heap, mémoire virtuelle'    },
+  { id:'network',   icon:'🌐',  name:'Réseau',         color:'#00d4ff', desc:'Connexion, ping, firewall, DNS'  },
+  { id:'scripts',   icon:'📜',  name:'Scripts',        color:'#ffdd57', desc:'Erreurs Lua et ressources'       },
+  { id:'streaming', icon:'📦',  name:'Streaming',      color:'#23d160', desc:'Téléchargement des assets'       },
+  { id:'launcher',  icon:'🚀',  name:'Launcher',       color:'#ff3860', desc:'Mise à jour et lancement FiveM'  },
+  { id:'anticheat', icon:'🛡️', name:'Anti-Cheat',    color:'#7fff00', desc:'EAC et Cfx anti-cheat'           },
+];
 
 function verifyToken(req) {
   const auth = req.headers.authorization || '';
