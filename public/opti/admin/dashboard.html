@@ -380,7 +380,7 @@ const SEV={critical:'CRITIQUE',high:'ÉLEVÉ',medium:'MOYEN',low:'FAIBLE'};
 async function init(){
   setDb('loading');
   try{
-    const [cr,cats]=await Promise.all([api('GET','/api/crashes?admin=1'),api('GET','/api/categories')]);
+    const [cr,cats]=await Promise.all([api('GET','/api/crashes?admin=1'),api('GET','/api/crash-categories')]);
     crashes=cr.crashes||[];categories=cats.categories||[];
     setDb('ok');renderDashboard();renderCatSelect();
   }catch(e){setDb('error');notify('⚠ Supabase: '+e.message,'danger');}
@@ -704,8 +704,8 @@ async function submitCat(){
   const editId=document.getElementById('cat-edit-id').value;
   const btn=document.getElementById('cat-submit-btn');btn.disabled=true;
   try{
-    if(editId){await api('PUT','/api/categories',payload);const idx=categories.findIndex(c=>c.id===editId);if(idx>-1)categories[idx]={...categories[idx],...payload};notify('✅ Catégorie mise à jour');}
-    else{const res=await api('POST','/api/categories',payload);categories.push(res.category||payload);notify('✅ Catégorie créée');}
+    if(editId){await api('PUT','/api/crash-categories',payload);const idx=categories.findIndex(c=>c.id===editId);if(idx>-1)categories[idx]={...categories[idx],...payload};notify('✅ Catégorie mise à jour');}
+    else{const res=await api('POST','/api/crash-categories',payload);categories.push(res.category||payload);notify('✅ Catégorie créée');}
     closeCatModal();renderCats();renderCatSelect();renderDashboard();
   }catch(e){notify('⚠ '+e.message,'danger');}finally{btn.disabled=false;}
 }
@@ -714,7 +714,7 @@ function confirmDelCat(id,name){
   document.getElementById('confirm-msg').innerHTML=`Supprimer la catégorie :<br><strong style="color:var(--danger);">${name}</strong><br><br>Les erreurs associées <strong>ne seront pas supprimées</strong>.`;
   document.getElementById('confirm-ok-btn').onclick=async()=>{
     closeConfirm();
-    try{await api('DELETE','/api/categories?id='+encodeURIComponent(id));categories=categories.filter(c=>c.id!==id);renderCats();renderCatSelect();renderDashboard();notify('🗑️ Catégorie supprimée','danger');}
+    try{await api('DELETE','/api/crash-categories?id='+encodeURIComponent(id));categories=categories.filter(c=>c.id!==id);renderCats();renderCatSelect();renderDashboard();notify('🗑️ Catégorie supprimée','danger');}
     catch(e){notify('⚠ '+e.message,'danger');}
   };
   document.getElementById('confirm-modal').classList.add('open');
