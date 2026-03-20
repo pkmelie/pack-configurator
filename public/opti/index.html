@@ -161,6 +161,8 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .crash-card{animation:fadeIn 0.25s ease forwards;}
+
+@keyframes loadSpin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -188,7 +190,7 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
     <div class="page-sub">// Base de données des erreurs FiveM les plus courantes — Diagnostics & solutions</div>
 
     <div class="stats-row">
-      <div class="stat-mini d"><div class="stat-val" style="color:var(--danger)">12</div><div class="stat-lbl">Erreurs répertoriées</div></div>
+      <div class="stat-mini d"><div class="stat-val" style="color:var(--danger)" id="st-count">—</div><div class="stat-lbl">Erreurs répertoriées</div></div>
       <div class="stat-mini s"><div class="stat-val" style="color:var(--success)">89%</div><div class="stat-lbl">Taux de résolution</div></div>
       <div class="stat-mini w"><div class="stat-val" style="color:var(--warn)">7</div><div class="stat-lbl">Catégories</div></div>
       <div class="stat-mini a"><div class="stat-val" style="color:var(--accent)">18.4k</div><div class="stat-lbl">Consultations</div></div>
@@ -334,60 +336,247 @@ Exemple :
 // ============================================================
 // DONNÉES (inlinées pour fonctionner sans serveur)
 // ============================================================
-const CRASH_DB = [
-  {id:'#001',title:'Erreur DirectX Init',code:'ERR_GFX_D3D_INIT',severity:'critical',cat:'gpu',tags:['DirectX','GPU','Drivers'],desc:'FiveM ne peut pas initialiser DirectX 11. Causé par des drivers GPU obsolètes, DirectX corrompu ou une configuration graphique incompatible.',views:4218,updatedAt:'2024-01-15',fix:[{title:'Mettre à jour les drivers GPU',desc:'Téléchargez les derniers drivers depuis le site officiel NVIDIA/AMD. Faites une installation propre avec DDU (Display Driver Uninstaller).',code:'Display Driver Uninstaller (DDU) → Mode sans échec → Nettoyer → Installer nouveau driver'},{title:'Réinstaller les Runtime DirectX',desc:'Téléchargez et installez le package DirectX End-User Runtime depuis Microsoft.',code:'dxwebsetup.exe → Réparation complète'},{title:'Vérifier les paramètres FiveM',desc:'Dans settings.xml, définir shaderQuality sur Medium ou Low pour diagnostiquer.'},{title:'Vérifier les logs',desc:'Consulter le fichier de log pour plus de détails.',code:'%AppData%\\CitizenFX\\logs\\CitizenFX.log'}]},
-  {id:'#002',title:'Erreur Mémoire Heap',code:'ERR_MEM_HEAP_UNKOWN',severity:'critical',cat:'memory',tags:['RAM','Memory Leak','Resources'],desc:'Crash causé par un débordement de la mémoire heap. Souvent dû à des ressources serveur qui fuient, une RAM insuffisante ou des mods mal optimisés.',views:3812,updatedAt:'2024-01-14',fix:[{title:'Augmenter la mémoire virtuelle',desc:'Augmenter le fichier d\'échange Windows à 8-16 GB. Panneau de configuration → Système → Paramètres avancés → Performances.'},{title:'Désactiver les ressources inutiles',desc:'Identifier les ressources qui causent des leaks. Utiliser resmon sur le serveur.',code:'resmon → Surveiller la mémoire par resource'},{title:'Activer Large Pages',desc:'Ajouter --use-heap-pagefile dans les flags de lancement FiveM.',code:'CitizenFX.ini → [Game] AdditionalFlags=--use-heap-pagefile'},{title:'Tester la RAM physique',desc:'Lancer MemTest86 pour vérifier l\'intégrité de la RAM.',code:'memtest86.com → Bootable USB → Test overnight'}]},
-  {id:'#003',title:'Timeout Connexion Réseau',code:'TIMEOUT_CONNECTING',severity:'medium',cat:'network',tags:['Connexion','Firewall','DNS','Timeout'],desc:'FiveM ne parvient pas à se connecter au serveur dans le délai imparti. Peut être lié au firewall, à une surcharge serveur ou à des problèmes DNS.',views:6102,updatedAt:'2024-01-13',fix:[{title:'Ajouter FiveM en exception Firewall',desc:'Windows Defender Firewall → Autoriser une application → Ajouter FiveM.exe. Ports: UDP 30120.',code:'UDP Port 30120 entrant/sortant → Autoriser'},{title:'Changer le DNS',desc:'Utiliser 1.1.1.1 (Cloudflare) ou 8.8.8.8 (Google).',code:'ncpa.cpl → Propriétés TCP/IPv4 → DNS: 1.1.1.1 / 1.0.0.1'},{title:'Vider le cache DNS',desc:'CMD en administrateur.',code:'ipconfig /flushdns && ipconfig /release && ipconfig /renew'}]},
-  {id:'#004',title:'Script Lua Error',code:'SCRIPT_ERROR_LUA',severity:'high',cat:'scripts',tags:['Lua','Scripts','Client'],desc:'Un script Lua côté client a planté FiveM. Causé par une ressource incompatible ou un script corrompu.',views:2934,updatedAt:'2024-01-11',fix:[{title:'Identifier le script fautif',desc:'Chercher "SCRIPT ERROR" dans les logs FiveM.',code:'%AppData%\\CitizenFX\\logs\\CitizenFX.log'},{title:'Mettre à jour la ressource',desc:'Vérifier si une version mise à jour est disponible sur le forum CFX ou GitHub.'},{title:'Désactiver la ressource',desc:'Contacter l\'administrateur du serveur pour désactiver temporairement la ressource.'}]},
-  {id:'#005',title:'Streaming Timeout',code:'STREAMING_TIMEOUT',severity:'high',cat:'streaming',tags:['Streaming','Assets','Loading'],desc:'FiveM ne peut pas charger les assets du serveur dans le temps imparti. Causé par des packs trop lourds ou une connexion lente.',views:5341,updatedAt:'2024-01-14',fix:[{title:'Vider le cache client',desc:'Supprimer le dossier cache et laisser FiveM re-télécharger.',code:'%LocalAppData%\\FiveM\\FiveM.app\\data\\cache\\priv'},{title:'Augmenter le timeout serveur',desc:'Modifier server.cfg.',code:'set sv_timeout 120'},{title:'Connexion filaire',desc:'Passer sur Ethernet (câble) plutôt que WiFi.'}]},
-  {id:'#006',title:'Launcher Update Error',code:'LAUNCHER_UPDATE_FAIL',severity:'medium',cat:'launcher',tags:['Launcher','Update','Permissions'],desc:'Le launcher FiveM ne peut pas se mettre à jour. Causé par des permissions Windows ou un antivirus bloquant.',views:1723,updatedAt:'2024-01-10',fix:[{title:'Lancer en administrateur',desc:'Clic droit sur FiveM.exe → Exécuter en tant qu\'administrateur.'},{title:'Désactiver l\'antivirus temporairement',desc:'Certains antivirus bloquent les mises à jour FiveM.'},{title:'Réinstaller FiveM',desc:'Supprimer le dossier FiveM Application Data et réinstaller.',code:'%LocalAppData%\\FiveM → Supprimer → Réinstaller'}]},
-  {id:'#007',title:'Anti-Cheat Kick',code:'ANTICHEAT_GLOBAL_DENY',severity:'critical',cat:'anticheat',tags:['Anti-cheat','Ban','Citizen'],desc:'FiveM anti-cheat a détecté une modification non autorisée. Peut être un faux positif avec certains logiciels.',views:8943,updatedAt:'2024-01-15',fix:[{title:'Fermer les programmes incompatibles',desc:'Fermer tous les overlays (MSI Afterburner, Rivatuner), trainers, CheatEngine avant de lancer FiveM.'},{title:'Vérifier les modifications GTA',desc:'S\'assurer qu\'aucun mod GTA V n\'est installé dans le dossier GTA V.',code:'Dossier GTA V → Aucun fichier .asi, .dll modifié'},{title:'Contacter le support Cfx.re',desc:'Ouvrir un ticket sur forum.cfx.re avec les logs si faux positif.'}]},
-  {id:'#008',title:'Erreur Téléchargement Cache',code:'ERR_HTTPGET_FAILED',severity:'medium',cat:'launcher',tags:['HTTP','Cache','Download'],desc:'FiveM ne peut pas télécharger les fichiers nécessaires. Lié à la connexion, un VPN ou un antivirus.',views:2104,updatedAt:'2024-01-12',fix:[{title:'Désactiver le proxy/VPN',desc:'Les VPN et proxies peuvent bloquer les téléchargements FiveM.'},{title:'Ajouter exceptions antivirus',desc:'Ajouter le dossier FiveM en exclusion dans l\'antivirus.',code:'%LocalAppData%\\FiveM\\ → Exclusions antivirus'},{title:'Vider le cache',desc:'Supprimer le cache et réessayer.',code:'%LocalAppData%\\FiveM\\FiveM.app\\data\\cache\\priv'}]},
-  {id:'#009',title:'DXGI Device Removed',code:'DXGI_ERROR_DEVICE_REMOVED',severity:'critical',cat:'gpu',tags:['GPU','DXGI','Overclock','Temperature'],desc:'Le GPU a été "removed" par Windows. Causé par une surchauffe, un driver instable ou un overclock instable.',views:3421,updatedAt:'2024-01-14',fix:[{title:'Vérifier les températures GPU',desc:'Utiliser HWiNFO64. Si >85°C, nettoyer le refroidissement.',code:'HWiNFO64 → GPU Core Temp → Doit être < 85°C'},{title:'Désactiver l\'overclocking',desc:'Remettre les valeurs GPU par défaut dans MSI Afterburner.'},{title:'Rollback driver GPU',desc:'Si apparu après une mise à jour driver, faire un rollback.'}]},
-  {id:'#010',title:'Erreur Certificat SSL',code:'ERR_SSL_CERT_VERIFY',severity:'low',cat:'network',tags:['SSL','Certificat','Heure Système'],desc:'FiveM ne peut pas vérifier les certificats SSL. Souvent causé par une date/heure système incorrecte.',views:891,updatedAt:'2024-01-08',fix:[{title:'Synchroniser la date et heure',desc:'Clic droit sur l\'horloge → Synchroniser maintenant.'},{title:'Désactiver les proxies',desc:'Paramètres Windows → Réseau → Proxy → Désactiver.'}]},
-  {id:'#011',title:'Resource Start Timeout',code:'RESOURCE_START_TIMEOUT',severity:'high',cat:'scripts',tags:['Resources','Timeout','Loading'],desc:'Une ressource dépasse le délai de démarrage et bloque la connexion.',views:1634,updatedAt:'2024-01-13',fix:[{title:'Identifier la ressource',desc:'Les logs serveur indiqueront quelle ressource cause le timeout.'},{title:'Redémarrer la ressource',desc:'Via console serveur.',code:'restart [nom_resource]'}]},
-  {id:'#012',title:'Kernel32 / Ntdll Crash',code:'KERNEL32.DLL_CRASH',severity:'critical',cat:'memory',tags:['Windows','Kernel','RAM','Drivers'],desc:'Crash dans les DLL système Windows. Causé par de la RAM défectueuse ou un Windows corrompu.',views:2712,updatedAt:'2024-01-14',fix:[{title:'Tester la RAM avec MemTest86',desc:'Créer une clé USB bootable MemTest86.',code:'memtest86.com → Bootable USB → Test overnight'},{title:'Vérifier les fichiers système',desc:'CMD en administrateur.',code:'sfc /scannow\nDISM /Online /Cleanup-Image /RestoreHealth'}]},
-];
+// ─────────────────────────────────────────────────────────────
+// STATE — chargé depuis Supabase via /api/crashes & /api/categories
+// ─────────────────────────────────────────────────────────────
+let CRASH_DB    = [];
+let CATEGORIES  = [];
+let activeCat   = 'all';
+let searchTerm  = '';
 
-// LOG PATTERNS (côté client — même logique que lib/crashData.js)
+const SEV_LABELS = {critical:'CRITIQUE',high:'ÉLEVÉ',medium:'MOYEN',low:'FAIBLE'};
+
+// ─────────────────────────────────────────────────────────────
+// INIT — charger depuis l'API au chargement de la page
+// ─────────────────────────────────────────────────────────────
+async function initData() {
+  showLoading(true);
+  try {
+    const [crashRes, catRes] = await Promise.all([
+      fetch('/api/crashes'),
+      fetch('/api/categories'),
+    ]);
+
+    if (crashRes.ok) {
+      const data = await crashRes.json();
+      // Normaliser : l'API utilise 'description', le template utilise 'desc'
+      CRASH_DB = (data.crashes || []).map(c => ({
+        ...c,
+        desc: c.description || c.desc || '',
+        updatedAt: (c.updated_at || '').slice(0, 10) || '—',
+      }));
+    }
+
+    if (catRes.ok) {
+      const data = await catRes.json();
+      CATEGORIES = data.categories || [];
+      renderCatFilters();
+    }
+
+    // Mettre à jour les stats
+    document.getElementById('st-count').textContent = CRASH_DB.length;
+    const crit = CRASH_DB.filter(c => c.severity === 'critical').length;
+    document.getElementById('st-crit').textContent = crit;
+
+  } catch (e) {
+    console.warn('[API] Erreur chargement, utilisation données locales:', e.message);
+    // Fallback: garder le DOM vide, afficher un message
+  } finally {
+    showLoading(false);
+    renderCrashes();
+  }
+}
+
+function showLoading(show) {
+  const grid = document.getElementById('crash-grid');
+  if (show) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">
+        <div style="width:24px;height:24px;border:2px solid rgba(255,56,96,0.3);border-top-color:var(--danger);border-radius:50%;animation:loadSpin 0.7s linear infinite;margin:0 auto 14px;"></div>
+        Chargement des erreurs...
+      </div>`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// FILTRES CATÉGORIES — générés depuis l'API
+// ─────────────────────────────────────────────────────────────
+function renderCatFilters() {
+  const container = document.getElementById('cat-filters');
+  // Garder le bouton "Tous" et régénérer le reste
+  container.innerHTML = `<button class="cat-filter active" onclick="filterCat(this,'all')">Tous</button>` +
+    CATEGORIES.map(c =>
+      `<button class="cat-filter" onclick="filterCat(this,'${c.id}')">${c.icon || ''} ${c.name}</button>`
+    ).join('');
+}
+
+// ─────────────────────────────────────────────────────────────
+// GRILLE CRASHES
+// ─────────────────────────────────────────────────────────────
+function renderCrashes() {
+  const grid = document.getElementById('crash-grid');
+  const q    = searchTerm.toLowerCase();
+
+  const filtered = CRASH_DB.filter(c => {
+    const mc = activeCat === 'all' || c.cat === activeCat;
+    const ms = !q
+      || (c.title       || '').toLowerCase().includes(q)
+      || (c.code        || '').toLowerCase().includes(q)
+      || (c.desc        || '').toLowerCase().includes(q)
+      || (c.tags        || []).some(t => t.toLowerCase().includes(q));
+    return mc && ms;
+  });
+
+  grid.innerHTML = filtered.length
+    ? filtered.map(c => `
+      <div class="crash-card" onclick="openModal('${c.id}')">
+        <div class="crash-card-header">
+          <span class="crash-sev sev-${c.severity}">${SEV_LABELS[c.severity] || c.severity}</span>
+          <span class="crash-id">${c.id}</span>
+        </div>
+        <div class="crash-card-body">
+          <div class="crash-title">${c.title}</div>
+          <div class="crash-code">${c.code}</div>
+          <div class="crash-desc">${(c.desc||'').length > 120 ? (c.desc||'').slice(0,120)+'...' : (c.desc||'')}</div>
+          <div class="crash-tags">${(c.tags||[]).map(t=>`<span class="crash-tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="crash-card-footer">
+          <span class="crash-meta">👁 ${(c.views||0).toLocaleString()} · 🕒 ${c.updatedAt || '—'}</span>
+          <button class="btn-fix" onclick="event.stopPropagation();openModal('${c.id}')">✓ VOIR FIX</button>
+        </div>
+      </div>
+    `).join('')
+    : `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">
+        Aucune erreur trouvée
+       </div>`;
+}
+
+function filterCat(btn, cat) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCrashes();
+}
+function filterCrashes() {
+  searchTerm = document.getElementById('db-search').value;
+  renderCrashes();
+}
+
+// ─────────────────────────────────────────────────────────────
+// MODAL DÉTAIL
+// ─────────────────────────────────────────────────────────────
+function openModal(id) {
+  const c = CRASH_DB.find(x => x.id === id);
+  if (!c) return;
+
+  document.getElementById('modal-title').textContent = c.code;
+  document.getElementById('modal-sub').textContent   =
+    `${c.id} · ${(c.cat||'').toUpperCase()} · ${SEV_LABELS[c.severity] || c.severity} · ${(c.views||0).toLocaleString()} vues`;
+
+  // Médias (images/vidéos uploadés + liens vidéo)
+  const mediaItems = (c.media || []);
+  const uploadedMedia = mediaItems.filter(m => m.type === 'image' || m.type === 'video');
+  const videoLinks    = mediaItems.filter(m => m.type === 'video_link');
+
+  let mediaHTML = '';
+  if (uploadedMedia.length || videoLinks.length) {
+    mediaHTML = `<div class="section-lbl">📸 MÉDIAS</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:16px;">
+      ${uploadedMedia.map(m => m.type === 'video'
+        ? `<div style="aspect-ratio:16/9;background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+             <video src="${m.url}" controls style="width:100%;height:100%;object-fit:cover;"></video>
+           </div>`
+        : `<div style="aspect-ratio:16/9;background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;" onclick="window.open('${m.url}','_blank')">
+             <img src="${m.url}" alt="" style="width:100%;height:100%;object-fit:cover;">
+           </div>`
+      ).join('')}
+      ${videoLinks.map(v =>
+        `<a href="${v.url}" target="_blank" rel="noopener"
+          style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--accent);text-decoration:none;font-size:12px;font-family:'Share Tech Mono',monospace;">
+          🎬 ${v.label || 'Voir la vidéo'}
+         </a>`
+      ).join('')}
+    </div>`;
+  }
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+      <span class="crash-sev sev-${c.severity}">${SEV_LABELS[c.severity] || c.severity}</span>
+      ${(c.tags||[]).map(t=>`<span class="crash-tag">${t}</span>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);">${c.desc || c.description || ''}</div>
+    <div class="section-lbl">🔧 ÉTAPES DE CORRECTION</div>
+    ${(c.fix||[]).map((f,i)=>`
+      <div class="fix-step">
+        <div class="step-num">${i+1}</div>
+        <div style="flex:1;">
+          <div class="step-title">${f.title||''}</div>
+          <div class="step-desc">${f.desc||''}</div>
+          ${f.code ? `<div class="step-code">${(f.code||'').replace(/\n/g,'<br>')}</div>` : ''}
+        </div>
+      </div>
+    `).join('')}
+    ${mediaHTML}
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button onclick="closeModal()" style="flex:1;padding:12px;background:rgba(255,56,96,0.08);border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;">✕ FERMER</button>
+      <button style="flex:1;padding:12px;background:linear-gradient(135deg,var(--success),#006622);border:none;border-radius:6px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;" onclick="incrViews('${c.id}');markSolved();closeModal()">✓ PROBLÈME RÉSOLU</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal()    { document.getElementById('modal').classList.remove('open'); }
+function closeModalOut(e){ if (e.target.id === 'modal') closeModal(); }
+function markSolved()    { showNotif('✓ Super ! Problème marqué comme résolu.','success'); }
+
+// Incrémenter les vues silencieusement
+async function incrViews(id) {
+  try {
+    await fetch('/api/crashes?id=' + encodeURIComponent(id) + '&view=1', { method: 'GET' });
+  } catch {}
+}
+
+// ─────────────────────────────────────────────────────────────
+// LOG PATTERNS — détection dans CitizenFX.log
+// ─────────────────────────────────────────────────────────────
 const LOG_PATTERNS = [
-  {re:/ERR_GFX_D3D_INIT/i, code:'ERR_GFX_D3D_INIT'},
-  {re:/DXGI_ERROR_DEVICE_REMOVED/i, code:'DXGI_ERROR_DEVICE_REMOVED'},
-  {re:/DXGI_ERROR_DEVICE_HUNG/i, code:'DXGI_ERROR_DEVICE_REMOVED'},
-  {re:/D3D11.*failed/i, code:'ERR_GFX_D3D_INIT'},
-  {re:/shader.*compilation.*failed/i, code:'ERR_GFX_D3D_INIT'},
-  {re:/ERR_MEM_HEAP_UNKOWN/i, code:'ERR_MEM_HEAP_UNKOWN'},
-  {re:/ERR_MEM_MULTIALLOC_FREE/i, code:'ERR_MEM_HEAP_UNKOWN'},
-  {re:/out of memory/i, code:'ERR_MEM_HEAP_UNKOWN'},
-  {re:/heap.*corrupt/i, code:'ERR_MEM_HEAP_UNKOWN'},
-  {re:/KERNEL32\.DLL/i, code:'KERNEL32.DLL_CRASH'},
-  {re:/ntdll\.dll/i, code:'KERNEL32.DLL_CRASH'},
-  {re:/access violation/i, code:'KERNEL32.DLL_CRASH'},
-  {re:/TIMEOUT_CONNECTING/i, code:'TIMEOUT_CONNECTING'},
-  {re:/Connection timed out/i, code:'TIMEOUT_CONNECTING'},
-  {re:/connecting to server.*timed out/i, code:'TIMEOUT_CONNECTING'},
-  {re:/ERR_SSL_CERT_VERIFY/i, code:'ERR_SSL_CERT_VERIFY'},
-  {re:/SSL.*certificate.*verify/i, code:'ERR_SSL_CERT_VERIFY'},
-  {re:/ERR_HTTPGET_FAILED/i, code:'ERR_HTTPGET_FAILED'},
-  {re:/HTTP.*download.*failed/i, code:'ERR_HTTPGET_FAILED'},
-  {re:/Failed to get.*http/i, code:'ERR_HTTPGET_FAILED'},
-  {re:/SCRIPT ERROR.*\.lua/i, code:'SCRIPT_ERROR_LUA'},
-  {re:/Lua.*error/i, code:'SCRIPT_ERROR_LUA'},
-  {re:/\[ERROR\].*\.lua/i, code:'SCRIPT_ERROR_LUA'},
-  {re:/RESOURCE_START_TIMEOUT/i, code:'RESOURCE_START_TIMEOUT'},
-  {re:/resource.*start.*timeout/i, code:'RESOURCE_START_TIMEOUT'},
-  {re:/timed out.*starting.*resource/i, code:'RESOURCE_START_TIMEOUT'},
-  {re:/STREAMING_TIMEOUT/i, code:'STREAMING_TIMEOUT'},
-  {re:/streaming.*timed out/i, code:'STREAMING_TIMEOUT'},
-  {re:/LAUNCHER_UPDATE_FAIL/i, code:'LAUNCHER_UPDATE_FAIL'},
-  {re:/update.*failed/i, code:'LAUNCHER_UPDATE_FAIL'},
-  {re:/ANTICHEAT_GLOBAL_DENY/i, code:'ANTICHEAT_GLOBAL_DENY'},
-  {re:/Citizen.*denied/i, code:'ANTICHEAT_GLOBAL_DENY'},
-  {re:/anti-cheat.*kick/i, code:'ANTICHEAT_GLOBAL_DENY'},
+  {re:/ERR_GFX_D3D_INIT/i,                code:'ERR_GFX_D3D_INIT'},
+  {re:/DXGI_ERROR_DEVICE_REMOVED/i,        code:'DXGI_ERROR_DEVICE_REMOVED'},
+  {re:/DXGI_ERROR_DEVICE_HUNG/i,           code:'DXGI_ERROR_DEVICE_REMOVED'},
+  {re:/D3D11.*failed/i,                    code:'ERR_GFX_D3D_INIT'},
+  {re:/shader.*compilation.*failed/i,      code:'ERR_GFX_D3D_INIT'},
+  {re:/ERR_MEM_HEAP_UNKOWN/i,              code:'ERR_MEM_HEAP_UNKOWN'},
+  {re:/ERR_MEM_MULTIALLOC_FREE/i,          code:'ERR_MEM_HEAP_UNKOWN'},
+  {re:/out of memory/i,                    code:'ERR_MEM_HEAP_UNKOWN'},
+  {re:/heap.*corrupt/i,                    code:'ERR_MEM_HEAP_UNKOWN'},
+  {re:/KERNEL32\.DLL/i,                    code:'KERNEL32.DLL_CRASH'},
+  {re:/ntdll\.dll/i,                       code:'KERNEL32.DLL_CRASH'},
+  {re:/access violation/i,                 code:'KERNEL32.DLL_CRASH'},
+  {re:/TIMEOUT_CONNECTING/i,               code:'TIMEOUT_CONNECTING'},
+  {re:/Connection timed out/i,             code:'TIMEOUT_CONNECTING'},
+  {re:/connecting to server.*timed out/i,  code:'TIMEOUT_CONNECTING'},
+  {re:/ERR_SSL_CERT_VERIFY/i,              code:'ERR_SSL_CERT_VERIFY'},
+  {re:/ERR_HTTPGET_FAILED/i,               code:'ERR_HTTPGET_FAILED'},
+  {re:/HTTP.*download.*failed/i,           code:'ERR_HTTPGET_FAILED'},
+  {re:/Failed to get.*http/i,              code:'ERR_HTTPGET_FAILED'},
+  {re:/SCRIPT ERROR.*\.lua/i,              code:'SCRIPT_ERROR_LUA'},
+  {re:/Lua.*error/i,                       code:'SCRIPT_ERROR_LUA'},
+  {re:/\[ERROR\].*\.lua/i,                 code:'SCRIPT_ERROR_LUA'},
+  {re:/RESOURCE_START_TIMEOUT/i,           code:'RESOURCE_START_TIMEOUT'},
+  {re:/resource.*start.*timeout/i,         code:'RESOURCE_START_TIMEOUT'},
+  {re:/timed out.*starting.*resource/i,    code:'RESOURCE_START_TIMEOUT'},
+  {re:/STREAMING_TIMEOUT/i,                code:'STREAMING_TIMEOUT'},
+  {re:/streaming.*timed out/i,             code:'STREAMING_TIMEOUT'},
+  {re:/LAUNCHER_UPDATE_FAIL/i,             code:'LAUNCHER_UPDATE_FAIL'},
+  {re:/update.*failed/i,                   code:'LAUNCHER_UPDATE_FAIL'},
+  {re:/ANTICHEAT_GLOBAL_DENY/i,            code:'ANTICHEAT_GLOBAL_DENY'},
+  {re:/Citizen.*denied/i,                  code:'ANTICHEAT_GLOBAL_DENY'},
+  {re:/anti-cheat.*kick/i,                 code:'ANTICHEAT_GLOBAL_DENY'},
 ];
 
 function parseLog(content) {
-  const lines = content.split('\n');
+  const lines    = content.split('\n');
+
   const detected = new Map();
   lines.forEach((line, idx) => {
     LOG_PATTERNS.forEach(({re, code}) => {
@@ -625,6 +814,12 @@ function showNotif(msg,type='success'){
 }
 
 renderCrashes();
+</script>
+</body>
+</html>
+
+// INIT
+initData();
 </script>
 </body>
 </html>

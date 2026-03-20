@@ -16,24 +16,14 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
 body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(168,85,247,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,0.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
-
-/* GUARD — affiché le temps de vérifier le token */
 #guard{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);}
-
-/* ── SIDEBAR ── */
-.sidebar{
-  position:fixed;left:0;top:0;bottom:0;width:225px;
-  background:linear-gradient(180deg,#060a10,#040710);
-  border-right:1px solid rgba(168,85,247,0.15);
-  z-index:100;display:flex;flex-direction:column;
-}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:225px;background:linear-gradient(180deg,#060a10,#040710);border-right:1px solid rgba(168,85,247,0.15);z-index:100;display:flex;flex-direction:column;}
 .sidebar-logo{padding:20px 16px;border-bottom:1px solid rgba(168,85,247,0.12);}
 .logo-badge{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--admin),#6600cc);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--glow);}
 .logo-text{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:2px;color:var(--admin);}
 .logo-sub{font-size:9px;color:var(--text-dim);letter-spacing:3px;}
 .admin-badge{display:inline-block;padding:2px 8px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.22);border-radius:3px;font-size:9px;letter-spacing:2px;color:var(--admin);font-family:'Share Tech Mono',monospace;margin-top:6px;}
-
 .nav-section{padding:14px 12px 5px;font-size:9px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;margin:2px 6px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text-dim);transition:all 0.2s;border:1px solid transparent;position:relative;}
 .nav-item:hover{background:rgba(168,85,247,0.06);color:var(--text);}
@@ -41,51 +31,39 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 .nav-item.active::before{content:'';position:absolute;left:-1px;top:25%;bottom:25%;width:2px;background:var(--admin);border-radius:2px;box-shadow:0 0 8px var(--admin);}
 .nav-icon{font-size:14px;width:18px;text-align:center;}
 .nav-count{margin-left:auto;background:var(--danger);color:#fff;border-radius:10px;font-size:9px;padding:1px 6px;font-family:'Share Tech Mono',monospace;}
-
 .sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid rgba(168,85,247,0.1);}
 .user-card{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--admin),#0080ff);display:flex;align-items:center;justify-content:center;font-size:13px;}
-.user-name{font-size:12px;font-weight:700;}
-.user-role{font-size:9px;color:var(--admin);letter-spacing:1px;font-family:'Share Tech Mono',monospace;}
+.user-name{font-size:12px;font-weight:700;}.user-role{font-size:9px;color:var(--admin);letter-spacing:1px;font-family:'Share Tech Mono',monospace;}
 .btn-logout{width:100%;padding:7px;background:transparent;border:1px solid rgba(255,56,96,0.22);border-radius:5px;color:var(--danger);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;}
 .btn-logout:hover{background:rgba(255,56,96,0.08);}
-
-/* ── MAIN ── */
 .main{margin-left:225px;flex:1;position:relative;z-index:1;}
 .topbar{height:52px;background:rgba(5,8,13,0.97);border-bottom:1px solid rgba(168,85,247,0.1);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);}
 .topbar-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:2px;color:var(--admin);}
 .topbar-right{display:flex;gap:10px;align-items:center;}
 .clock{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);}
-
+.db-status{font-family:'Share Tech Mono',monospace;font-size:10px;display:flex;align-items:center;gap:5px;}
+.db-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:pulse2 2s infinite;}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.4}}
 .content{padding:22px;}
-
-/* ── SECTIONS ── */
-.sec{display:none;}
-.sec.active{display:block;}
-
-/* ── STATS ── */
+.sec{display:none;}.sec.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sec.active>*{animation:fadeIn 0.2s ease forwards;}
 .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px;}
 .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;position:relative;overflow:hidden;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.stat-card.s-admin::before{background:var(--admin);}
-.stat-card.s-danger::before{background:var(--danger);}
-.stat-card.s-warn::before{background:var(--warn);}
-.stat-card.s-success::before{background:var(--success);}
-.stat-card.s-accent::before{background:var(--accent);}
+.stat-card.s-a::before{background:var(--admin);}.stat-card.s-d::before{background:var(--danger);}
+.stat-card.s-w::before{background:var(--warn);}.stat-card.s-s::before{background:var(--success);}
+.stat-card.s-c::before{background:var(--accent);}
 .stat-val{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;line-height:1;}
 .stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:4px;font-family:'Share Tech Mono',monospace;}
-.stat-sub{font-size:10px;color:var(--text-dim);margin-top:3px;}
-
-/* ── PANELS ── */
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:18px;}
-.panel-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(168,85,247,0.02);}
+.panel-hd{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(168,85,247,0.02);}
 .panel-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--admin);}
 .panel-body{padding:18px;}
-
-/* ── TABLE ── */
 table{width:100%;border-collapse:collapse;}
 th{padding:9px 14px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.01);}
-td{padding:9px 14px;font-size:12px;border-bottom:1px solid rgba(26,37,53,0.5);}
+td{padding:9px 14px;font-size:12px;border-bottom:1px solid rgba(26,37,53,0.4);}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(168,85,247,0.025);}
 .td-code{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--danger);}
@@ -99,18 +77,16 @@ tr:hover td{background:rgba(168,85,247,0.025);}
 .ico-btn{width:26px;height:26px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.2s;}
 .ico-btn:hover{border-color:var(--admin);color:var(--admin);}
 .ico-btn.del:hover{border-color:var(--danger);color:var(--danger);}
-
-/* ── BUTTONS ── */
+.td-draft{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(255,221,87,0.1);border:1px solid rgba(255,221,87,0.2);color:var(--warn);font-family:'Share Tech Mono',monospace;}
 .btn{padding:7px 16px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;border-radius:5px;cursor:pointer;transition:all 0.2s;border:none;outline:none;}
 .btn-admin{background:linear-gradient(135deg,var(--admin),#6600cc);color:#fff;box-shadow:var(--glow);}
 .btn-admin:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-admin:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-dim);}
 .btn-outline:hover{border-color:var(--admin);color:var(--admin);}
 .btn-danger{background:linear-gradient(135deg,var(--danger),#990022);color:#fff;}
 .btn-success{background:linear-gradient(135deg,var(--success),#005522);color:#fff;}
 .btn-sm{padding:5px 11px;font-size:11px;}
-
-/* ── FORM ── */
 .form-row{margin-bottom:14px;}
 .form-row label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;font-family:'Share Tech Mono',monospace;}
 .form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 13px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
@@ -118,48 +94,32 @@ tr:hover td{background:rgba(168,85,247,0.025);}
 .form-input::placeholder,.form-textarea::placeholder{color:var(--text-dim);}
 .form-textarea{resize:vertical;min-height:80px;line-height:1.6;}
 .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-
-/* ── STEPS EDITOR ── */
 .steps-editor{border:1px solid var(--border);border-radius:6px;overflow:hidden;}
-.step-item{padding:11px 13px;border-bottom:1px solid rgba(26,37,53,0.5);display:flex;gap:10px;align-items:flex-start;}
+.step-item{padding:11px 13px;border-bottom:1px solid rgba(26,37,53,0.4);display:flex;gap:10px;align-items:flex-start;}
 .step-item:last-child{border-bottom:none;}
-.step-num{width:24px;height:24px;border-radius:50%;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);color:var(--admin);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:3px;}
+.step-num{width:24px;height:24px;border-radius:50%;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);color:var(--admin);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:3px;}
 .step-fields{flex:1;display:flex;flex-direction:column;gap:5px;}
 .step-inp{background:transparent;border:none;border-bottom:1px solid var(--border);padding:3px 0;color:var(--text);font-family:'Exo 2',sans-serif;font-size:12px;outline:none;width:100%;}
 .step-inp:focus{border-bottom-color:var(--admin);}
 .step-inp::placeholder{color:var(--text-dim);}
-.add-step-btn{width:100%;padding:9px;background:rgba(168,85,247,0.05);border:1px dashed rgba(168,85,247,0.2);color:var(--admin);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;}
-.add-step-btn:hover{background:rgba(168,85,247,0.1);}
-
-/* ── MEDIA UPLOAD ── */
-.drop-zone{border:2px dashed rgba(168,85,247,0.18);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(168,85,247,0.02);position:relative;}
-.drop-zone:hover,.drop-zone.drag{border-color:var(--admin);background:rgba(168,85,247,0.07);}
+.add-step-btn{width:100%;padding:9px;background:rgba(168,85,247,0.04);border:1px dashed rgba(168,85,247,0.18);color:var(--admin);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;}
+.add-step-btn:hover{background:rgba(168,85,247,0.09);}
+.drop-zone{border:2px dashed rgba(168,85,247,0.18);border-radius:8px;padding:22px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(168,85,247,0.02);position:relative;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--admin);background:rgba(168,85,247,0.06);}
 .drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px;}
 .media-item{position:relative;aspect-ratio:16/9;background:var(--bg3);border:1px solid var(--border);border-radius:5px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .media-item img,.media-item video{width:100%;height:100%;object-fit:cover;}
 .media-rm{position:absolute;top:3px;right:3px;width:17px;height:17px;background:rgba(255,56,96,0.85);border-radius:50%;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .media-badge{position:absolute;bottom:3px;left:3px;padding:1px 5px;border-radius:2px;font-size:8px;font-family:'Share Tech Mono',monospace;}
-.b-img{background:rgba(0,212,255,0.75);color:#000;}
-.b-vid{background:rgba(255,56,96,0.75);color:#fff;}
-
-/* ── CATEGORIES ── */
+.b-img{background:rgba(0,212,255,0.75);color:#000;}.b-vid{background:rgba(255,56,96,0.75);color:#fff;}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
 .cat-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:15px;transition:border-color 0.2s;}
 .cat-card:hover{border-color:var(--admin);}
 .cat-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.cat-name{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;}
-.cat-cnt{font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
-.cat-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
-
-/* ── ACTIVITY LOG ── */
-.log-item{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid rgba(26,37,53,0.4);}
-.log-item:last-child{border-bottom:none;}
-.log-ico{width:28px;height:28px;border-radius:5px;background:rgba(168,85,247,0.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
-.log-action{font-size:12px;font-weight:600;}
-.log-meta{font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:2px;}
-
-/* ── MODAL ── */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:12px;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(5px);}
 .modal-overlay.open{opacity:1;pointer-events:all;}
 .modal{background:var(--bg2);border:1px solid rgba(168,85,247,0.2);border-radius:12px;width:90%;max-width:460px;transform:scale(0.92);transition:transform 0.25s;}
@@ -169,42 +129,27 @@ tr:hover td{background:rgba(168,85,247,0.025);}
 .modal-close{width:28px;height:28px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
 .modal-close:hover{border-color:var(--danger);color:var(--danger);}
 .modal-body{padding:20px;}
-
-/* ── NOTIF ── */
 #notif{position:fixed;bottom:18px;right:18px;padding:10px 16px;background:var(--panel);border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:11px;z-index:9999;transform:translateY(60px);opacity:0;transition:all 0.3s;border:1px solid var(--admin);color:var(--admin);}
-
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.sec.active>*{animation:fadeIn 0.22s ease forwards;}
 </style>
 </head>
 <body>
-
-<!-- GUARD (vérifié côté JS au chargement) -->
 <div id="guard">⏳ Vérification session...</div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-badge">
       <div class="logo-icon">🛡️</div>
-      <div>
-        <div class="logo-text">ADMIN PANEL</div>
-        <div class="logo-sub">Crash Database</div>
-      </div>
+      <div><div class="logo-text">ADMIN PANEL</div><div class="logo-sub">Crash Database</div></div>
     </div>
     <div class="admin-badge">✓ ADMINISTRATOR</div>
   </div>
-
   <div class="nav-section">Gestion</div>
   <div class="nav-item active" onclick="showSec('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</div>
-  <div class="nav-item" onclick="showSec('crashes',this)"><span class="nav-icon">🗂️</span>Erreurs<span class="nav-count" id="nav-count">12</span></div>
+  <div class="nav-item" onclick="showSec('crashes',this)"><span class="nav-icon">🗂️</span>Erreurs<span class="nav-count" id="nav-count">—</span></div>
   <div class="nav-item" onclick="showSec('categories',this)"><span class="nav-icon">🏷️</span>Catégories</div>
-  <div class="nav-item" onclick="showSec('add',this)"><span class="nav-icon">➕</span>Ajouter Erreur</div>
-
-  <div class="nav-section">Outils</div>
-  <div class="nav-item" onclick="showSec('activity',this)"><span class="nav-icon">📋</span>Activité</div>
+  <div class="nav-item" onclick="openAddForm()"><span class="nav-icon">➕</span>Ajouter Erreur</div>
+  <div class="nav-section">Liens</div>
   <div class="nav-item" onclick="window.open('../index.html')"><span class="nav-icon">🔍</span>Voir le site</div>
-
   <div class="sidebar-footer">
     <div class="user-card">
       <div class="user-avatar">👤</div>
@@ -214,172 +159,150 @@ tr:hover td{background:rgba(168,85,247,0.025);}
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="topbar-title">DASHBOARD</div>
     <div class="topbar-right">
+      <div class="db-status"><div class="db-dot" id="db-dot"></div><span id="db-label" style="color:var(--text-dim)">Supabase</span></div>
       <span class="clock" id="clock"></span>
-      <button class="btn btn-admin btn-sm" onclick="showSec('add',null)">➕ NOUVELLE ERREUR</button>
+      <button class="btn btn-admin btn-sm" onclick="openAddForm()">➕ NOUVELLE ERREUR</button>
       <a href="../index.html" class="btn btn-outline btn-sm">👁️ VOIR SITE</a>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ── DASHBOARD ── -->
+    <!-- DASHBOARD -->
     <div class="sec active" id="s-dashboard">
       <div class="stats-grid">
-        <div class="stat-card s-admin"><div class="stat-val" style="color:var(--admin)" id="st-total">12</div><div class="stat-lbl">Erreurs total</div><div class="stat-sub">↑ +12 ce mois</div></div>
-        <div class="stat-card s-danger"><div class="stat-val" style="color:var(--danger)" id="st-crit">5</div><div class="stat-lbl">Critiques</div></div>
-        <div class="stat-card s-warn"><div class="stat-val" style="color:var(--warn)" id="st-cats">7</div><div class="stat-lbl">Catégories</div></div>
-        <div class="stat-card s-success"><div class="stat-val" style="color:var(--success)">89%</div><div class="stat-lbl">Taux résolution</div></div>
-        <div class="stat-card s-accent"><div class="stat-val" style="color:var(--accent)">18.4k</div><div class="stat-lbl">Vues ce mois</div></div>
+        <div class="stat-card s-a"><div class="stat-val" style="color:var(--admin)" id="st-total">—</div><div class="stat-lbl">Erreurs total</div></div>
+        <div class="stat-card s-d"><div class="stat-val" style="color:var(--danger)" id="st-crit">—</div><div class="stat-lbl">Critiques</div></div>
+        <div class="stat-card s-w"><div class="stat-val" style="color:var(--warn)" id="st-draft">—</div><div class="stat-lbl">Brouillons</div></div>
+        <div class="stat-card s-s"><div class="stat-val" style="color:var(--success)" id="st-cats">—</div><div class="stat-lbl">Catégories</div></div>
+        <div class="stat-card s-c"><div class="stat-val" style="color:var(--accent)" id="st-views">—</div><div class="stat-lbl">Vues totales</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">Erreurs récentes</div><button class="btn btn-outline btn-sm" onclick="showSec('crashes',null)">Tout voir</button></div>
-          <div class="panel-body" style="padding:0;"><table><thead><tr><th>Code</th><th>Sévérité</th><th>Vues</th><th>Actions</th></tr></thead><tbody id="recent-tb"></tbody></table></div>
+          <div class="panel-hd"><div class="panel-title">Dernières erreurs</div><button class="btn btn-outline btn-sm" onclick="showSec('crashes',document.querySelectorAll('.nav-item')[1])">Tout voir</button></div>
+          <div class="panel-body" style="padding:0;"><table><thead><tr><th>Code</th><th>Sév.</th><th>Vues</th><th></th></tr></thead><tbody id="recent-tb"><tr><td colspan="4" class="empty">Chargement...</td></tr></tbody></table></div>
         </div>
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">Activité récente</div></div>
-          <div class="panel-body" id="activity-mini"></div>
+          <div class="panel-hd"><div class="panel-title">Répartition par catégorie</div></div>
+          <div class="panel-body" id="cat-stats"><div class="empty">Chargement...</div></div>
         </div>
       </div>
     </div>
 
-    <!-- ── CRASHES LIST ── -->
+    <!-- CRASHES LIST -->
     <div class="sec" id="s-crashes">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
         <div>
           <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;color:var(--admin);">GESTION DES ERREURS</div>
-          <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;" id="crashes-count-lbl"></div>
+          <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;" id="crashes-lbl">Chargement...</div>
         </div>
         <div style="display:flex;gap:10px;">
-          <input type="text" id="admin-search" placeholder="Rechercher..." oninput="renderTable()" style="background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:7px 13px;color:var(--text);font-size:12px;outline:none;width:200px;">
-          <button class="btn btn-admin btn-sm" onclick="showSec('add',null)">➕ AJOUTER</button>
+          <input type="text" id="admin-search" placeholder="Rechercher..." oninput="filterTable()" style="background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:7px 13px;color:var(--text);font-size:12px;outline:none;width:180px;">
+          <select id="filter-sev" onchange="filterTable()" style="background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:7px 10px;color:var(--text);font-size:12px;outline:none;">
+            <option value="">Toutes sévérités</option><option value="critical">Critique</option><option value="high">Élevée</option><option value="medium">Moyenne</option><option value="low">Faible</option>
+          </select>
+          <button class="btn btn-admin btn-sm" onclick="openAddForm()">➕ AJOUTER</button>
         </div>
       </div>
       <div class="panel">
         <div class="panel-body" style="padding:0;">
           <table>
-            <thead><tr><th>ID</th><th>Titre</th><th>Code</th><th>Catégorie</th><th>Sévérité</th><th>Vues</th><th>Actions</th></tr></thead>
-            <tbody id="crashes-tb"></tbody>
+            <thead><tr><th>ID</th><th>Titre</th><th>Code</th><th>Cat.</th><th>Sév.</th><th>Vues</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="crashes-tb"><tr><td colspan="8" class="empty">Chargement...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── CATEGORIES ── -->
+    <!-- CATEGORIES -->
     <div class="sec" id="s-categories">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
         <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;color:var(--admin);">CATÉGORIES</div>
-        <button class="btn btn-admin btn-sm" onclick="openCatModal()">➕ NOUVELLE CATÉGORIE</button>
+        <button class="btn btn-admin btn-sm" onclick="openCatModal()">➕ NOUVELLE</button>
       </div>
-      <div class="cat-grid" id="cat-grid"></div>
+      <div class="cat-grid" id="cat-grid"><div class="empty" style="grid-column:1/-1">Chargement...</div></div>
     </div>
 
-    <!-- ── ADD / EDIT ── -->
+    <!-- ADD / EDIT -->
     <div class="sec" id="s-add">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;color:var(--admin);margin-bottom:4px;" id="form-heading">AJOUTER UNE ERREUR</div>
-      <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:20px;">Remplir les informations de l'erreur FiveM</div>
-
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;color:var(--admin);" id="form-heading">AJOUTER UNE ERREUR</div>
+        <button class="btn btn-outline btn-sm" onclick="resetForm();showSec('crashes',document.querySelectorAll('.nav-item')[1])">← Retour</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:20px;" id="form-sub">Nouvelle entrée dans la base de données</div>
+      <input type="hidden" id="f-edit-id">
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;">
-        <!-- LEFT -->
         <div>
           <div class="panel" style="margin-bottom:14px;">
-            <div class="panel-header"><div class="panel-title">Informations principales</div></div>
+            <div class="panel-hd"><div class="panel-title">Informations principales</div></div>
             <div class="panel-body">
               <div class="form-row"><label>Titre *</label><input class="form-input" id="f-title" placeholder="ex: Erreur DirectX Init"></div>
               <div class="form-row-2">
-                <div class="form-row"><label>Code d'erreur *</label><input class="form-input" id="f-code" placeholder="ex: ERR_GFX_D3D_INIT"></div>
-                <div class="form-row"><label>ID</label><input class="form-input" id="f-id" placeholder="ex: #013"></div>
+                <div class="form-row"><label>Code d'erreur *</label><input class="form-input" id="f-code" placeholder="ex: ERR_GFX_D3D_INIT" style="font-family:'Share Tech Mono',monospace;"></div>
+                <div class="form-row"><label>ID (auto si vide)</label><input class="form-input" id="f-id" placeholder="ex: #013"></div>
               </div>
               <div class="form-row-2">
-                <div class="form-row"><label>Catégorie *</label>
-                  <select class="form-select" id="f-cat">
-                    <option value="">— Sélectionner —</option>
-                    <option value="gpu">🖥️ GPU/DirectX</option>
-                    <option value="memory">💾 Mémoire</option>
-                    <option value="network">🌐 Réseau</option>
-                    <option value="scripts">📜 Scripts</option>
-                    <option value="streaming">📦 Streaming</option>
-                    <option value="launcher">🚀 Launcher</option>
-                    <option value="anticheat">🛡️ Anti-Cheat</option>
-                  </select>
-                </div>
+                <div class="form-row"><label>Catégorie *</label><select class="form-select" id="f-cat"><option value="">— Sélectionner —</option></select></div>
                 <div class="form-row"><label>Sévérité *</label>
                   <select class="form-select" id="f-sev">
                     <option value="">— Sélectionner —</option>
-                    <option value="critical">🔴 Critique</option>
-                    <option value="high">🟠 Élevée</option>
-                    <option value="medium">🟡 Moyenne</option>
-                    <option value="low">🟢 Faible</option>
+                    <option value="critical">🔴 Critique</option><option value="high">🟠 Élevée</option><option value="medium">🟡 Moyenne</option><option value="low">🟢 Faible</option>
                   </select>
                 </div>
               </div>
-              <div class="form-row"><label>Description *</label><textarea class="form-textarea" id="f-desc" placeholder="Décrire l'erreur, ses causes, son contexte d'apparition..."></textarea></div>
+              <div class="form-row"><label>Description *</label><textarea class="form-textarea" id="f-desc" rows="4" placeholder="Décrire l'erreur, ses causes probables..."></textarea></div>
               <div class="form-row"><label>Tags (séparés par virgule)</label><input class="form-input" id="f-tags" placeholder="ex: DirectX, GPU, Drivers"></div>
             </div>
           </div>
-
           <div class="panel">
-            <div class="panel-header"><div class="panel-title">Étapes de correction</div></div>
+            <div class="panel-hd"><div class="panel-title">Étapes de correction</div><span style="font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;" id="steps-count">0 étape(s)</span></div>
             <div class="panel-body" style="padding:0;">
               <div class="steps-editor" id="steps-editor"></div>
               <button class="add-step-btn" onclick="addStep()">➕ AJOUTER UNE ÉTAPE</button>
             </div>
           </div>
         </div>
-
-        <!-- RIGHT -->
         <div>
           <div class="panel" style="margin-bottom:14px;">
-            <div class="panel-header"><div class="panel-title">Médias</div></div>
+            <div class="panel-hd"><div class="panel-title">Médias</div></div>
             <div class="panel-body">
-              <div class="drop-zone" id="drop-zone"
-                onclick="document.getElementById('file-input').click()"
-                ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
+              <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
                 <input type="file" id="file-input" accept="image/*,video/*" multiple onchange="handleFiles(this.files)">
-                <div style="font-size:28px;margin-bottom:8px;">📸</div>
-                <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:var(--text);">GLISSER / CLIQUER</div>
-                <div style="font-size:10px;color:var(--text-dim);margin-top:4px;font-family:'Share Tech Mono',monospace;">Images (PNG, JPG) · Vidéos (MP4)</div>
+                <div style="font-size:26px;margin-bottom:6px;">📸</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--text);">GLISSER / CLIQUER</div>
+                <div style="font-size:10px;color:var(--text-dim);margin-top:3px;font-family:'Share Tech Mono',monospace;">PNG, JPG, MP4, WEBM</div>
               </div>
               <div class="media-grid" id="media-preview"></div>
             </div>
           </div>
-
           <div class="panel" style="margin-bottom:14px;">
-            <div class="panel-header"><div class="panel-title">Lien Vidéo</div></div>
+            <div class="panel-hd"><div class="panel-title">Lien Vidéo</div></div>
             <div class="panel-body">
               <div class="form-row" style="margin-bottom:8px;"><label>URL YouTube / Streamable</label><input class="form-input" id="f-vid-url" placeholder="https://youtube.com/..."></div>
-              <div class="form-row" style="margin-bottom:8px;"><label>Label</label><input class="form-input" id="f-vid-lbl" placeholder="ex: Tutoriel DDU complet"></div>
-              <button class="btn btn-outline btn-sm" style="width:100%;" onclick="addVideo()">➕ AJOUTER LIEN</button>
+              <div class="form-row" style="margin-bottom:8px;"><label>Label</label><input class="form-input" id="f-vid-lbl" placeholder="Tutoriel DDU complet"></div>
+              <button class="btn btn-outline btn-sm" style="width:100%;" onclick="addVideoLink()">➕ AJOUTER LIEN</button>
               <div id="video-list" style="margin-top:8px;"></div>
             </div>
           </div>
-
           <div class="panel">
-            <div class="panel-header"><div class="panel-title">Publication</div></div>
+            <div class="panel-hd"><div class="panel-title">Publication</div></div>
             <div class="panel-body">
-              <div class="form-row" style="margin-bottom:10px;"><label>Statut</label>
+              <div class="form-row" style="margin-bottom:12px;"><label>Statut</label>
                 <select class="form-select" id="f-status">
-                  <option value="published">✅ Publié</option>
-                  <option value="draft">📝 Brouillon</option>
+                  <option value="true">✅ Publié (visible sur le site)</option>
+                  <option value="false">📝 Brouillon (masqué)</option>
                 </select>
               </div>
-              <button class="btn btn-success" style="width:100%;padding:11px;font-size:13px;margin-bottom:8px;" onclick="submitForm()">💾 PUBLIER</button>
-              <button class="btn btn-outline" style="width:100%;padding:9px;font-size:12px;" onclick="saveDraft()">📝 BROUILLON</button>
+              <button class="btn btn-success" id="submit-btn" style="width:100%;padding:11px;font-size:13px;margin-bottom:8px;" onclick="submitForm()">💾 SAUVEGARDER</button>
+              <div style="font-size:10px;color:var(--text-dim);text-align:center;font-family:'Share Tech Mono',monospace;margin-top:6px;" id="save-status"></div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- ── ACTIVITY ── -->
-    <div class="sec" id="s-activity">
-      <div style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;color:var(--admin);margin-bottom:18px;">JOURNAL D'ACTIVITÉ</div>
-      <div class="panel"><div class="panel-body" id="activity-full"></div></div>
     </div>
 
   </div>
@@ -388,20 +311,33 @@ tr:hover td{background:rgba(168,85,247,0.025);}
 <!-- CATEGORY MODAL -->
 <div class="modal-overlay" id="cat-modal" onclick="if(event.target===this)closeCatModal()">
   <div class="modal">
-    <div class="modal-hd">
-      <div class="modal-title">NOUVELLE CATÉGORIE</div>
-      <button class="modal-close" onclick="closeCatModal()">✕</button>
-    </div>
+    <div class="modal-hd"><div class="modal-title" id="cat-modal-title">NOUVELLE CATÉGORIE</div><button class="modal-close" onclick="closeCatModal()">✕</button></div>
     <div class="modal-body">
-      <div class="form-row"><label>Nom *</label><input class="form-input" id="cat-name" placeholder="ex: BSOD / Windows"></div>
+      <input type="hidden" id="cat-edit-id">
+      <div class="form-row"><label>ID unique (sans espaces) *</label><input class="form-input" id="cat-id" placeholder="ex: bsod"></div>
+      <div class="form-row"><label>Nom affiché *</label><input class="form-input" id="cat-name" placeholder="ex: BSOD / Windows"></div>
       <div class="form-row-2">
-        <div class="form-row"><label>Icône (emoji)</label><input class="form-input" id="cat-icon" placeholder="💻" style="width:80px;"></div>
+        <div class="form-row"><label>Icône (emoji)</label><input class="form-input" id="cat-icon" placeholder="💻" maxlength="4"></div>
         <div class="form-row"><label>Couleur</label><input class="form-input" id="cat-color" type="color" value="#00d4ff" style="height:38px;padding:4px;"></div>
       </div>
-      <div class="form-row"><label>Description</label><textarea class="form-textarea" id="cat-desc" placeholder="Description courte..."></textarea></div>
+      <div class="form-row"><label>Description</label><textarea class="form-textarea" id="cat-desc" rows="2" placeholder="Description courte..."></textarea></div>
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn btn-outline" style="flex:1;padding:10px;" onclick="closeCatModal()">Annuler</button>
-        <button class="btn btn-admin" style="flex:1;padding:10px;" onclick="submitCat()">➕ CRÉER</button>
+        <button class="btn btn-admin" style="flex:1;padding:10px;" id="cat-submit-btn" onclick="submitCat()">➕ CRÉER</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal" onclick="if(event.target===this)closeConfirm()">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-hd"><div class="modal-title" style="color:var(--danger);">⚠ CONFIRMATION</div><button class="modal-close" onclick="closeConfirm()">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.6;" id="confirm-msg"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline" style="flex:1;padding:10px;" onclick="closeConfirm()">Annuler</button>
+        <button class="btn btn-danger" style="flex:1;padding:10px;" id="confirm-ok-btn">Supprimer</button>
       </div>
     </div>
   </div>
@@ -410,309 +346,391 @@ tr:hover td{background:rgba(168,85,247,0.025);}
 <div id="notif"></div>
 
 <script>
-// ─────────────────────────────────────────────
-// AUTH GUARD — vérification du token sessionStorage
-// Le token a été stocké par la page login (index.html)
-// ─────────────────────────────────────────────
-(function() {
+// AUTH GUARD
+let ADMIN_TOKEN = null;
+(function(){
   const token = sessionStorage.getItem('admin_token');
-  const ts    = parseInt(sessionStorage.getItem('admin_ts') || '0', 10);
-
-  // Token absent ou expiré (session > 8h)
-  if (!token || !token.startsWith('YWRtaW46') && !isValidToken(token)) {
-    window.location.replace('index.html');
-    return;
+  const ts = parseInt(sessionStorage.getItem('admin_ts')||'0',10);
+  function isValid(t){try{return atob(t).startsWith('admin:');}catch{return false;}}
+  if(!token||!isValid(token)||Date.now()-ts>8*3600*1000){
+    sessionStorage.removeItem('admin_token');sessionStorage.removeItem('admin_ts');
+    window.location.replace('index.html');return;
   }
-  // Session trop ancienne (8h)
-  if (Date.now() - ts > 8 * 60 * 60 * 1000) {
-    sessionStorage.removeItem('admin_token');
-    sessionStorage.removeItem('admin_ts');
-    window.location.replace('index.html');
-    return;
-  }
-
-  // OK — masquer le guard, afficher le panel
-  document.getElementById('guard').style.display = 'none';
-  document.getElementById('admin-panel-wrap')?.style && (document.getElementById('admin-panel-wrap').style.display = 'flex');
-
-  // Afficher tout le body (sidebar + main sont directement dans body)
-  document.querySelector('.sidebar').style.display = 'flex';
-  document.querySelector('.main').style.display    = 'block';
+  ADMIN_TOKEN=token;
+  document.getElementById('guard').style.display='none';
 })();
 
-function isValidToken(t) {
-  try {
-    const dec = atob(t);
-    return dec.startsWith('admin:');
-  } catch { return false; }
+function logout(){sessionStorage.removeItem('admin_token');sessionStorage.removeItem('admin_ts');window.location.href='index.html';}
+
+// API
+async function api(method,path,body){
+  const opts={method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+ADMIN_TOKEN}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(path,opts);
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||'Erreur '+res.status);
+  return data;
 }
 
-function logout() {
-  sessionStorage.removeItem('admin_token');
-  sessionStorage.removeItem('admin_ts');
-  window.location.href = 'index.html';
+// STATE
+let crashes=[],categories=[],videoLinks=[],stepCount=0;
+const SEV={critical:'CRITIQUE',high:'ÉLEVÉ',medium:'MOYEN',low:'FAIBLE'};
+
+// INIT
+async function init(){
+  setDb('loading');
+  try{
+    const [cr,cats]=await Promise.all([api('GET','/api/crashes?admin=1'),api('GET','/api/categories')]);
+    crashes=cr.crashes||[];categories=cats.categories||[];
+    setDb('ok');renderDashboard();renderCatSelect();
+  }catch(e){setDb('error');notify('⚠ Supabase: '+e.message,'danger');}
 }
 
-// ─────────────────────────────────────────────
-// DONNÉES MOCK
-// ─────────────────────────────────────────────
-const CRASHES = [
-  {id:'#001',title:'Erreur DirectX Init',code:'ERR_GFX_D3D_INIT',cat:'gpu',sev:'critical',views:'4.2k'},
-  {id:'#002',title:'Erreur Mémoire Heap',code:'ERR_MEM_HEAP_UNKOWN',cat:'memory',sev:'critical',views:'3.8k'},
-  {id:'#003',title:'Timeout Connexion',code:'TIMEOUT_CONNECTING',cat:'network',sev:'medium',views:'6.1k'},
-  {id:'#004',title:'Script Lua Error',code:'SCRIPT_ERROR_LUA',cat:'scripts',sev:'high',views:'2.9k'},
-  {id:'#005',title:'Streaming Timeout',code:'STREAMING_TIMEOUT',cat:'streaming',sev:'high',views:'5.3k'},
-  {id:'#006',title:'Launcher Update Error',code:'LAUNCHER_UPDATE_FAIL',cat:'launcher',sev:'medium',views:'1.7k'},
-  {id:'#007',title:'Anti-Cheat Kick',code:'ANTICHEAT_GLOBAL_DENY',cat:'anticheat',sev:'critical',views:'8.9k'},
-  {id:'#008',title:'Erreur HTTP Get',code:'ERR_HTTPGET_FAILED',cat:'launcher',sev:'medium',views:'2.1k'},
-  {id:'#009',title:'DXGI Device Removed',code:'DXGI_ERROR_DEVICE_REMOVED',cat:'gpu',sev:'critical',views:'3.4k'},
-  {id:'#010',title:'Certificat SSL',code:'ERR_SSL_CERT_VERIFY',cat:'network',sev:'low',views:'890'},
-  {id:'#011',title:'Resource Start Timeout',code:'RESOURCE_START_TIMEOUT',cat:'scripts',sev:'high',views:'1.6k'},
-  {id:'#012',title:'Kernel32 / Ntdll Crash',code:'KERNEL32.DLL_CRASH',cat:'memory',sev:'critical',views:'2.7k'},
-];
-
-let categories = [
-  {id:'gpu',icon:'🖥️',name:'GPU/DirectX',count:3,color:'#a855f7',desc:'Erreurs liées au GPU et DirectX'},
-  {id:'memory',icon:'💾',name:'Mémoire',count:2,color:'#ff6b35',desc:'RAM, heap, mémoire virtuelle'},
-  {id:'network',icon:'🌐',name:'Réseau',count:2,color:'#00d4ff',desc:'Connexion, ping, firewall, DNS'},
-  {id:'scripts',icon:'📜',name:'Scripts',count:2,color:'#ffdd57',desc:'Erreurs Lua et ressources serveur'},
-  {id:'streaming',icon:'📦',name:'Streaming',count:1,color:'#23d160',desc:'Téléchargement des assets'},
-  {id:'launcher',icon:'🚀',name:'Launcher',count:2,color:'#ff3860',desc:'Mise à jour et lancement FiveM'},
-  {id:'anticheat',icon:'🛡️',name:'Anti-Cheat',count:1,color:'#7fff00',desc:'EAC et Cfx anti-cheat'},
-];
-
-const ACTIVITY = [
-  {icon:'➕',action:'Nouvelle erreur ajoutée',meta:'DXGI_ERROR_DEVICE_REMOVED · Il y a 2h'},
-  {icon:'✏️',action:'Erreur modifiée',meta:'ERR_GFX_D3D_INIT · Étape 2 mise à jour · Il y a 4h'},
-  {icon:'🏷️',action:'Catégorie créée',meta:'Anti-Cheat · Il y a 1j'},
-  {icon:'🖼️',action:'Média ajouté',meta:'Screenshot ajouté à #007 · Il y a 1j'},
-  {icon:'🗑️',action:'Erreur supprimée',meta:'DEPRECATED_ERROR · Il y a 2j'},
-  {icon:'✏️',action:'Erreur modifiée',meta:'TIMEOUT_CONNECTING · Fix amélioré · Il y a 3j'},
-];
-
-const SEV = {critical:'CRITIQUE',high:'ÉLEVÉ',medium:'MOYEN',low:'FAIBLE'};
-const videoLinks = [];
-let stepCount = 0;
-
-// ─────────────────────────────────────────────
-// NAVIGATION
-// ─────────────────────────────────────────────
-function showSec(id, navEl) {
-  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('s-' + id).classList.add('active');
-  if (navEl) navEl.classList.add('active');
-  const titles = {dashboard:'DASHBOARD',crashes:'GESTION DES ERREURS',add:'AJOUTER UNE ERREUR',categories:'CATÉGORIES',activity:'JOURNAL D\'ACTIVITÉ'};
-  document.getElementById('topbar-title').textContent = titles[id] || id.toUpperCase();
-  if (id === 'crashes')    renderTable();
-  if (id === 'categories') renderCats();
-  if (id === 'activity')   renderActivityFull();
-  if (id === 'add')        initSteps();
+function setDb(s){
+  const dot=document.getElementById('db-dot'),lbl=document.getElementById('db-label');
+  if(s==='ok'){dot.style.cssText='width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:pulse2 2s infinite;';lbl.textContent='Supabase ✓';lbl.style.color='var(--success)';}
+  if(s==='error'){dot.style.background='var(--danger)';dot.style.boxShadow='0 0 6px var(--danger)';lbl.textContent='Supabase ✗';lbl.style.color='var(--danger)';}
+  if(s==='loading'){dot.style.background='var(--warn)';dot.style.boxShadow='0 0 6px var(--warn)';lbl.textContent='Connexion...';lbl.style.color='var(--warn)';}
 }
 
-// ─────────────────────────────────────────────
+// NAV
+function showSec(id,navEl){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  const titles={dashboard:'DASHBOARD',crashes:'GESTION DES ERREURS',add:'FORMULAIRE',categories:'CATÉGORIES'};
+  document.getElementById('topbar-title').textContent=titles[id]||id.toUpperCase();
+  if(id==='crashes')renderTable();
+  if(id==='categories')renderCats();
+}
+
 // DASHBOARD
-// ─────────────────────────────────────────────
-function renderDashboard() {
-  const crit = CRASHES.filter(c => c.sev === 'critical').length;
-  document.getElementById('st-total').textContent = CRASHES.length;
-  document.getElementById('st-crit').textContent  = crit;
-  document.getElementById('st-cats').textContent  = categories.length;
-  document.getElementById('nav-count').textContent = CRASHES.length;
-
-  document.getElementById('recent-tb').innerHTML = CRASHES.slice(0,5).map(c => `
+function renderDashboard(){
+  const crit=crashes.filter(c=>c.severity==='critical').length;
+  const drafts=crashes.filter(c=>!c.published).length;
+  const views=crashes.reduce((a,c)=>a+(c.views||0),0);
+  document.getElementById('st-total').textContent=crashes.length;
+  document.getElementById('st-crit').textContent=crit;
+  document.getElementById('st-draft').textContent=drafts;
+  document.getElementById('st-cats').textContent=categories.length;
+  document.getElementById('st-views').textContent=views>999?(views/1000).toFixed(1)+'k':views;
+  document.getElementById('nav-count').textContent=crashes.length;
+  document.getElementById('recent-tb').innerHTML=crashes.slice(0,5).map(c=>`
     <tr>
-      <td class="td-code">${c.code}</td>
-      <td><span class="td-sev sev-${c.sev}">${SEV[c.sev]}</span></td>
-      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);">${c.views}</td>
+      <td class="td-code" style="font-size:10px;">${c.code}</td>
+      <td><span class="td-sev sev-${c.severity}">${SEV[c.severity]}</span></td>
+      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);">${c.views||0}</td>
       <td><div class="actions-td">
         <button class="ico-btn" onclick="editCrash('${c.id}')">✏️</button>
-        <button class="ico-btn del" onclick="delCrash('${c.id}')">🗑️</button>
+        <button class="ico-btn del" onclick="confirmDelete('${c.id}','${c.title.replace(/'/g,"\\'")}')">🗑️</button>
       </div></td>
-    </tr>
-  `).join('');
-
-  document.getElementById('activity-mini').innerHTML = ACTIVITY.slice(0,4).map(a => `
-    <div class="log-item">
-      <div class="log-ico">${a.icon}</div>
-      <div><div class="log-action">${a.action}</div><div class="log-meta">${a.meta}</div></div>
-    </div>
-  `).join('');
+    </tr>`).join('')||'<tr><td colspan="4" class="empty">Aucune erreur</td></tr>';
+  const byCat={};crashes.forEach(c=>{byCat[c.cat]=(byCat[c.cat]||0)+1;});
+  document.getElementById('cat-stats').innerHTML=categories.map(cat=>{
+    const count=byCat[cat.id]||0,pct=crashes.length?Math.round(count/crashes.length*100):0;
+    return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="font-size:14px;width:20px;">${cat.icon}</span>
+      <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>${cat.name}</span><span style="color:var(--text-dim);font-family:'Share Tech Mono',monospace;">${count}</span></div>
+      <div style="height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:${cat.color};border-radius:2px;transition:width 0.6s;"></div></div></div></div>`;
+  }).join('')||'<div class="empty">Aucune catégorie</div>';
 }
 
-// ─────────────────────────────────────────────
-// TABLE CRASHES
-// ─────────────────────────────────────────────
-function renderTable() {
-  const q = (document.getElementById('admin-search')?.value || '').toLowerCase();
-  const list = CRASHES.filter(c => !q || c.title.toLowerCase().includes(q) || c.code.toLowerCase().includes(q));
-  document.getElementById('crashes-count-lbl').textContent = `${list.length} erreur(s) répertoriée(s)`;
-  document.getElementById('crashes-tb').innerHTML = list.map(c => `
+// TABLE
+function renderTable(){
+  const q=(document.getElementById('admin-search')?.value||'').toLowerCase();
+  const sev=document.getElementById('filter-sev')?.value||'';
+  const list=crashes.filter(c=>(!q||c.title.toLowerCase().includes(q)||c.code.toLowerCase().includes(q))&&(!sev||c.severity===sev));
+  document.getElementById('crashes-lbl').textContent=`${list.length} / ${crashes.length} erreur(s)`;
+  document.getElementById('crashes-tb').innerHTML=list.map(c=>`
     <tr>
       <td style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);">${c.id}</td>
-      <td style="font-weight:600;">${c.title}</td>
-      <td class="td-code">${c.code}</td>
+      <td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.title}</td>
+      <td class="td-code" style="font-size:10px;">${c.code}</td>
       <td><span class="td-cat">${c.cat}</span></td>
-      <td><span class="td-sev sev-${c.sev}">${SEV[c.sev]}</span></td>
-      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);">${c.views}</td>
+      <td><span class="td-sev sev-${c.severity}">${SEV[c.severity]}</span></td>
+      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);">${c.views||0}</td>
+      <td>${c.published?'<span style="font-size:10px;color:var(--success);">✅ Publié</span>':'<span class="td-draft">BROUILLON</span>'}</td>
       <td><div class="actions-td">
         <button class="ico-btn" onclick="editCrash('${c.id}')" title="Modifier">✏️</button>
-        <button class="ico-btn" onclick="dupCrash('${c.id}')" title="Dupliquer">📋</button>
-        <button class="ico-btn del" onclick="delCrash('${c.id}')" title="Supprimer">🗑️</button>
+        <button class="ico-btn" onclick="togglePub('${c.id}',${!c.published})" title="${c.published?'Masquer':'Publier'}">${c.published?'👁':'👁‍🗨'}</button>
+        <button class="ico-btn del" onclick="confirmDelete('${c.id}','${c.title.replace(/'/g,"\\'")}')">🗑️</button>
       </div></td>
-    </tr>
-  `).join('');
+    </tr>`).join('')||'<tr><td colspan="8" class="empty">Aucune erreur trouvée</td></tr>';
+}
+function filterTable(){renderTable();}
+
+async function togglePub(id,pub){
+  try{await api('PUT','/api/crashes',{id,published:pub});const i=crashes.findIndex(c=>c.id===id);if(i>-1)crashes[i].published=pub;renderTable();notify(pub?'✅ Publié':'📝 Brouillon');}
+  catch(e){notify('⚠ '+e.message,'danger');}
 }
 
-function editCrash(id) { showSec('add', null); document.getElementById('form-heading').textContent = `MODIFIER L'ERREUR ${id}`; notify(`✏️ Modification ${id}`); }
-function delCrash(id)  { if(confirm(`Supprimer l'erreur ${id} ?`)) notify(`🗑️ Erreur ${id} supprimée`, 'danger'); }
-function dupCrash(id)  { notify(`📋 Erreur ${id} dupliquée`); }
+function confirmDelete(id,title){
+  document.getElementById('confirm-msg').innerHTML=`Supprimer :<br><strong style="color:var(--danger);">${title}</strong> (${id})<br><br>Action <strong>irréversible</strong>.`;
+  document.getElementById('confirm-ok-btn').onclick=()=>deleteCrash(id);
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-modal').classList.remove('open');}
 
-// ─────────────────────────────────────────────
-// CATÉGORIES
-// ─────────────────────────────────────────────
-function renderCats() {
-  document.getElementById('cat-grid').innerHTML = categories.map(c => `
-    <div class="cat-card">
-      <div class="cat-hd">
-        <span style="font-size:20px;">${c.icon}</span>
-        <div class="actions-td">
-          <button class="ico-btn" onclick="notify('✏️ Modifier catégorie ${c.id}')">✏️</button>
-          <button class="ico-btn del" onclick="delCat('${c.id}')">🗑️</button>
-        </div>
-      </div>
-      <div class="cat-name">${c.name}</div>
-      <div style="margin:4px 0;"><span class="cat-dot" style="background:${c.color}"></span><span class="cat-cnt">${c.count} erreurs</span></div>
-      <div style="font-size:11px;color:var(--text-dim);">${c.desc}</div>
-    </div>
-  `).join('');
+async function deleteCrash(id){
+  closeConfirm();
+  try{await api('DELETE','/api/crashes?id='+encodeURIComponent(id));crashes=crashes.filter(c=>c.id!==id);renderTable();renderDashboard();notify('🗑️ Supprimé','danger');}
+  catch(e){notify('⚠ '+e.message,'danger');}
 }
 
-function delCat(id) { if(confirm(`Supprimer la catégorie ${id} ?`)) { categories = categories.filter(c=>c.id!==id); renderCats(); notify('🗑️ Catégorie supprimée','danger'); }}
-function openCatModal()  { document.getElementById('cat-modal').classList.add('open'); }
-function closeCatModal() { document.getElementById('cat-modal').classList.remove('open'); }
-function submitCat() {
-  const name = document.getElementById('cat-name').value.trim();
-  if (!name) { notify('⚠ Nom requis','warn'); return; }
-  categories.push({id:name.toLowerCase().replace(/\s+/g,'_'),icon:document.getElementById('cat-icon').value||'📁',name,count:0,color:document.getElementById('cat-color').value,desc:document.getElementById('cat-desc').value});
-  closeCatModal();
-  renderCats();
-  notify('✓ Catégorie créée');
-}
+// FORM
+function openAddForm(){resetForm();document.getElementById('form-heading').textContent='AJOUTER UNE ERREUR';document.getElementById('form-sub').textContent='Nouvelle entrée';document.getElementById('submit-btn').textContent='💾 PUBLIER';showSec('add',document.querySelectorAll('.nav-item')[3]);}
 
-// ─────────────────────────────────────────────
-// FORMULAIRE AJOUT
-// ─────────────────────────────────────────────
-function initSteps() {
-  const ed = document.getElementById('steps-editor');
-  if (ed.children.length > 0) return;
-  stepCount = 0;
-  for (let i = 0; i < 3; i++) addStep();
-}
-
-function addStep() {
-  stepCount++;
-  const ed = document.getElementById('steps-editor');
-  const d  = document.createElement('div');
-  d.className = 'step-item';
-  d.innerHTML = `
-    <div class="step-num">${stepCount}</div>
-    <div class="step-fields">
-      <input class="step-inp" placeholder="Titre de l'étape">
-      <input class="step-inp" placeholder="Description détaillée...">
-      <input class="step-inp" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--success);" placeholder="Commande / Code (optionnel)">
-    </div>
-    <button onclick="removeStep(this)" style="background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:15px;padding:3px;line-height:1;margin-top:2px;">×</button>
-  `;
-  ed.appendChild(d);
-}
-
-function removeStep(btn) {
-  btn.closest('.step-item').remove();
-  document.querySelectorAll('#steps-editor .step-num').forEach((b,i) => b.textContent = i+1);
-  stepCount = document.querySelectorAll('#steps-editor .step-item').length;
-}
-
-function submitForm() {
-  if (!document.getElementById('f-title').value.trim() || !document.getElementById('f-code').value.trim()) {
-    notify('⚠ Titre et code requis','warn'); return;
-  }
-  notify('✓ Erreur publiée avec succès !');
-  showSec('crashes', document.querySelectorAll('.nav-item')[1]);
-}
-function saveDraft() { notify('📝 Brouillon sauvegardé'); }
-
-// MÉDIAS
-function dOver(e)  { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag'); }
-function dLeave()  { document.getElementById('drop-zone').classList.remove('drag'); }
-function dDrop(e)  { e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag'); handleFiles(e.dataTransfer.files); }
-function handleFiles(files) {
-  const preview = document.getElementById('media-preview');
-  Array.from(files).forEach(f => {
-    const isVid = f.type.startsWith('video/');
-    const url   = URL.createObjectURL(f);
-    const d = document.createElement('div'); d.className = 'media-item';
-    d.innerHTML = isVid
-      ? `<video src="${url}" muted loop playsinline></video><span class="media-badge b-vid">VID</span><span class="media-rm" onclick="this.parentElement.remove()">×</span>`
-      : `<img src="${url}" alt=""><span class="media-badge b-img">IMG</span><span class="media-rm" onclick="this.parentElement.remove()">×</span>`;
-    preview.appendChild(d);
+function editCrash(id){
+  const c=crashes.find(x=>x.id===id);if(!c)return;
+  resetForm();
+  document.getElementById('form-heading').textContent='MODIFIER '+c.id;
+  document.getElementById('form-sub').textContent='Code: '+c.code+' · '+((c.updated_at||'').slice(0,10)||'—');
+  document.getElementById('submit-btn').textContent='💾 METTRE À JOUR';
+  document.getElementById('f-edit-id').value=c.id;
+  document.getElementById('f-title').value=c.title||'';
+  document.getElementById('f-code').value=c.code||'';
+  document.getElementById('f-id').value=c.id||'';
+  document.getElementById('f-desc').value=c.description||'';
+  document.getElementById('f-cat').value=c.cat||'';
+  document.getElementById('f-sev').value=c.severity||'';
+  document.getElementById('f-status').value=String(c.published!==false);
+  document.getElementById('f-tags').value=(c.tags||[]).join(', ');
+  (c.fix||[]).forEach(s=>addStep(s));
+  // Afficher les médias existants (images/vidéos uploadées + liens vidéo)
+  const preview=document.getElementById('media-preview');
+  (c.media||[]).forEach(m=>{
+    if(m.type==='video_link'){
+      videoLinks.push({url:m.url,lbl:m.label});
+    } else {
+      const d=document.createElement('div');d.className='media-item';
+      d.dataset.url=m.url||'';d.dataset.path=m.storage_path||'';d.dataset.type=m.type||'image';
+      const isVid=m.type==='video';
+      d.innerHTML=isVid
+        ?`<video src="${m.url}" muted loop playsinline></video><span class="media-badge b-vid">VID</span><span class="media-rm" onclick="removeMedia(this,'${m.storage_path||''}')">×</span>`
+        :`<img src="${m.url}" alt=""><span class="media-badge b-img">IMG</span><span class="media-rm" onclick="removeMedia(this,'${m.storage_path||''}')">×</span>`;
+      preview.appendChild(d);
+    }
   });
+  renderVideoList();
+  showSec('add',null);
 }
 
-function addVideo() {
-  const url = document.getElementById('f-vid-url').value.trim();
-  const lbl = document.getElementById('f-vid-lbl').value.trim() || 'Vidéo';
-  if (!url) return;
-  videoLinks.push({url,lbl});
-  document.getElementById('f-vid-url').value = '';
-  document.getElementById('f-vid-lbl').value = '';
-  document.getElementById('video-list').innerHTML = videoLinks.map((v,i) => `
+function resetForm(){
+  ['f-edit-id','f-title','f-code','f-id','f-desc','f-tags','f-vid-url','f-vid-lbl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-cat').value='';document.getElementById('f-sev').value='';document.getElementById('f-status').value='true';
+  document.getElementById('steps-editor').innerHTML='';document.getElementById('media-preview').innerHTML='';
+  document.getElementById('video-list').innerHTML='';document.getElementById('save-status').textContent='';
+  videoLinks=[];stepCount=0;document.getElementById('steps-count').textContent='0 étape(s)';
+}
+
+function renderCatSelect(){
+  const sel=document.getElementById('f-cat'),cur=sel.value;
+  sel.innerHTML='<option value="">— Sélectionner —</option>'+categories.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+  sel.value=cur;
+}
+
+async function submitForm(){
+  const title=document.getElementById('f-title').value.trim();
+  const code=document.getElementById('f-code').value.trim();
+  const cat=document.getElementById('f-cat').value;
+  const sev=document.getElementById('f-sev').value;
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!title||!code||!cat||!sev||!desc){notify('⚠ Remplir tous les champs obligatoires (*)','warn');return;}
+  const steps=[];
+  document.querySelectorAll('#steps-editor .step-item').forEach(item=>{
+    const inps=item.querySelectorAll('.step-inp');
+    const t=inps[0]?.value.trim(),d=inps[1]?.value.trim(),c=inps[2]?.value.trim();
+    if(t||d)steps.push({title:t,desc:d,code:c||undefined});
+  });
+  // Médias : fichiers uploadés (dataset) + liens vidéo
+  const media=[];
+  document.querySelectorAll('#media-preview .media-item[data-url]').forEach(item=>{
+    media.push({type:item.dataset.type||'image',url:item.dataset.url,storage_path:item.dataset.path||'',label:''});
+  });
+  videoLinks.forEach(v=>media.push({type:'video_link',url:v.url,label:v.lbl}));
+  const payload={title,code,cat,severity:sev,description:desc,tags:document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean),fix:steps,media,published:document.getElementById('f-status').value==='true'};
+  const editId=document.getElementById('f-edit-id').value;
+  const btn=document.getElementById('submit-btn'),status=document.getElementById('save-status');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Sauvegarde...';status.textContent='';
+  try{
+    if(editId){
+      payload.id=editId;
+      await api('PUT','/api/crashes',payload);
+      const idx=crashes.findIndex(c=>c.id===editId);if(idx>-1)crashes[idx]={...crashes[idx],...payload};
+      notify('✅ Mis à jour !');status.textContent='✓ Sauvegardé à '+new Date().toLocaleTimeString('fr-FR');status.style.color='var(--success)';
+    }else{
+      if(document.getElementById('f-id').value.trim())payload.id=document.getElementById('f-id').value.trim();
+      const res=await api('POST','/api/crashes',payload);
+      crashes.unshift(res.crash||payload);notify('✅ Créé et publié !');resetForm();
+      showSec('crashes',document.querySelectorAll('.nav-item')[1]);
+    }
+    renderDashboard();
+  }catch(e){notify('⚠ '+e.message,'danger');status.textContent='✗ Échec: '+e.message;status.style.color='var(--danger)';}
+  finally{btn.disabled=false;btn.innerHTML=editId?'💾 METTRE À JOUR':'💾 PUBLIER';}
+}
+
+// STEPS
+function addStep(data){
+  stepCount++;
+  const ed=document.getElementById('steps-editor'),d=document.createElement('div');
+  d.className='step-item';
+  d.innerHTML=`<div class="step-num">${stepCount}</div><div class="step-fields">
+    <input class="step-inp" placeholder="Titre de l'étape *" value="${(data?.title||'').replace(/"/g,'&quot;')}">
+    <input class="step-inp" placeholder="Description détaillée..." value="${(data?.desc||'').replace(/"/g,'&quot;')}">
+    <input class="step-inp" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--success);" placeholder="Commande / Code (optionnel)" value="${(data?.code||'').replace(/"/g,'&quot;')}">
+  </div><button onclick="removeStep(this)" style="background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;padding:3px;line-height:1;margin-top:2px;">×</button>`;
+  ed.appendChild(d);
+  document.getElementById('steps-count').textContent=`${ed.children.length} étape(s)`;
+}
+function removeStep(btn){
+  btn.closest('.step-item').remove();
+  document.querySelectorAll('#steps-editor .step-num').forEach((b,i)=>b.textContent=i+1);
+  stepCount=document.querySelectorAll('#steps-editor .step-item').length;
+  document.getElementById('steps-count').textContent=`${stepCount} étape(s)`;
+}
+
+// MEDIA
+function dOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag');}
+function dLeave(){document.getElementById('drop-zone').classList.remove('drag');}
+function dDrop(e){e.preventDefault();dLeave();handleFiles(e.dataTransfer.files);}
+// Upload réel vers Supabase Storage via /api/upload
+async function handleFiles(files) {
+  const preview = document.getElementById('media-preview');
+  for (const f of Array.from(files)) {
+    // Afficher un placeholder pendant l'upload
+    const placeholder = document.createElement('div');
+    placeholder.className = 'media-item';
+    placeholder.style.cssText = 'opacity:0.5;';
+    placeholder.innerHTML = `<div style="text-align:center;padding:10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);"><span class="spin" style="width:12px;height:12px;border-width:2px;margin:0 0 4px 0;display:block;margin:0 auto 4px;"></span>Upload...</div>`;
+    preview.appendChild(placeholder);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', f);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.url) throw new Error(data.error || 'Upload échoué');
+
+      // Remplacer le placeholder par l'image/vidéo réelle
+      const isVid = data.type === 'video';
+      placeholder.style.opacity = '1';
+      placeholder.innerHTML = isVid
+        ? `<video src="${data.url}" muted loop playsinline></video><span class="media-badge b-vid">VID</span><span class="media-rm" onclick="removeMedia(this,'${data.path}')">×</span>`
+        : `<img src="${data.url}" alt=""><span class="media-badge b-img">IMG</span><span class="media-rm" onclick="removeMedia(this,'${data.path}')">×</span>`;
+      // Stocker l'URL pour la soumission du formulaire
+      placeholder.dataset.url  = data.url;
+      placeholder.dataset.path = data.path;
+      placeholder.dataset.type = data.type;
+      notify(`✓ ${f.name} uploadé`);
+    } catch (e) {
+      placeholder.remove();
+      notify('⚠ Upload échoué: ' + e.message, 'danger');
+    }
+  }
+}
+
+async function removeMedia(btn, storagePath) {
+  // Supprimer du Storage Supabase si on a un path
+  if (storagePath) {
+    try {
+      await fetch(`/api/upload?path=${encodeURIComponent(storagePath)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + ADMIN_TOKEN },
+      });
+    } catch(e) { /* pas bloquant */ }
+  }
+  btn.parentElement.remove();
+}
+function addVideoLink(){
+  const url=document.getElementById('f-vid-url').value.trim(),lbl=document.getElementById('f-vid-lbl').value.trim()||'Vidéo';
+  if(!url){notify('⚠ URL requise','warn');return;}
+  videoLinks.push({url,lbl});document.getElementById('f-vid-url').value='';document.getElementById('f-vid-lbl').value='';
+  renderVideoList();notify('✓ Lien ajouté');
+}
+function renderVideoList(){
+  document.getElementById('video-list').innerHTML=videoLinks.map((v,i)=>`
     <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(26,37,53,0.4);">
-      <span>🎬</span>
-      <span style="flex:1;font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;overflow:hidden;text-overflow:ellipsis;">${v.lbl}</span>
-      <button onclick="videoLinks.splice(${i},1);addVideo()" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:13px;">×</button>
-    </div>
-  `).join('');
-  notify('✓ Lien vidéo ajouté');
+      <span>🎬</span><span style="flex:1;font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.lbl}</span>
+      <button onclick="videoLinks.splice(${i},1);renderVideoList();" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:14px;">×</button>
+    </div>`).join('');
 }
 
-// ─────────────────────────────────────────────
-// ACTIVITY
-// ─────────────────────────────────────────────
-function renderActivityFull() {
-  document.getElementById('activity-full').innerHTML = ACTIVITY.map(a => `
-    <div class="log-item">
-      <div class="log-ico">${a.icon}</div>
-      <div><div class="log-action">${a.action}</div><div class="log-meta">${a.meta}</div></div>
-    </div>
-  `).join('');
+// CATEGORIES
+function renderCats(){
+  document.getElementById('cat-grid').innerHTML=categories.map(c=>`
+    <div class="cat-card">
+      <div class="cat-hd"><span style="font-size:20px;">${c.icon}</span>
+        <div class="actions-td"><button class="ico-btn" onclick="openEditCat('${c.id}')">✏️</button><button class="ico-btn del" onclick="confirmDelCat('${c.id}','${c.name.replace(/'/g,"\\'")}')">🗑️</button></div>
+      </div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;">${c.name}</div>
+      <div style="margin-bottom:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.color};margin-right:4px;"></span><span style="font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">${crashes.filter(cr=>cr.cat===c.id).length} erreur(s)</span></div>
+      <div style="font-size:11px;color:var(--text-dim);">${c.description||'—'}</div>
+    </div>`).join('')||'<div class="empty" style="grid-column:1/-1">Aucune catégorie</div>';
 }
 
-// ─────────────────────────────────────────────
+function openCatModal(){
+  document.getElementById('cat-modal-title').textContent='NOUVELLE CATÉGORIE';
+  document.getElementById('cat-submit-btn').textContent='➕ CRÉER';
+  document.getElementById('cat-edit-id').value='';
+  document.getElementById('cat-id').disabled=false;
+  ['cat-id','cat-name','cat-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cat-icon').value='📁';document.getElementById('cat-color').value='#00d4ff';
+  document.getElementById('cat-modal').classList.add('open');
+}
+function openEditCat(id){
+  const cat=categories.find(c=>c.id===id);if(!cat)return;
+  document.getElementById('cat-modal-title').textContent='MODIFIER LA CATÉGORIE';
+  document.getElementById('cat-submit-btn').textContent='💾 METTRE À JOUR';
+  document.getElementById('cat-edit-id').value=cat.id;
+  document.getElementById('cat-id').value=cat.id;document.getElementById('cat-id').disabled=true;
+  document.getElementById('cat-name').value=cat.name||'';document.getElementById('cat-icon').value=cat.icon||'📁';
+  document.getElementById('cat-color').value=cat.color||'#00d4ff';document.getElementById('cat-desc').value=cat.description||'';
+  document.getElementById('cat-modal').classList.add('open');
+}
+function closeCatModal(){document.getElementById('cat-modal').classList.remove('open');}
+
+async function submitCat(){
+  const id=document.getElementById('cat-id').value.trim().replace(/\s+/g,'_').toLowerCase();
+  const name=document.getElementById('cat-name').value.trim();
+  if(!id||!name){notify('⚠ ID et nom requis','warn');return;}
+  const payload={id,name,icon:document.getElementById('cat-icon').value||'📁',color:document.getElementById('cat-color').value,description:document.getElementById('cat-desc').value.trim()};
+  const editId=document.getElementById('cat-edit-id').value;
+  const btn=document.getElementById('cat-submit-btn');btn.disabled=true;
+  try{
+    if(editId){await api('PUT','/api/categories',payload);const idx=categories.findIndex(c=>c.id===editId);if(idx>-1)categories[idx]={...categories[idx],...payload};notify('✅ Catégorie mise à jour');}
+    else{const res=await api('POST','/api/categories',payload);categories.push(res.category||payload);notify('✅ Catégorie créée');}
+    closeCatModal();renderCats();renderCatSelect();renderDashboard();
+  }catch(e){notify('⚠ '+e.message,'danger');}finally{btn.disabled=false;}
+}
+
+function confirmDelCat(id,name){
+  document.getElementById('confirm-msg').innerHTML=`Supprimer la catégorie :<br><strong style="color:var(--danger);">${name}</strong><br><br>Les erreurs associées <strong>ne seront pas supprimées</strong>.`;
+  document.getElementById('confirm-ok-btn').onclick=async()=>{
+    closeConfirm();
+    try{await api('DELETE','/api/categories?id='+encodeURIComponent(id));categories=categories.filter(c=>c.id!==id);renderCats();renderCatSelect();renderDashboard();notify('🗑️ Catégorie supprimée','danger');}
+    catch(e){notify('⚠ '+e.message,'danger');}
+  };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
 // NOTIF
-// ─────────────────────────────────────────────
-function notify(msg, type = 'success') {
-  const n = document.getElementById('notif');
-  const cols = {success:'var(--success)',warn:'var(--warn)',danger:'var(--danger)',admin:'var(--admin)'};
-  const c = cols[type] || 'var(--admin)';
-  n.textContent = msg;
-  n.style.borderColor = c; n.style.color = c;
-  n.style.transform = 'translateY(0)'; n.style.opacity = '1';
-  clearTimeout(n._t);
-  n._t = setTimeout(() => { n.style.transform = 'translateY(60px)'; n.style.opacity = '0'; }, 3000);
+function notify(msg,type='success'){
+  const n=document.getElementById('notif'),c={success:'var(--success)',warn:'var(--warn)',danger:'var(--danger)'}[type]||'var(--admin)';
+  n.textContent=msg;n.style.borderColor=c;n.style.color=c;n.style.transform='translateY(0)';n.style.opacity='1';
+  clearTimeout(n._t);n._t=setTimeout(()=>{n.style.transform='translateY(60px)';n.style.opacity='0';},3500);
 }
 
-// ─────────────────────────────────────────────
 // CLOCK
-// ─────────────────────────────────────────────
-setInterval(() => {
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString('fr-FR');
-}, 1000);
+setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString('fr-FR');},1000);
 
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
-renderDashboard();
+init();
 </script>
 </body>
 </html>
