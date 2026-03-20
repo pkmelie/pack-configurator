@@ -558,7 +558,7 @@ function markSolved()    { showNotif('✓ Super ! Problème marqué comme résol
 // Incrémenter les vues silencieusement
 async function incrViews(id) {
   try {
-    await fetch('/api/crashes/view', {
+    await fetch('/api/crashes?action=view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),

@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
   }
 
   // POST /api/crashes/view — incrémenter les vues (public, pas d'auth)
-  if (req.method === 'POST' && (req.url || '').includes('/view')) {
+  if (req.method === 'POST' && req.query.action === 'view') {
     const { id } = req.body;
     if (!id) return res.status(400).json({ error: 'id requis' });
     await fetch(
