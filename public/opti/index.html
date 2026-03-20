@@ -178,7 +178,7 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
   <div class="nav-links">
     <button class="nav-tab active" onclick="switchTab('database',this)">📚 BASE DE DONNÉES</button>
     <button class="nav-tab" onclick="switchTab('analyzer',this)">🔬 ANALYSER MES LOGS</button>
-    <a href="https://discord.gg/hiromasa" class="nav-link" target="_blank" rel="noopener noreferrer">⚡ OPTIMIZER</a>
+    <a href="fivem-optimizer.html" class="nav-link">⚡ OPTIMIZER</a>
   </div>
 </div>
 
@@ -191,9 +191,9 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 
     <div class="stats-row">
       <div class="stat-mini d"><div class="stat-val" style="color:var(--danger)" id="st-count">—</div><div class="stat-lbl">Erreurs répertoriées</div></div>
-      <div class="stat-mini s"><div class="stat-val" style="color:var(--success)">89%</div><div class="stat-lbl">Taux de résolution</div></div>
-      <div class="stat-mini w"><div class="stat-val" style="color:var(--warn)">7</div><div class="stat-lbl">Catégories</div></div>
-      <div class="stat-mini a"><div class="stat-val" style="color:var(--accent)">18.4k</div><div class="stat-lbl">Consultations</div></div>
+      <div class="stat-mini s"><div class="stat-val" style="color:var(--success)" id="st-cats">—</div><div class="stat-lbl">Catégories</div></div>
+      <div class="stat-mini w"><div class="stat-val" style="color:var(--warn)" id="st-crit">—</div><div class="stat-lbl">Critiques</div></div>
+      <div class="stat-mini a"><div class="stat-val" style="color:var(--accent)" id="st-views">—</div><div class="stat-lbl">Vues totales</div></div>
     </div>
 
     <div class="search-bar">
@@ -377,8 +377,15 @@ async function initData() {
       updatedAt: (c.updated_at || '').slice(0, 10) || '—',
     }));
 
-    // Stats
+    // Stats — toutes calculées depuis les vraies données
     document.getElementById('st-count').textContent = CRASH_DB.length;
+    document.getElementById('st-cats').textContent  = CATEGORIES.length;
+    const crit  = CRASH_DB.filter(c => c.severity === 'critical').length;
+    document.getElementById('st-crit').textContent  = crit;
+    const totalViews = CRASH_DB.reduce((sum, c) => sum + (c.views || 0), 0);
+    document.getElementById('st-views').textContent = totalViews > 999
+      ? (totalViews / 1000).toFixed(1) + 'k'
+      : totalViews;
 
   } catch (e) {
     console.error('[API]', e.message);
