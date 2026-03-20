@@ -39,6 +39,21 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ crashes: await r.json() });
   }
 
+  // POST /api/crashes/view — incrémenter les vues (public, pas d'auth)
+  if (req.method === 'POST' && (req.url || '').includes('/view')) {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: 'id requis' });
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/rpc/increment_crash_views`,
+      {
+        method: 'POST',
+        headers: sb,
+        body: JSON.stringify({ crash_id: id }),
+      }
+    );
+    return res.status(200).json({ success: true });
+  }
+
   // Routes admin
   if (!verifyToken(req)) return res.status(401).json({ error: 'Non autorisé' });
 

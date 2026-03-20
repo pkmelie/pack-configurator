@@ -543,10 +543,12 @@ function openModal(id) {
     ${mediaHTML}
     <div style="display:flex;gap:10px;margin-top:18px;">
       <button onclick="closeModal()" style="flex:1;padding:12px;background:rgba(255,56,96,0.08);border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;">✕ FERMER</button>
-      <button style="flex:1;padding:12px;background:linear-gradient(135deg,var(--success),#006622);border:none;border-radius:6px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;" onclick="incrViews('${c.id}');markSolved();closeModal()">✓ PROBLÈME RÉSOLU</button>
+      <button style="flex:1;padding:12px;background:linear-gradient(135deg,var(--success),#006622);border:none;border-radius:6px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;" onclick="markSolved();closeModal()">✓ PROBLÈME RÉSOLU</button>
     </div>
   `;
   document.getElementById('modal').classList.add('open');
+  // Incrémenter la vue dès l'ouverture de la fiche
+  incrViews(id);
 }
 
 function closeModal()    { document.getElementById('modal').classList.remove('open'); }
@@ -556,7 +558,20 @@ function markSolved()    { showNotif('✓ Super ! Problème marqué comme résol
 // Incrémenter les vues silencieusement
 async function incrViews(id) {
   try {
-    await fetch('/api/crashes?id=' + encodeURIComponent(id) + '&view=1', { method: 'GET' });
+    await fetch('/api/crashes/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    // Mettre à jour localement sans recharger
+    const c = CRASH_DB.find(x => x.id === id);
+    if (c) {
+      c.views = (c.views || 0) + 1;
+      const totalViews = CRASH_DB.reduce((sum, c) => sum + (c.views || 0), 0);
+      document.getElementById('st-views').textContent = totalViews > 999
+        ? (totalViews / 1000).toFixed(1) + 'k'
+        : totalViews;
+    }
   } catch {}
 }
 
