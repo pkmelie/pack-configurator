@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elie Limouzin — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Dégradé : Anthracite doux vers un Gris profond */
+      --bg-gradient: radial-gradient(circle at 50% 0%, #2c2c34 0%, #121214 100%);
+      --surface: rgba(255, 255, 255, 0.05);
+      --text: #ffffff;
+      --accent: #ff3b3b;     /* Rouge "Racing" pour le dynamisme */
+      --border: rgba(255, 255, 255, 0.1);
+      --muted: #a0a0a0;
+      --font-display: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #121214; /* Couleur de secours */
+      background-image: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: var(--font-display);
+      line-height: 1.4;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Effet de grain très léger pour casser le côté "plat" du numérique */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      opacity: 0.02;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      z-index: 50;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5vw;
+    }
+
+    /* ── NAVIGATION ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: var(--font-mono); font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; margin-left: 2rem; transition: 0.3s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO SECTION ── */
+    .hero {
+      padding: 15vh 0;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 59, 59, 0.1);
+      border: 1px solid var(--accent);
+      padding: 8px 20px;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+      line-height: 0.85;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 span {
+      display: block;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: clamp(1.1rem, 2vw, 1.8rem);
+      max-width: 750px;
+      margin-bottom: 3.5rem;
+      font-weight: 400;
+      color: #e0e0e0;
+    }
+
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 4rem; }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 6px 15px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* ── BOUTONS ── */
+    .hero-cta { display: flex; gap: 20px; }
+    .btn {
+      padding: 18px 40px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+    .btn-primary { background: var(--accent); color: white; border: 1px solid var(--accent); }
+    .btn-primary:hover { background: transparent; color: var(--accent); }
+    .btn-outline { border: 1px solid var(--text); color: white; }
+    .btn-outline:hover { background: white; color: black; }
+
+    /* ── SECTIONS ── */
+    section { padding: 8rem 0; border-top: 1px solid var(--border); }
+    .section-title { font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; letter-spacing: 0.4em; margin-bottom: 5rem; text-transform: uppercase; }
+
+    /* Compétences */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; }
+    .skill-name { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; display: block; }
+    .skill-bar { height: 2px; background: var(--border); position: relative; }
+    .skill-fill { height: 100%; background: var(--accent); position: absolute; left: 0; box-shadow: 0 0 10px var(--accent); }
+
+    /* Projets */
+    .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .project-card { 
+      background: var(--surface);
+      padding: 3rem;
+      border: 1px solid var(--border);
+      transition: 0.4s;
+    }
+    .project-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+    .proj-name { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem; }
+    .proj-desc { color: var(--muted); font-size: 1rem; }
+
+    /* Liens */
+    .link-item { 
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 3rem 0; border-bottom: 1px solid var(--border);
+      text-decoration: none; color: white; font-size: 1.8rem; font-weight: 700; text-transform: uppercase;
+      transition: 0.3s;
+    }
+    .link-item:hover { color: var(--accent); padding-left: 1.5rem; }
+
+    footer { padding: 5rem 0; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+
+    @media (max-width: 900px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 3.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="wrap">
+
+    <!-- NAV -->
+    <nav class="fade-up">
+      <div class="nav-logo">MON_PORTFOLIO</div>
+      <div class="nav-links">
+        <a href="#competences">Compétences</a>
+        <a href="#projets">Projets</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-label fade-up delay-1">Bellevigny, France</div>
+      <div>
+        <p>..........</p>
+      </div>
+      <h1 class="fade-up delay-2">
+        Elie
+        <span>Limouzin</span>
+      </h1>
+      <p class="hero-sub fade-up delay-3">
+        Futur administrateur réseau &amp; cybersécurité. Entrepreneur digital avec ma propre boutique de produits numériques.
+      </p>
+      <div class="hero-tags fade-up delay-3">
+        <span class="tag tag-b">Admin Réseau</span>
+        <span class="tag tag-g">Cybersécurité</span>
+        <span class="tag tag-p">Produits Digitaux</span>
+      </div>
+      <div class="hero-cta fade-up delay-4">
+        <a href="https://v3clix-shop.com/" target="_blank" class="btn btn-primary">🛒 Ma boutique</a>
+        <a href="https://www.linkedin.com/in/elie-limouzin" target="_blank" class="btn btn-outline">💼 LinkedIn</a>
+      </div>
+    </section>
+
+    <!-- COMPÉTENCES -->
+    <section id="competences" class="skills fade-up delay-3">
+      <div class="section-title">// compétences</div>
+      <div class="skills-grid">
+
+        <div class="skill-item">
+          <div class="skill-top">
+            <span class="skill-name">Réseaux TCP/IP</span>
+            <span class="skill-level lv-debut">Débutant</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill fill-b" style="width:30%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-top">
+            <span class="skill-name">Cybersécurité</span>
+            <span class="skill-level lv-debut">Débutant</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill fill-g" style="width:25%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-top">
+            <span class="skill-name">Linux / Systèmes</span>
+            <span class="skill-level lv-debut">Débutant</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill fill-p" style="width:30%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-top">
+            <span class="skill-name">E-commerce digital</span>
+            <span class="skill-level lv-avance">Avancé</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill fill-a" style="width:80%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-top">
+            <span class="skill-name">VLAN / Routage</span>
+            <span class="skill-level lv-debut">Débutant</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill fill-b" style="width:20%"></div></div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-top">
+            <span class="skill-name">HTML / CSS</span>
+            <span class="skill-level lv-debut">Débutant</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill fill-p" style="width:35%"></div></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROJETS -->
+    <section id="projets" class="projects fade-up delay-4">
+      <div class="section-title">// projets</div>
+      <div class="projects-grid">
+
+        <div class="project-card card-accent-g">
+          <div class="proj-head">
+            <span class="proj-icon">🛒</span>
+            <span class="proj-badge badge-live">LIVE</span>
+          </div>
+          <div class="proj-name">V3Clix Shop</div>
+          <div class="proj-desc">Boutique en ligne de vente de produits numériques. Gestion complète du shop, du catalogue et des ventes.</div>
+          <a href="https://v3clix-shop.com/" target="_blank" class="proj-link">v3clix-shop.com →</a>
+        </div>
+
+        <div class="project-card card-accent-b">
+          <div class="proj-head">
+            <span class="proj-icon">🔐</span>
+            <span class="proj-badge badge-wip">EN COURS</span>
+          </div>
+          <div class="proj-name">Voiture solaire</div>
+          <div class="proj-desc">Voici mon projet de fin d'année en STI2D</div>
+          <!-- <a href="#" class="proj-link">Voir le projet →</a> -->
+        </div>
+
+        <div class="project-card card-accent-p">
+          <div class="proj-head">
+            <span class="proj-icon">🌐</span>
+            <span class="proj-badge badge-wip">EN COURS</span>
+          </div>
+          <div class="proj-name">Infrastructure réseau</div>
+          <div class="proj-desc"><!-- Modifie ici : décris ton projet réseau (config, routage, etc.) --></div>
+          <!-- <a href="#" class="proj-link">Voir le projet →</a> -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LIENS & CONTACT -->
+    <section id="contact" class="links-section fade-up delay-5">
+      <div class="section-title">// contact &amp; liens</div>
+      <div class="links-list">
+
+        <a href="https://v3clix-shop.com/" target="_blank" class="link-item">
+          <div class="link-ico" style="background:rgba(0,180,255,0.1)">🌐</div>
+          <div>
+            <div class="link-name">Boutique V3Clix</div>
+            <div class="link-url">v3clix-shop.com</div>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+
+        <a href="https://www.linkedin.com/in/elie-limouzin" target="_blank" class="link-item">
+          <div class="link-ico" style="background:rgba(0,100,200,0.1)">💼</div>
+          <div>
+            <div class="link-name">LinkedIn</div>
+            <div class="link-url">linkedin.com/in/elie-limouzin</div>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+
+        <a href="https://discord.com/users/v3clix" target="_blank" class="link-item">
+          <div class="link-ico" style="background:rgba(100,80,255,0.1)">💬</div>
+          <div>
+            <div class="link-name">Discord</div>
+            <div class="link-url">v3clix</div>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="fade-up delay-5">
+      <p>Conçu &amp; développé par <span>Elie Limouzin</span> · <span>v3clix</span></p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
