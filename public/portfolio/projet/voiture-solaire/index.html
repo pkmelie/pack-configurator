@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projet STI2D — Voiture Solaire Télécommandée</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0e0e0e;
+      --white: #f7f5f0;
+      --accent: #d4a84b;
+      --accent-light: #f0e4c3;
+      --gray-light: #ebebeb;
+      --gray-mid: #a0a0a0;
+      --gray-dark: #3a3a3a;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.75;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(247, 245, 240, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--gray-light);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      letter-spacing: 0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-dark);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 4rem 6rem 6rem;
+      border-right: 1px solid var(--gray-light);
+    }
+    .hero-tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block;
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 4vw, 4rem);
+      line-height: 1.1;
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--gray-dark);
+      max-width: 400px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 3rem;
+    }
+    .meta-item label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 0.25rem;
+    }
+    .meta-item span {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .hero-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gray-light);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--gray-mid);
+    }
+    .hero-img-placeholder svg { opacity: 0.35; }
+    .hero-img-placeholder p {
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-align: center;
+      max-width: 200px;
+      opacity: 0.6;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 7rem 6rem; }
+    section:nth-child(even) { background: #f0ede6; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .section-number {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      color: var(--gray-light);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      user-select: none;
+    }
+    .section-title-block {}
+    .section-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 400;
+      line-height: 1.15;
+    }
+
+    /* ── PRESENTATION ── */
+    .presentation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .presentation-text p {
+      font-size: 1rem;
+      color: var(--gray-dark);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+    .presentation-image {
+      background: var(--gray-light);
+      border-radius: 4px;
+      aspect-ratio: 4/3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      color: var(--gray-mid);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── PROBLEMATIQUE ── */
+    .problematique-inner {
+      max-width: 800px;
+    }
+    .quote-block {
+      border-left: 3px solid var(--accent);
+      padding: 1.5rem 2.5rem;
+      margin: 2.5rem 0;
+      background: var(--accent-light);
+      border-radius: 0 4px 4px 0;
+    }
+    .quote-block p {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--black);
+    }
+    .problematique-text p {
+      font-size: 1rem;
+      color: var(--gray-dark);
+      line-height: 1.85;
+      margin-bottom: 1rem;
+    }
+
+    /* ── SOLUTION ── */
+    .solution-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+    .solution-main {}
+    .solution-main p {
+      font-size: 1rem;
+      color: var(--gray-dark);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 2.5rem 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .card-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .card h3 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .card p {
+      font-size: 0.85rem;
+      color: var(--gray-mid);
+      line-height: 1.6;
+    }
+    .solution-schema {
+      background: var(--gray-light);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      min-height: 350px;
+      color: var(--gray-mid);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    /* ── RÉSULTATS ── */
+    .resultats-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .stat-box {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: 4px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+    }
+    .resultats-gallery {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 240px 240px;
+      gap: 1rem;
+    }
+    .gallery-item {
+      background: var(--gray-light);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-mid);
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      gap: 0.5rem;
+    }
+    .gallery-item:first-child {
+      grid-row: span 2;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    /* ── BILAN ── */
+    .bilan-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .bilan-text p {
+      font-size: 1rem;
+      color: var(--gray-dark);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+    .bilan-lists { display: flex; flex-direction: column; gap: 2rem; }
+    .bilan-list h3 {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    .bilan-list ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .bilan-list li {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      color: var(--gray-dark);
+      align-items: flex-start;
+    }
+    .bilan-list li::before {
+      content: '—';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 0.05em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 3rem 6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer p { font-size: 0.82rem; color: #888; }
+    footer strong { color: var(--accent); font-weight: 500; }
+
+    /* ── FADE IN ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { min-height: 40vw; }
+      section { padding: 4rem 1.5rem; }
+      .section-number { font-size: 2.5rem; }
+      .presentation-grid,
+      .solution-grid,
+      .bilan-inner { grid-template-columns: 1fr; }
+      .resultats-stats { grid-template-columns: 1fr 1fr; }
+      .resultats-gallery { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gallery-item:first-child { grid-row: auto; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">Projet STI2D · 2024–2025</span>
+    <ul class="nav-links">
+      <li><a href="#presentation">Présentation</a></li>
+      <li><a href="#problematique">Problématique</a></li>
+      <li><a href="#solution">Solution</a></li>
+      <li><a href="#resultats">Résultats</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left fade-in">
+      <div class="hero-tag">Projet de fin d'année — STI2D</div>
+      <h1>Voiture solaire<br><em>télécommandée</em></h1>
+      <p class="hero-desc">
+        Conception et réalisation d'un véhicule miniature alimenté par l'énergie photovoltaïque, piloté sans fil. Un projet alliant électronique, énergie et développement durable.
+      </p>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <label>Filière</label>
+          <span>STI2D</span>
+        </div>
+        <div class="meta-item">
+          <label>Année</label>
+          <span>2024 – 2025</span>
+        </div>
+        <div class="meta-item">
+          <label>Domaine</label>
+          <span>Énergie & Numérique</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-placeholder">
+        <!-- Remplace par : <img src="ta-photo.jpg" alt="Photo du véhicule" style="width:100%;height:100%;object-fit:cover;" /> -->
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="22" width="48" height="18" rx="4" stroke="#888" stroke-width="1.5"/>
+          <rect x="14" y="14" width="28" height="12" rx="3" fill="#d4a84b" opacity="0.4"/>
+          <circle cx="18" cy="42" r="6" stroke="#888" stroke-width="1.5"/>
+          <circle cx="46" cy="42" r="6" stroke="#888" stroke-width="1.5"/>
+          <line x1="24" y1="14" x2="24" y2="22" stroke="#888" stroke-width="1"/>
+          <line x1="36" y1="14" x2="36" y2="22" stroke="#888" stroke-width="1"/>
+        </svg>
+        <p>Ajoute ici une photo de ton véhicule</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRÉSENTATION -->
+  <section id="presentation">
+    <div class="section-header fade-in">
+      <span class="section-number">01</span>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Introduction</div>
+        <h2 class="section-title">Présentation du projet</h2>
+      </div>
+    </div>
+    <div class="presentation-grid fade-in">
+      <div class="presentation-text">
+        <p>
+          <!-- ✏️ Décris ici ton projet en quelques phrases. D'où vient l'idée ? Quel est le contexte ? -->
+          Ce projet a été réalisé dans le cadre du cours de STI2D. L'objectif était de concevoir, construire et tester un véhicule miniature capable de se déplacer grâce à l'énergie captée par des panneaux solaires, tout en étant piloté à distance par télécommande.
+        </p>
+        <p>
+          <!-- ✏️ Ajoute des détails sur l'équipe, la durée, les outils utilisés... -->
+          Le projet a mobilisé des compétences en électronique, en énergie renouvelable et en conception mécanique. [Complète avec les détails de ton projet ici.]
+        </p>
+      </div>
+      <div class="presentation-image">
+        <!-- Remplace par : <img src="schema-general.jpg" alt="Schéma général" /> -->
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="4" width="32" height="32" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><path d="M4 14h32M14 4v32" stroke="#a0a0a0" stroke-width="1.2"/></svg>
+        <p style="font-size:0.78rem; text-align:center; max-width:160px;">Insère ici une image de présentation / schéma général</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLÉMATIQUE -->
+  <section id="problematique">
+    <div class="section-header fade-in">
+      <span class="section-number">02</span>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Enjeux & contexte</div>
+        <h2 class="section-title">Problématique</h2>
+      </div>
+    </div>
+    <div class="problematique-inner fade-in">
+      <div class="quote-block">
+        <p>
+          <!-- ✏️ Mets ici ta problématique officielle -->
+          « Comment concevoir un véhicule télécommandé autonome en énergie, capable d'utiliser l'énergie solaire pour se déplacer de façon efficace ? »
+        </p>
+      </div>
+      <div class="problematique-text">
+        <p>
+          <!-- ✏️ Explique le contexte du problème, les contraintes identifiées, les besoins auxquels répond le projet -->
+          Face aux enjeux environnementaux actuels, la recherche de solutions de mobilité utilisant des énergies renouvelables est primordiale. Ce projet s'inscrit dans cette démarche en explorant la faisabilité d'un véhicule entièrement alimenté par l'énergie photovoltaïque.
+        </p>
+        <p>
+          <!-- ✏️ Ajoute les contraintes techniques, le cahier des charges... -->
+          Les principales contraintes identifiées étaient : [liste tes contraintes — puissance disponible, poids du véhicule, portée de la télécommande, etc.]
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION -->
+  <section id="solution">
+    <div class="section-header fade-in">
+      <span class="section-number">03</span>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Conception & réalisation</div>
+        <h2 class="section-title">La solution développée</h2>
+      </div>
+    </div>
+    <div class="solution-grid fade-in">
+      <div class="solution-main">
+        <p>
+          <!-- ✏️ Décris ta solution technique : comment fonctionne le système ? -->
+          La solution retenue repose sur un châssis léger équipé de panneaux photovoltaïques en surface, reliés à un circuit de régulation de charge alimentant les moteurs et le module de réception radio.
+        </p>
+        <br>
+        <div class="cards-list">
+          <div class="card">
+            <div class="card-icon">☀️</div>
+            <div>
+              <h3>Captage solaire</h3>
+              <!-- ✏️ Décris tes panneaux, leur puissance, leur positionnement -->
+              <p>Panneaux photovoltaïques [X] W — positionnés sur le toit du véhicule pour maximiser l'exposition.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <div>
+              <h3>Gestion de l'énergie</h3>
+              <!-- ✏️ Décris ton circuit de régulation, ta batterie éventuelle -->
+              <p>Régulateur de charge + batterie tampon [X] mAh permettant de stocker l'énergie en cas d'ensoleillement variable.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📡</div>
+            <div>
+              <h3>Télécommande sans fil</h3>
+              <!-- ✏️ Décris ton module radio, la fréquence, la portée -->
+              <p>Module radio [fréquence] — portée de [X] mètres, contrôle directionnel et vitesse.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔧</div>
+            <div>
+              <h3>Châssis & motorisation</h3>
+              <!-- ✏️ Décris la structure mécanique, les moteurs -->
+              <p>Structure en [matériau] — moteurs DC [X] V — [X] roues motrices.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="solution-schema">
+        <!-- Remplace par : <img src="schema-technique.jpg" alt="Schéma technique" style="width:100%;height:100%;object-fit:contain;" /> -->
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="#a0a0a0" stroke-width="1.2"/><path d="M14 22h16M22 14v16" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="22" cy="22" r="4" fill="#d4a84b" opacity="0.5"/></svg>
+        <p>Insère ici ton schéma technique<br>ou diagramme de fonctionnement</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RÉSULTATS -->
+  <section id="resultats">
+    <div class="section-header fade-in">
+      <span class="section-number">04</span>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Tests & évaluation</div>
+        <h2 class="section-title">Résultats obtenus</h2>
+      </div>
+    </div>
+
+    <div class="resultats-stats fade-in">
+      <div class="stat-box">
+        <!-- ✏️ Remplace par ta valeur mesurée -->
+        <div class="stat-value">X W</div>
+        <div class="stat-label">Puissance solaire captée</div>
+      </div>
+      <div class="stat-box">
+        <!-- ✏️ Remplace par ta valeur mesurée -->
+        <div class="stat-value">X m</div>
+        <div class="stat-label">Portée télécommande</div>
+      </div>
+      <div class="stat-box">
+        <!-- ✏️ Remplace par ta valeur mesurée -->
+        <div class="stat-value">X km/h</div>
+        <div class="stat-label">Vitesse max atteinte</div>
+      </div>
+    </div>
+
+    <div class="resultats-gallery fade-in">
+      <!-- Remplace chaque bloc par : <img src="photo.jpg" alt="description" /> -->
+      <div class="gallery-item">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="3" y="3" width="30" height="30" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="18" cy="15" r="4" stroke="#a0a0a0" stroke-width="1.2"/><path d="M8 30c0-5.5 4.5-9 10-9s10 3.5 10 9" stroke="#a0a0a0" stroke-width="1.2"/></svg>
+        <p>Photo principale du projet</p>
+      </div>
+      <div class="gallery-item">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect x="3" y="3" width="30" height="30" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="18" cy="15" r="4" stroke="#a0a0a0" stroke-width="1.2"/><path d="M8 30c0-5.5 4.5-9 10-9s10 3.5 10 9" stroke="#a0a0a0" stroke-width="1.2"/></svg>
+        <p>Photo détail 1</p>
+      </div>
+      <div class="gallery-item">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect x="3" y="3" width="30" height="30" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="18" cy="15" r="4" stroke="#a0a0a0" stroke-width="1.2"/><path d="M8 30c0-5.5 4.5-9 10-9s10 3.5 10 9" stroke="#a0a0a0" stroke-width="1.2"/></svg>
+        <p>Photo détail 2</p>
+      </div>
+      <div class="gallery-item">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect x="3" y="3" width="30" height="30" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="18" cy="15" r="4" stroke="#a0a0a0" stroke-width="1.2"/><path d="M8 30c0-5.5 4.5-9 10-9s10 3.5 10 9" stroke="#a0a0a0" stroke-width="1.2"/></svg>
+        <p>Photo test / démonstration</p>
+      </div>
+      <div class="gallery-item">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect x="3" y="3" width="30" height="30" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="18" cy="15" r="4" stroke="#a0a0a0" stroke-width="1.2"/><path d="M8 30c0-5.5 4.5-9 10-9s10 3.5 10 9" stroke="#a0a0a0" stroke-width="1.2"/></svg>
+        <p>Graphique / mesures</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BILAN -->
+  <section id="bilan" style="background:#f0ede6;">
+    <div class="section-header fade-in">
+      <span class="section-number">05</span>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Retour d'expérience</div>
+        <h2 class="section-title">Bilan & perspectives</h2>
+      </div>
+    </div>
+    <div class="bilan-inner fade-in">
+      <div class="bilan-text">
+        <p>
+          <!-- ✏️ Que retiens-tu de ce projet ? Qu'est-ce qui a bien fonctionné, moins bien ? -->
+          Ce projet m'a permis de mettre en pratique de nombreuses compétences acquises tout au long de l'année en STI2D, notamment en électronique, en énergie et en modélisation. [Développe ici ton bilan personnel.]
+        </p>
+        <p>
+          <!-- ✏️ Qu'aurais-tu fait différemment ? Quelles améliorations sont possibles ? -->
+          Des améliorations sont envisageables, notamment en ce qui concerne [l'efficacité des panneaux, l'autonomie, la précision de la télécommande…].
+        </p>
+      </div>
+      <div class="bilan-lists">
+        <div class="bilan-list">
+          <h3>Points forts</h3>
+          <ul>
+            <!-- ✏️ Remplace par tes vrais points forts -->
+            <li>Fonctionnement en conditions réelles de soleil</li>
+            <li>Bonne portée de la télécommande</li>
+            <li>Structure légère et robuste</li>
+          </ul>
+        </div>
+        <div class="bilan-list">
+          <h3>Difficultés rencontrées</h3>
+          <ul>
+            <!-- ✏️ Remplace par tes vraies difficultés -->
+            <li>Gestion de l'énergie par temps nuageux</li>
+            <li>Interférences radio à longue portée</li>
+            <li>[Autre difficulté rencontrée]</li>
+          </ul>
+        </div>
+        <div class="bilan-list">
+          <h3>Perspectives</h3>
+          <ul>
+            <!-- ✏️ Ce que tu ferais en plus si tu avais plus de temps -->
+            <li>Ajout d'une batterie à recharge solaire plus performante</li>
+            <li>Intégration d'une interface de pilotage sur smartphone</li>
+            <li>[Autre idée d'amélioration]</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Projet STI2D · Voiture solaire télécommandée · <strong>2024–2025</strong></p>
+    <p><!-- ✏️ Ton prénom, ta classe --> Réalisé par <strong>[Ton prénom]</strong> · Classe [Ta classe]</p>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
