@@ -323,19 +323,21 @@ function filterCards(type, btn) {
 function handleCard(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
-  if (p.type === 'free') {
   window.open('https://discord.gg/khqmFkEUet', '_blank');
-  }
-  else { openTicket(); document.getElementById('t-subject').value = 'Question sur un produit'; document.getElementById('t-message').value = `Bonjour, je suis intéressé par "${p.title}" à ${p.price}.`; }
 }
 
 function openTicket() {
-  
   window.open('https://discord.gg/7zUw3gDv', '_blank');
 }
-  
+
+function closeTicket() {}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
 }
-function closeTicket() { document.getElementById('ticketModal').classList.remove('open'); }
 
 // 4. UN SEUL SUBMIT TICKET POUR SUPABASE (L'ancien a été supprimé)
 async function submitTicket() {
