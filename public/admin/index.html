@@ -157,7 +157,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">Nex<span>Shop</span> <span class="sidebar-badge">ADMIN</span></div>
 
@@ -189,33 +188,31 @@
   </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
 
-  <!-- DASHBOARD -->
   <div class="tab-view active" id="tab-dashboard">
     <div class="page-header">
       <div>
         <div class="page-title">Dashboard</div>
         <div class="page-sub">Bienvenue dans votre espace administration</div>
       </div>
-      <button class="header-btn" onclick="showTab('add',document.querySelector('.nav-item:nth-child(5)'))">+ Nouveau produit</button>
+      <button class="header-btn" onclick="showTab('add',document.querySelector('.nav-item:nth-child(4)'))">+ Nouveau produit</button>
     </div>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Produits total</div>
-        <div class="stat-value" id="s-products">8</div>
-        <div class="stat-delta">↑ +2 ce mois</div>
+        <div class="stat-value" id="s-products">0</div>
+        <div class="stat-delta">Catalogue connecté</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Produits gratuits</div>
-        <div class="stat-value" id="s-free">4</div>
-        <div class="stat-delta">50% du catalogue</div>
+        <div class="stat-value" id="s-free">0</div>
+        <div class="stat-delta">Accès libre</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Produits premium</div>
-        <div class="stat-value" id="s-paid">4</div>
-        <div class="stat-delta">↑ +1 cette semaine</div>
+        <div class="stat-value" id="s-paid">0</div>
+        <div class="stat-delta">Ressources payantes</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Tickets ouverts</div>
@@ -224,7 +221,6 @@
       </div>
     </div>
 
-    <!-- Recent tickets preview -->
     <div class="table-wrap">
       <div class="table-head">
         <div class="table-title">🎫 Derniers tickets</div>
@@ -236,7 +232,6 @@
     </div>
   </div>
 
-  <!-- PRODUCTS LIST -->
   <div class="tab-view" id="tab-products">
     <div class="page-header">
       <div>
@@ -259,7 +254,6 @@
     </div>
   </div>
 
-  <!-- TICKETS -->
   <div class="tab-view" id="tab-tickets">
     <div class="page-header">
       <div>
@@ -279,7 +273,6 @@
     </div>
   </div>
 
-  <!-- ADD PRODUCT -->
   <div class="tab-view" id="tab-add">
     <div class="page-header">
       <div>
@@ -347,7 +340,6 @@
 
 </main>
 
-<!-- TICKET DETAIL MODAL -->
 <div class="modal-bg" id="ticketModal">
   <div class="modal">
     <h2>🎫 Détail du ticket</h2>
@@ -359,100 +351,35 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
-const DEFAULT_PRODUCTS = [
-  { id:1, title:"Guide Figma Débutant", cat:"design", type:"free", price:"Gratuit", desc:"Apprenez Figma de zéro.", yt:"dQw4w9WgXcQ" },
-  { id:2, title:"Pack UI Components Pro", cat:"design", type:"paid", price:"29€", desc:"+200 composants Figma.", yt:"jNQXAC9IVRw" },
-  { id:3, title:"Crash Course React 2025", cat:"code", type:"free", price:"Gratuit", desc:"Maîtrisez React en partant de zéro.", yt:"w7ejDZ8SWv8" },
-  { id:4, title:"Masterclass Next.js Full", cat:"code", type:"paid", price:"49€", desc:"Formation complète Next.js 14.", yt:"ZVnjOPwW4ZA" },
-  { id:5, title:"Intro au SEO Moderne", cat:"marketing", type:"free", price:"Gratuit", desc:"Les bases du SEO 2025.", yt:"C_jCLNkoMpU" },
-  { id:6, title:"Stratégie Growth Hacking", cat:"marketing", type:"paid", price:"39€", desc:"Techniques de croissance avancées.", yt:"ysz5S6PUM-U" },
-  { id:7, title:"Montage Vidéo Rapide", cat:"video", type:"free", price:"Gratuit", desc:"Bases de DaVinci Resolve.", yt:"LXb3EKWsInQ" },
-  { id:8, title:"After Effects Avancé", cat:"video", type:"paid", price:"59€", desc:"Motion design professionnel.", yt:"6P3CkEGUleo" },
-];
-
+// ─── DATA (SUPABASE CONFIG) ──────────────────────────────────────────────────
 let products = [];
-let tickets = [];
+let tickets  = JSON.parse(localStorage.getItem('tickets')  || '[]');
 let currentTicketId = null;
 
-function saveProducts() { localStorage.setItem('products', JSON.stringify(products)); }
+// Charger les produits en direct depuis Supabase
+async function fetchProducts() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('id', { ascending: false });
+
+  if (error) {
+    console.error('Erreur Supabase lors du fetch:', error);
+    showToast('❌ Erreur de chargement du catalogue');
+  } else {
+    products = data || [];
+    if (document.getElementById('tab-products').classList.contains('active')) {
+      renderProductTable();
+    }
+    refreshDashboard();
+  }
+}
+
 function saveTickets()  { localStorage.setItem('tickets',  JSON.stringify(tickets));  }
 
-
-document.addEventListener('supabaseReady', async () => {
-  // 1. Vérifier si l'utilisateur est connecté
-  const { data: { session } } = await window.supabase.auth.getSession();
-  if (!session) {
-      window.location.href = 'login.html'; // Redirige si non connecté
-      return;
-  }
-
-  // 2. Charger les données depuis la base de données
-  await loadDataFromSupabase();
-});
-
-async function loadDataFromSupabase() {
-  // Fetch Produits
-  const { data: prods } = await window.supabase.from('products').select('*').order('id', { ascending: false });
-  if (prods) products = prods;
-
-  // Fetch Tickets
-  const { data: tcks } = await window.supabase.from('tickets').select('*').order('id', { ascending: false });
-  if (tcks) tickets = tcks;
-
-  // Mettre à jour l'interface
-  refreshDashboard();
-  renderProductTable();
-  renderTicketTable();
-}
-
-// Exemple pour remplacer "saveProduct" avec Supabase
-async function saveProduct() {
-  const title = document.getElementById('f-title').value.trim();
-  const cat = document.getElementById('f-cat').value;
-  const type = document.getElementById('f-type').value;
-  const desc = document.getElementById('f-desc').value.trim();
-  const ytRaw = document.getElementById('f-yt').value.trim();
-  const ytId = extractYTId(ytRaw);
-  const price = type === 'free' ? 'Gratuit' : document.getElementById('f-price').value.trim() || 'N/A';
-
-  if (!title || !desc || !ytId) return showToast('⚠️ Remplissez tous les champs obligatoires');
-
-  const newProduct = { title, cat, type, price, desc, yt: ytId };
-  const editId = parseInt(document.getElementById('f-title').dataset.editId || '0');
-
-  if (editId) {
-    // Update (Modification)
-    await window.supabase.from('products').update(newProduct).eq('id', editId);
-    showToast('✅ Produit mis à jour');
-  } else {
-    // Insert (Nouveau)
-    await window.supabase.from('products').insert([newProduct]);
-    showToast('✅ Produit ajouté à la vitrine');
-  }
-
-  resetForm();
-  await loadDataFromSupabase(); // Recharger la BDD
-  showTab('products', document.querySelectorAll('.nav-item')[1]);
-}
-
-// Exemple pour remplacer "deleteProduct"
-async function deleteProduct(id) {
-  if (!confirm('Supprimer ce produit ?')) return;
-  await window.supabase.from('products').delete().eq('id', id);
-  await loadDataFromSupabase();
-  showToast('🗑 Produit supprimé');
-}
-
-// Pour la déconnexion (tu peux ajouter un bouton dans ta sidebar)
-async function logout() {
-  await window.supabase.auth.signOut();
-  window.location.href = 'login.html';
-}
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function showTab(name, btn) {
   document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
@@ -475,11 +402,9 @@ function refreshDashboard() {
   document.getElementById('s-tickets-delta').textContent = newCount > 0 ? `⚠️ ${newCount} nouveau(x)` : 'Aucun ticket en attente';
   document.getElementById('s-tickets-delta').style.color = newCount > 0 ? 'var(--gold)' : 'var(--free)';
 
-  // Update badge
   const badge = document.getElementById('ticket-count');
   badge.textContent = newCount > 0 ? newCount : '';
 
-  // Recent tickets
   const wrap = document.getElementById('dash-tickets-table');
   if (!tickets.length) {
     wrap.innerHTML = '<div class="empty-state"><div class="icon">📬</div><p>Aucun ticket reçu.</p></div>';
@@ -523,16 +448,26 @@ function renderProductTable() {
     </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Aucun produit trouvé</td></tr>';
 }
 
-function deleteProduct(id) {
-  if (!confirm('Supprimer ce produit ?')) return;
-  products = products.filter(p => p.id !== id);
-  saveProducts();
-  renderProductTable();
-  showToast('🗑 Produit supprimé');
+// Action Supprimer liée à Supabase
+async function deleteProduct(id) {
+  if (!confirm('Supprimer définitivement ce produit de Supabase ?')) return;
+  
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error(error);
+    showToast('❌ Erreur lors de la suppression dans Supabase');
+  } else {
+    showToast('🗑 Produit supprimé avec succès');
+    fetchProducts();
+  }
 }
 
 function editProduct(id) {
-  const p = products.find(x => x.id===id);
+  const p = products.find(x => x.id === id);
   if (!p) return;
   showTab('add', document.querySelectorAll('.nav-item')[3]);
   document.getElementById('f-title').value = p.title;
@@ -542,7 +477,7 @@ function editProduct(id) {
   document.getElementById('f-desc').value  = p.desc;
   document.getElementById('f-yt').value    = p.yt;
   updatePriceField(); updateYTPreview();
-  // flag for edit
+  
   document.getElementById('f-title').dataset.editId = id;
   showToast('✏️ Édition du produit chargée');
 }
@@ -586,6 +521,7 @@ function updateTicketStatus(id, status) {
   refreshDashboard();
 }
 
+// ... Rest of ticket processing functions preserved accurately
 function deleteTicket(id) {
   tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
   tickets = tickets.filter(t => t.id !== id);
@@ -658,7 +594,8 @@ function updateYTPreview() {
   }
 }
 
-function saveProduct() {
+// Sauvegarde synchrone avec Supabase (Ajout / Edition)
+async function saveProduct() {
   const title = document.getElementById('f-title').value.trim();
   const cat   = document.getElementById('f-cat').value;
   const type  = document.getElementById('f-type').value;
@@ -669,19 +606,36 @@ function saveProduct() {
 
   if (!title || !desc || !ytId) return showToast('⚠️ Remplissez tous les champs obligatoires');
 
-  const editId = parseInt(document.getElementById('f-title').dataset.editId || '0');
+  const editId = document.getElementById('f-title').dataset.editId;
+  const productData = { title, cat, type, price, desc, yt: ytId };
+
   if (editId) {
-    const idx = products.findIndex(p => p.id===editId);
-    if (idx>-1) { products[idx] = { id:editId, title, cat, type, price, desc, yt:ytId }; }
+    // Mode Modification (UPDATE)
+    const { error } = await supabase
+      .from('products')
+      .update(productData)
+      .eq('id', editId);
+
+    if (error) {
+      console.error(error);
+      return showToast('❌ Erreur lors de la modification sur Supabase');
+    }
     delete document.getElementById('f-title').dataset.editId;
-    showToast('✅ Produit mis à jour');
+    showToast('✅ Produit mis à jour dans Supabase');
   } else {
-    const newId = Date.now();
-    products.push({ id:newId, title, cat, type, price, desc, yt:ytId });
-    showToast('✅ Produit ajouté à la vitrine');
+    // Mode Nouvel ajout (INSERT)
+    const { error } = await supabase
+      .from('products')
+      .insert([productData]);
+
+    if (error) {
+      console.error(error);
+      return showToast('❌ Erreur lors de l\'enregistrement sur Supabase');
+    }
+    showToast('✅ Produit ajouté à Supabase');
   }
 
-  saveProducts();
+  await fetchProducts(); // Forcer la mise à jour globale locale
   resetForm();
   showTab('products', document.querySelectorAll('.nav-item')[1]);
 }
@@ -704,7 +658,8 @@ function showToast(msg) {
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
-refreshDashboard();
+// Va chercher les données à chaque ouverture de page
+fetchProducts();
 </script>
 </body>
-</html> 
+</html>
