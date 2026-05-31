@@ -304,8 +304,6 @@
 <script>
 // 2. UTILISER "let" AU LIEU DE "const" POUR POUVOIR ECRASE LA LISTE
 let PRODUCTS = [
-  { id:1, title:"Guide Figma Débutant", cat:"design", type:"free", price:"Gratuit", desc:"Apprenez Figma de zéro avec ce guide complet en vidéo.", yt:"dQw4w9WgXcQ" },
-  { id:2, title:"Pack UI Components Pro", cat:"design", type:"paid", price:"29€", desc:"+200 composants Figma prêts à l'emploi pour vos projets.", yt:"jNQXAC9IVRw" }
 ];
 
 function renderCards(list) {
@@ -363,7 +361,7 @@ function handleCard(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
   if (p.type === 'free') {
-  window.open('https://discord.gg/TON_CODE_INVITATION', '_blank');
+  window.open('https://discord.gg/khqmFkEUet', '_blank');
   }
   else { openTicket(); document.getElementById('t-subject').value = 'Question sur un produit'; document.getElementById('t-message').value = `Bonjour, je suis intéressé par "${p.title}" à ${p.price}.`; }
 }
