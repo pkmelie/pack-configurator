@@ -265,13 +265,12 @@
 </footer>
 
 <script>
-// 2. UTILISER "let" AU LIEU DE "const" POUR POUVOIR ECRASE LA LISTE
-let PRODUCTS = [
-];
+let PRODUCTS = [];
 
 function renderCards(list) {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
+  if (!list.length) { grid.innerHTML = '<p style="color:var(--muted);text-align:center;padding:3rem;">Aucun produit disponible.</p>'; return; }
   list.forEach(p => {
     const isPaid = p.type === 'paid';
     grid.innerHTML += `
@@ -295,22 +294,14 @@ function renderCards(list) {
   });
 }
 
-// Premier affichage local par sécurité
 renderCards(PRODUCTS);
 
-// 3. RECUPERER LES PRODUITS DEPUIS SUPABASE
-document.addEventListener('supabaseReady', async () => {
-    const { data: dbProducts, error } = await window.supabase.from('products').select('*').order('id', { ascending: false });
-    
-    if (dbProducts && dbProducts.length > 0) {
-        // Remplace l'ancienne liste par la vraie liste de Supabase
-        PRODUCTS = dbProducts; 
-        renderCards(PRODUCTS); // Rafraîchit l'affichage avec Supabase
-    }
-    if (error) {
-        console.error("Erreur de chargement Supabase:", error);
-    }
-});
+(async () => {
+  const { data, error } = await window.supabase
+    .from('products').select('*').order('id', { ascending: false });
+  if (data && data.length > 0) { PRODUCTS = data; renderCards(PRODUCTS); }
+  if (error) console.error('Erreur Supabase:', error);
+})();
 
 function filterCards(type, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -321,8 +312,6 @@ function filterCards(type, btn) {
 }
 
 function handleCard(id) {
-  const p = PRODUCTS.find(x => x.id === id);
-  if (!p) return;
   window.open('https://discord.gg/khqmFkEUet', '_blank');
 }
 
@@ -330,51 +319,12 @@ function openTicket() {
   window.open('https://discord.gg/7zUw3gDv', '_blank');
 }
 
-function closeTicket() {}
-
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
-
-// 4. UN SEUL SUBMIT TICKET POUR SUPABASE (L'ancien a été supprimé)
-async function submitTicket() {
-  const name = document.getElementById('t-name').value.trim();
-  const email = document.getElementById('t-email').value.trim();
-  const msg = document.getElementById('t-message').value.trim();
-  const subject = document.getElementById('t-subject').value;
-  
-  if (!name || !email || !msg) return showToast('⚠️ Remplissez tous les champs obligatoires');
-
-  // Envoi dans la BDD
-  const { error } = await window.supabase.from('tickets').insert([{
-      name: name,
-      email: email,
-      subject: subject,
-      message: msg,
-      date: new Date().toLocaleString('fr-FR'),
-      status: 'Nouveau'
-  }]);
-
-  if (!error) {
-      document.getElementById('formPart').style.display = 'none';
-      document.getElementById('senderName').textContent = name;
-      document.getElementById('successMsg').style.display = 'block';
-  } else {
-      showToast('❌ Erreur lors de l\'envoi');
-      console.error(error);
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-
 </script>
 </body>
 </html>
