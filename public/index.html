@@ -341,6 +341,46 @@ function renderCards(list) {
 
 renderCards(PRODUCTS);
 
+// À mettre dans index.html
+document.addEventListener('supabaseReady', async () => {
+    // Récupérer les produits
+    const { data: dbProducts } = await window.supabase.from('products').select('*').order('id', { ascending: false });
+    
+    if (dbProducts && dbProducts.length > 0) {
+        // Remplace PRODUCTS global par ce qui vient de la base
+        window.PRODUCTS = dbProducts; 
+        renderCards(window.PRODUCTS);
+    }
+});
+
+// Pour envoyer un ticket dans submitTicket()
+async function submitTicket() {
+  const name = document.getElementById('t-name').value.trim();
+  const email = document.getElementById('t-email').value.trim();
+  const msg = document.getElementById('t-message').value.trim();
+  const subject = document.getElementById('t-subject').value;
+  
+  if (!name || !email || !msg) return showToast('⚠️ Remplissez tous les champs obligatoires');
+
+  // INSERT DANS SUPABASE AU LIEU DU LOCALSTORAGE
+  const { error } = await window.supabase.from('tickets').insert([{
+      name: name,
+      email: email,
+      subject: subject,
+      message: msg,
+      date: new Date().toLocaleString('fr-FR'),
+      status: 'Nouveau'
+  }]);
+
+  if (!error) {
+      document.getElementById('formPart').style.display = 'none';
+      document.getElementById('senderName').textContent = name;
+      document.getElementById('successMsg').style.display = 'block';
+  } else {
+      showToast('❌ Erreur lors de l\'envoi');
+  }
+}
+
 function filterCards(type, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
