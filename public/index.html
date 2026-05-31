@@ -254,46 +254,9 @@
 </section>
 
 <div class="modal-bg" id="ticketModal">
-  <div class="modal">
-    <div id="formPart">
-      <h2>📩 Ouvrir un ticket</h2>
-      <p class="sub">Notre équipe vous répondra dans les 24h.</p>
-      <div class="form-row">
-        <label>Nom complet *</label>
-        <input type="text" id="t-name" placeholder="Jean Dupont">
-      </div>
-      <div class="form-row">
-        <label>Email *</label>
-        <input type="email" id="t-email" placeholder="jean@example.com">
-      </div>
-      <div class="form-row">
-        <label>Sujet</label>
-        <select id="t-subject">
-          <option>Question sur un produit</option>
-          <option>Problème d'accès</option>
-          <option>Demande de remboursement</option>
-          <option>Partenariat</option>
-          <option>Autre</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Message *</label>
-        <textarea id="t-message" placeholder="Décrivez votre demande..."></textarea>
-      </div>
-      <div class="modal-btns">
-        <button class="close-btn" onclick="closeTicket()">Annuler</button>
-        <button class="submit-btn" onclick="submitTicket()">Envoyer le ticket ✉️</button>
-      </div>
-    </div>
-    <div class="success-msg" id="successMsg">
-      <div class="check">✅</div>
-      <h3>Ticket envoyé !</h3>
-      <p>Merci <span id="senderName"></span>, nous avons bien reçu votre message. Réponse sous 24h.</p>
-      <div class="modal-btns" style="justify-content:center;margin-top:1.5rem">
-        <button class="submit-btn" onclick="closeTicket()">Fermer</button>
-      </div>
-    </div>
-  </div>
+  
+  <script>window.open('https://discord.gg/khqmFkEUet', '_blank');</script>
+  
 </div>
 
 <div class="toast" id="toast">
