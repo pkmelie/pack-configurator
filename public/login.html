@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexShop — Connexion Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14; --surface: #0f1520; --border: rgba(255,255,255,0.07);
+    --accent: #5b6af4; --text: #e8eaf6; --muted: #6b7280; --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; height:100vh; display:flex; align-items:center; justify-content:center; }
+  
+  .login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2.5rem; width:100%; max-width:400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.8rem; text-align:center; margin-bottom:0.5rem; }
+  .logo span { color:var(--accent); }
+  .sub { text-align:center; color:var(--muted); font-size:0.9rem; margin-bottom:2rem; }
+  
+  .form-row { margin-bottom:1.2rem; }
+  .form-row label { display:block; font-size:0.85rem; color:var(--muted); margin-bottom:0.4rem; }
+  .form-row input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:9px; padding:0.8rem; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+  .form-row input:focus { border-color:var(--accent); }
+  
+  .btn-submit { width:100%; background:var(--accent); color:#fff; border:none; padding:0.8rem; border-radius:9px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.95rem; cursor:pointer; margin-top:1rem; transition:opacity .2s; }
+  .btn-submit:hover { opacity:0.9; }
+  #error-msg { color:var(--danger); font-size:0.8rem; text-align:center; margin-top:1rem; display:none; }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="logo">Nex<span>Shop</span></div>
+  <div class="sub">Accès restreint à l'administration</div>
+  
+  <form id="loginForm">
+    <div class="form-row">
+      <label>Email de l'administrateur</label>
+      <input type="email" id="email" required placeholder="admin@nexshop.com">
+    </div>
+    <div class="form-row">
+      <label>Mot de passe</label>
+      <input type="password" id="password" required placeholder="••••••••">
+    </div>
+    <button type="submit" class="btn-submit" id="loginBtn">Se connecter</button>
+    <div id="error-msg">Identifiants incorrects.</div>
+  </form>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+document.addEventListener('supabaseReady', () => {
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('error-msg');
+    const btn = document.getElementById('loginBtn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        btn.textContent = "Connexion...";
+        errorMsg.style.display = 'none';
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Appel à Supabase pour l'authentification
+        const { data, error } = await window.supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) {
+            errorMsg.textContent = "Erreur : " + error.message;
+            errorMsg.style.display = 'block';
+            btn.textContent = "Se connecter";
+        } else {
+            // Succès, redirection vers l'admin
+            window.location.href = 'admin.html';
+        }
+    });
+});
+</script>
+</body>
+</html>

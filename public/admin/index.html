@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="supabase.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NexShop — Admin</title>
@@ -374,265 +375,79 @@ const DEFAULT_PRODUCTS = [
   { id:8, title:"After Effects Avancé", cat:"video", type:"paid", price:"59€", desc:"Motion design professionnel.", yt:"6P3CkEGUleo" },
 ];
 
-let products = JSON.parse(localStorage.getItem('products') || 'null') || DEFAULT_PRODUCTS;
-let tickets  = JSON.parse(localStorage.getItem('tickets')  || '[]');
-let currentTicketId = null;
+let products = [];
+let tickets = [];
 
-function saveProducts() { localStorage.setItem('products', JSON.stringify(products)); }
-function saveTickets()  { localStorage.setItem('tickets',  JSON.stringify(tickets));  }
-
-// ─── TABS ────────────────────────────────────────────────────────────────────
-function showTab(name, btn) {
-  document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (name === 'products') renderProductTable();
-  if (name === 'tickets')  renderTicketTable();
-  if (name === 'dashboard') refreshDashboard();
-}
-
-// ─── DASHBOARD ───────────────────────────────────────────────────────────────
-function refreshDashboard() {
-  tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-  const newCount = tickets.filter(t => t.status === 'Nouveau').length;
-  document.getElementById('s-products').textContent = products.length;
-  document.getElementById('s-free').textContent = products.filter(p => p.type==='free').length;
-  document.getElementById('s-paid').textContent = products.filter(p => p.type==='paid').length;
-  document.getElementById('s-tickets').textContent = tickets.length;
-  document.getElementById('s-tickets-delta').textContent = newCount > 0 ? `⚠️ ${newCount} nouveau(x)` : 'Aucun ticket en attente';
-  document.getElementById('s-tickets-delta').style.color = newCount > 0 ? 'var(--gold)' : 'var(--free)';
-
-  // Update badge
-  const badge = document.getElementById('ticket-count');
-  badge.textContent = newCount > 0 ? newCount : '';
-
-  // Recent tickets
-  const wrap = document.getElementById('dash-tickets-table');
-  if (!tickets.length) {
-    wrap.innerHTML = '<div class="empty-state"><div class="icon">📬</div><p>Aucun ticket reçu.</p></div>';
-    return;
+document.addEventListener('supabaseReady', async () => {
+  // 1. Vérifier si l'utilisateur est connecté
+  const { data: { session } } = await window.supabase.auth.getSession();
+  if (!session) {
+      window.location.href = 'login.html'; // Redirige si non connecté
+      return;
   }
-  const recent = [...tickets].reverse().slice(0, 5);
-  wrap.innerHTML = `<table><thead><tr><th>Nom</th><th>Sujet</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead><tbody>
-    ${recent.map(t => `<tr>
-      <td>${t.name}</td>
-      <td style="color:var(--muted);font-size:0.82rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.subject}</td>
-      <td style="color:var(--muted);font-size:0.8rem;">${t.date}</td>
-      <td><span class="status-badge status-${statusClass(t.status)}">${t.status}</span></td>
-      <td><button class="action-btn" onclick="openTicketDetail(${t.id})">Voir</button></td>
-    </tr>`).join('')}
-  </tbody></table>`;
-}
 
-function statusClass(s) {
-  if (s==='Nouveau') return 'new';
-  if (s==='En cours') return 'open';
-  if (s==='Résolu') return 'done';
-  return 'closed';
-}
+  // 2. Charger les données depuis la base de données
+  await loadDataFromSupabase();
+});
 
-// ─── PRODUCTS TABLE ─────────────────────────────────────────────────────────
-function renderProductTable() {
-  const q = (document.getElementById('prod-search')?.value || '').toLowerCase();
-  const filtered = products.filter(p => p.title.toLowerCase().includes(q) || p.cat.includes(q));
-  const tbody = document.getElementById('products-tbody');
-  tbody.innerHTML = filtered.map(p => `
-    <tr>
-      <td><strong>${p.title}</strong></td>
-      <td style="text-transform:capitalize;">${p.cat}</td>
-      <td><span class="type-badge type-${p.type}">${p.type==='free'?'✅ Gratuit':'⭐ Premium'}</span></td>
-      <td style="font-weight:500;">${p.price}</td>
-      <td style="color:var(--muted);font-size:0.8rem;font-family:monospace;">${p.yt}</td>
-      <td>
-        <button class="action-btn" onclick="editProduct(${p.id})">Éditer</button>
-        <button class="action-btn del" onclick="deleteProduct(${p.id})">Suppr</button>
-      </td>
-    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Aucun produit trouvé</td></tr>';
-}
+async function loadDataFromSupabase() {
+  // Fetch Produits
+  const { data: prods } = await window.supabase.from('products').select('*').order('id', { ascending: false });
+  if (prods) products = prods;
 
-function deleteProduct(id) {
-  if (!confirm('Supprimer ce produit ?')) return;
-  products = products.filter(p => p.id !== id);
-  saveProducts();
+  // Fetch Tickets
+  const { data: tcks } = await window.supabase.from('tickets').select('*').order('id', { ascending: false });
+  if (tcks) tickets = tcks;
+
+  // Mettre à jour l'interface
+  refreshDashboard();
   renderProductTable();
-  showToast('🗑 Produit supprimé');
-}
-
-function editProduct(id) {
-  const p = products.find(x => x.id===id);
-  if (!p) return;
-  showTab('add', document.querySelectorAll('.nav-item')[3]);
-  document.getElementById('f-title').value = p.title;
-  document.getElementById('f-cat').value   = p.cat;
-  document.getElementById('f-type').value  = p.type;
-  document.getElementById('f-price').value = p.price;
-  document.getElementById('f-desc').value  = p.desc;
-  document.getElementById('f-yt').value    = p.yt;
-  updatePriceField(); updateYTPreview();
-  // flag for edit
-  document.getElementById('f-title').dataset.editId = id;
-  showToast('✏️ Édition du produit chargée');
-}
-
-// ─── TICKETS TABLE ───────────────────────────────────────────────────────────
-function renderTicketTable() {
-  tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-  const q = (document.getElementById('ticket-search')?.value || '').toLowerCase();
-  const filtered = tickets.filter(t => t.name.toLowerCase().includes(q) || t.subject.toLowerCase().includes(q));
-  const wrap = document.getElementById('tickets-wrap');
-
-  if (!filtered.length) {
-    wrap.innerHTML = '<div class="empty-state"><div class="icon">📬</div><p>Aucun ticket reçu pour l\'instant.</p></div>';
-    return;
-  }
-  wrap.innerHTML = `<table><thead><tr><th>Nom</th><th>Email</th><th>Sujet</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>
-    ${[...filtered].reverse().map(t => `<tr>
-      <td><strong>${t.name}</strong></td>
-      <td style="color:var(--muted);font-size:0.82rem;">${t.email}</td>
-      <td style="color:var(--muted);font-size:0.82rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.subject}</td>
-      <td style="color:var(--muted);font-size:0.78rem;">${t.date}</td>
-      <td>
-        <select onchange="updateTicketStatus(${t.id},this.value)" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:2px 6px;font-size:0.78rem;cursor:pointer;">
-          ${['Nouveau','En cours','Résolu','Fermé'].map(s => `<option ${s===t.status?'selected':''}>${s}</option>`).join('')}
-        </select>
-      </td>
-      <td>
-        <button class="action-btn" onclick="openTicketDetail(${t.id})">Voir</button>
-        <button class="action-btn del" onclick="deleteTicket(${t.id})">Suppr</button>
-      </td>
-    </tr>`).join('')}
-  </tbody></table>`;
-  document.getElementById('ticket-count').textContent = tickets.filter(t=>t.status==='Nouveau').length || '';
-}
-
-function updateTicketStatus(id, status) {
-  tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-  const t = tickets.find(x => x.id === id);
-  if (t) { t.status = status; saveTickets(); }
-  showToast(`✅ Statut mis à jour : ${status}`);
-  refreshDashboard();
-}
-
-function deleteTicket(id) {
-  tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-  tickets = tickets.filter(t => t.id !== id);
-  saveTickets();
-  renderTicketTable();
-  showToast('🗑 Ticket supprimé');
-}
-
-function clearTickets() {
-  if (!confirm('Supprimer tous les tickets ?')) return;
-  localStorage.removeItem('tickets');
-  tickets = [];
-  renderTicketTable();
-  refreshDashboard();
-  showToast('🗑 Tous les tickets supprimés');
-}
-
-function openTicketDetail(id) {
-  tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-  const t = tickets.find(x => x.id === id);
-  if (!t) return;
-  currentTicketId = id;
-  document.getElementById('ticket-detail-content').innerHTML = `
-    <div class="ticket-field"><label>Nom</label><p>${t.name}</p></div>
-    <div class="ticket-field"><label>Email</label><p style="color:var(--accent);">${t.email}</p></div>
-    <div class="ticket-field"><label>Sujet</label><p>${t.subject}</p></div>
-    <div class="ticket-field"><label>Message</label><p style="background:var(--surface);padding:0.8rem;border-radius:8px;border:1px solid var(--border);">${t.message}</p></div>
-    <div class="ticket-field"><label>Date</label><p style="color:var(--muted);">${t.date}</p></div>
-    <div class="ticket-field"><label>Statut</label><p><span class="status-badge status-${statusClass(t.status)}">${t.status}</span></p></div>`;
-  document.getElementById('resolve-btn').style.display = t.status === 'Résolu' ? 'none' : 'block';
-  document.getElementById('ticketModal').classList.add('open');
-}
-
-function resolveTicket() {
-  updateTicketStatus(currentTicketId, 'Résolu');
-  closeModal();
   renderTicketTable();
 }
 
-function closeModal() { document.getElementById('ticketModal').classList.remove('open'); }
-document.getElementById('ticketModal').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
-
-// ─── ADD PRODUCT ─────────────────────────────────────────────────────────────
-function updatePriceField() {
-  const isPaid = document.getElementById('f-type').value === 'paid';
-  const priceInput = document.getElementById('f-price');
-  priceInput.disabled = !isPaid;
-  priceInput.style.opacity = isPaid ? '1' : '0.4';
-  if (!isPaid) priceInput.value = 'Gratuit';
-}
-
-function extractYTId(val) {
-  val = val.trim();
-  const m = val.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
-  return m ? m[1] : (val.length===11 ? val : null);
-}
-
-function updateYTPreview() {
-  const val = document.getElementById('f-yt').value;
-  const id = extractYTId(val);
-  const preview = document.getElementById('yt-preview');
-  const placeholder = document.getElementById('yt-placeholder');
-  if (id) {
-    document.getElementById('yt-iframe').src = `https://www.youtube.com/embed/${id}?controls=1&modestbranding=1`;
-    preview.style.display = 'block';
-    placeholder.style.display = 'none';
-  } else {
-    preview.style.display = 'none';
-    placeholder.style.display = 'flex';
-  }
-}
-
-function saveProduct() {
+// Exemple pour remplacer "saveProduct" avec Supabase
+async function saveProduct() {
   const title = document.getElementById('f-title').value.trim();
-  const cat   = document.getElementById('f-cat').value;
-  const type  = document.getElementById('f-type').value;
-  const desc  = document.getElementById('f-desc').value.trim();
+  const cat = document.getElementById('f-cat').value;
+  const type = document.getElementById('f-type').value;
+  const desc = document.getElementById('f-desc').value.trim();
   const ytRaw = document.getElementById('f-yt').value.trim();
-  const ytId  = extractYTId(ytRaw);
-  const price = type==='free' ? 'Gratuit' : document.getElementById('f-price').value.trim() || 'N/A';
+  const ytId = extractYTId(ytRaw);
+  const price = type === 'free' ? 'Gratuit' : document.getElementById('f-price').value.trim() || 'N/A';
 
   if (!title || !desc || !ytId) return showToast('⚠️ Remplissez tous les champs obligatoires');
 
+  const newProduct = { title, cat, type, price, desc, yt: ytId };
   const editId = parseInt(document.getElementById('f-title').dataset.editId || '0');
+
   if (editId) {
-    const idx = products.findIndex(p => p.id===editId);
-    if (idx>-1) { products[idx] = { id:editId, title, cat, type, price, desc, yt:ytId }; }
-    delete document.getElementById('f-title').dataset.editId;
+    // Update (Modification)
+    await window.supabase.from('products').update(newProduct).eq('id', editId);
     showToast('✅ Produit mis à jour');
   } else {
-    const newId = Date.now();
-    products.push({ id:newId, title, cat, type, price, desc, yt:ytId });
+    // Insert (Nouveau)
+    await window.supabase.from('products').insert([newProduct]);
     showToast('✅ Produit ajouté à la vitrine');
   }
 
-  saveProducts();
   resetForm();
+  await loadDataFromSupabase(); // Recharger la BDD
   showTab('products', document.querySelectorAll('.nav-item')[1]);
 }
 
-function resetForm() {
-  ['f-title','f-cat','f-type','f-desc','f-yt','f-price'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el.tagName==='SELECT') el.selectedIndex=0;
-    else el.value='';
-  });
-  delete document.getElementById('f-title').dataset.editId;
-  updatePriceField(); updateYTPreview();
+// Exemple pour remplacer "deleteProduct"
+async function deleteProduct(id) {
+  if (!confirm('Supprimer ce produit ?')) return;
+  await window.supabase.from('products').delete().eq('id', id);
+  await loadDataFromSupabase();
+  showToast('🗑 Produit supprimé');
 }
 
-// ─── TOAST ───────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+// Pour la déconnexion (tu peux ajouter un bouton dans ta sidebar)
+async function logout() {
+  await window.supabase.auth.signOut();
+  window.location.href = 'login.html';
 }
-
-// ─── INIT ────────────────────────────────────────────────────────────────────
-refreshDashboard();
 </script>
 </body>
 </html> 
