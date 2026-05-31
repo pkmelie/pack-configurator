@@ -362,7 +362,9 @@ function filterCards(type, btn) {
 function handleCard(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
-  if (p.type === 'free') showToast(`✅ Accès accordé à "${p.title}"`);
+  if (p.type === 'free') {
+  window.open('https://discord.gg/TON_CODE_INVITATION', '_blank');
+  }
   else { openTicket(); document.getElementById('t-subject').value = 'Question sur un produit'; document.getElementById('t-message').value = `Bonjour, je suis intéressé par "${p.title}" à ${p.price}.`; }
 }
 
