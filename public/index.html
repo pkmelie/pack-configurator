@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NexShop — Boutique</title>
@@ -205,12 +208,11 @@
   <div class="nav-links">
     <a href="#vitrine">Vitrine</a>
     <a href="#" onclick="openTicket()">Support</a>
-    <a href="admin.html">Admin ↗</a>
+    <a href="admin/index.html">Admin ↗</a>
   </div>
   <button class="nav-btn" onclick="openTicket()">Ouvrir un ticket</button>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-badge">🚀 Nouvelles ressources disponibles</div>
   <h1>Accédez aux meilleurs<br><span>contenus & outils</span></h1>
@@ -221,7 +223,6 @@
   </div>
 </section>
 
-<!-- STATS -->
 <div class="stats">
   <div class="stat"><div class="stat-num">48+</div><div class="stat-label">Ressources disponibles</div></div>
   <div class="stat"><div class="stat-num">2.4k</div><div class="stat-label">Membres actifs</div></div>
@@ -229,7 +230,6 @@
   <div class="stat"><div class="stat-num">24h</div><div class="stat-label">Support réactif</div></div>
 </div>
 
-<!-- VITRINE -->
 <section class="section" id="vitrine">
   <div class="section-title">Notre Vitrine</div>
   <div class="section-sub">Filtrez par catégorie ou par type d'accès</div>
@@ -247,7 +247,6 @@
   <div class="grid" id="grid"></div>
 </section>
 
-<!-- MODAL TICKET -->
 <div class="modal-bg" id="ticketModal">
   <div class="modal">
     <div id="formPart">
@@ -291,26 +290,20 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-dot"></div>
   <span id="toastMsg">Action effectuée</span>
 </div>
 
 <footer>
-  © 2025 NexShop — <a href="admin.html">Panel Admin</a> · <a href="#" onclick="openTicket()">Support</a>
+  © 2025 NexShop — <a href="admin/index.html">Panel Admin</a> · <a href="#" onclick="openTicket()">Support</a>
 </footer>
 
 <script>
-const PRODUCTS = [
+// 2. UTILISER "let" AU LIEU DE "const" POUR POUVOIR ECRASE LA LISTE
+let PRODUCTS = [
   { id:1, title:"Guide Figma Débutant", cat:"design", type:"free", price:"Gratuit", desc:"Apprenez Figma de zéro avec ce guide complet en vidéo.", yt:"dQw4w9WgXcQ" },
-  { id:2, title:"Pack UI Components Pro", cat:"design", type:"paid", price:"29€", desc:"+200 composants Figma prêts à l'emploi pour vos projets.", yt:"jNQXAC9IVRw" },
-  { id:3, title:"Crash Course React 2025", cat:"code", type:"free", price:"Gratuit", desc:"Maîtrisez React en partant de zéro jusqu'aux hooks avancés.", yt:"w7ejDZ8SWv8" },
-  { id:4, title:"Masterclass Next.js Full", cat:"code", type:"paid", price:"49€", desc:"Formation complète Next.js 14 avec App Router & Prisma.", yt:"ZVnjOPwW4ZA" },
-  { id:5, title:"Intro au SEO Moderne", cat:"marketing", type:"free", price:"Gratuit", desc:"Les bases du référencement naturel en 2025 expliquées.", yt:"C_jCLNkoMpU" },
-  { id:6, title:"Stratégie Growth Hacking", cat:"marketing", type:"paid", price:"39€", desc:"Techniques avancées pour accélérer la croissance de votre projet.", yt:"ysz5S6PUM-U" },
-  { id:7, title:"Montage Vidéo Rapide", cat:"video", type:"free", price:"Gratuit", desc:"Apprenez les bases du montage vidéo avec DaVinci Resolve.", yt:"LXb3EKWsInQ" },
-  { id:8, title:"After Effects Avancé", cat:"video", type:"paid", price:"59€", desc:"Effets visuels professionnels & motion design pour vos vidéos.", yt:"6P3CkEGUleo" },
+  { id:2, title:"Pack UI Components Pro", cat:"design", type:"paid", price:"29€", desc:"+200 composants Figma prêts à l'emploi pour vos projets.", yt:"jNQXAC9IVRw" }
 ];
 
 function renderCards(list) {
@@ -339,47 +332,22 @@ function renderCards(list) {
   });
 }
 
+// Premier affichage local par sécurité
 renderCards(PRODUCTS);
 
-// À mettre dans index.html
+// 3. RECUPERER LES PRODUITS DEPUIS SUPABASE
 document.addEventListener('supabaseReady', async () => {
-    // Récupérer les produits
-    const { data: dbProducts } = await window.supabase.from('products').select('*').order('id', { ascending: false });
+    const { data: dbProducts, error } = await window.supabase.from('products').select('*').order('id', { ascending: false });
     
     if (dbProducts && dbProducts.length > 0) {
-        // Remplace PRODUCTS global par ce qui vient de la base
-        window.PRODUCTS = dbProducts; 
-        renderCards(window.PRODUCTS);
+        // Remplace l'ancienne liste par la vraie liste de Supabase
+        PRODUCTS = dbProducts; 
+        renderCards(PRODUCTS); // Rafraîchit l'affichage avec Supabase
+    }
+    if (error) {
+        console.error("Erreur de chargement Supabase:", error);
     }
 });
-
-// Pour envoyer un ticket dans submitTicket()
-async function submitTicket() {
-  const name = document.getElementById('t-name').value.trim();
-  const email = document.getElementById('t-email').value.trim();
-  const msg = document.getElementById('t-message').value.trim();
-  const subject = document.getElementById('t-subject').value;
-  
-  if (!name || !email || !msg) return showToast('⚠️ Remplissez tous les champs obligatoires');
-
-  // INSERT DANS SUPABASE AU LIEU DU LOCALSTORAGE
-  const { error } = await window.supabase.from('tickets').insert([{
-      name: name,
-      email: email,
-      subject: subject,
-      message: msg,
-      date: new Date().toLocaleString('fr-FR'),
-      status: 'Nouveau'
-  }]);
-
-  if (!error) {
-      document.getElementById('formPart').style.display = 'none';
-      document.getElementById('senderName').textContent = name;
-      document.getElementById('successMsg').style.display = 'block';
-  } else {
-      showToast('❌ Erreur lors de l\'envoi');
-  }
-}
 
 function filterCards(type, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -403,26 +371,33 @@ function openTicket() {
 }
 function closeTicket() { document.getElementById('ticketModal').classList.remove('open'); }
 
-function submitTicket() {
+// 4. UN SEUL SUBMIT TICKET POUR SUPABASE (L'ancien a été supprimé)
+async function submitTicket() {
   const name = document.getElementById('t-name').value.trim();
   const email = document.getElementById('t-email').value.trim();
   const msg = document.getElementById('t-message').value.trim();
+  const subject = document.getElementById('t-subject').value;
+  
   if (!name || !email || !msg) return showToast('⚠️ Remplissez tous les champs obligatoires');
 
-  // Save to localStorage for admin
-  const tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-  tickets.push({
-    id: Date.now(), name, email,
-    subject: document.getElementById('t-subject').value,
-    message: msg,
-    date: new Date().toLocaleString('fr-FR'),
-    status: 'Nouveau'
-  });
-  localStorage.setItem('tickets', JSON.stringify(tickets));
+  // Envoi dans la BDD
+  const { error } = await window.supabase.from('tickets').insert([{
+      name: name,
+      email: email,
+      subject: subject,
+      message: msg,
+      date: new Date().toLocaleString('fr-FR'),
+      status: 'Nouveau'
+  }]);
 
-  document.getElementById('formPart').style.display = 'none';
-  document.getElementById('senderName').textContent = name;
-  document.getElementById('successMsg').style.display = 'block';
+  if (!error) {
+      document.getElementById('formPart').style.display = 'none';
+      document.getElementById('senderName').textContent = name;
+      document.getElementById('successMsg').style.display = 'block';
+  } else {
+      showToast('❌ Erreur lors de l\'envoi');
+      console.error(error);
+  }
 }
 
 function showToast(msg) {
@@ -438,4 +413,3 @@ document.getElementById('ticketModal').addEventListener('click', function(e) {
 </script>
 </body>
 </html>
- 
