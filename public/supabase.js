@@ -4,8 +4,8 @@ const script = document.createElement('script');
 script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 script.onload = () => {
     // 2. Initialiser le client
-    const supabaseUrl = 'TON_URL_SUPABASE'; // Ex: https://xyz.supabase.co
-    const supabaseKey = 'TA_CLE_ANON_SUPABASE';
+    const supabaseUrl = 'https://jefxkfkwrdzagbeptyqo.supabase.co'; 
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplZnhrZmt3cmR6YWdiZXB0eXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMzczOTMsImV4cCI6MjA4ODkxMzM5M30.4w42OUP_yBTeT98BjDhY88wQKCFbF8djXg1kBcVOVRw';
     window.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     
     // Déclencher un événement quand Supabase est prêt
