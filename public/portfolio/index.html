@@ -1,183 +1,529 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elie Limouzin — Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      /* Dégradé : Anthracite doux vers un Gris profond */
-      --bg-gradient: radial-gradient(circle at 50% 0%, #2c2c34 0%, #121214 100%);
-      --surface: rgba(255, 255, 255, 0.05);
-      --text: #ffffff;
-      --accent: #ff3b3b;     /* Rouge "Racing" pour le dynamisme */
-      --border: rgba(255, 255, 255, 0.1);
-      --muted: #a0a0a0;
-      --font-display: 'Inter', -apple-system, sans-serif;
-      --font-mono: 'Space Mono', monospace;
+      --bg:        #0a0a0c;
+      --bg2:       #111116;
+      --surface:   #16161c;
+      --surface2:  #1c1c24;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.13);
+      --accent:    #e8c97e;
+      --accent2:   #c9a84c;
+      --text:      #f0ede8;
+      --muted:     #7a7880;
+      --muted2:    #a09daa;
+      --serif:     'Cormorant Garamond', Georgia, serif;
+      --sans:      'Outfit', sans-serif;
+      --mono:      'DM Mono', monospace;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    html { scroll-behavior: smooth; }
+
     body {
-      background: #121214; /* Couleur de secours */
-      background-image: var(--bg-gradient);
-      background-attachment: fixed;
+      background: var(--bg);
       color: var(--text);
-      font-family: var(--font-display);
-      line-height: 1.4;
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.6;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    /* Effet de grain très léger pour casser le côté "plat" du numérique */
-    body::before {
-      content: "";
+    /* grain subtil */
+    body::after {
+      content: '';
       position: fixed;
       inset: 0;
-      opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
       pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      z-index: 50;
+      z-index: 100;
     }
 
+    ::selection { background: rgba(232,201,126,0.2); color: var(--text); }
+
+    /* ── WRAP ── */
     .wrap {
-      width: 100%;
-      max-width: 1400px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 0 5vw;
+      padding: 0 48px;
     }
 
-    /* ── NAVIGATION ── */
+    /* ── NAV ── */
     nav {
       display: flex;
       justify-content: space-between;
-      padding: 3rem 0;
+      align-items: center;
+      padding: 40px 0;
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-family: var(--font-mono); font-weight: 700; color: var(--accent); letter-spacing: 2px; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; margin-left: 2rem; transition: 0.3s; }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
     .nav-links a:hover { color: var(--text); }
 
-    /* ── HERO SECTION ── */
+    /* ── HERO ── */
     .hero {
-      padding: 15vh 0;
+      padding: 120px 0 100px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
     }
+    .hero-left { max-width: 780px; }
 
-    .status-pill {
-      display: inline-flex;
+    .hero-eyebrow {
+      display: flex;
       align-items: center;
-      gap: 10px;
-      background: rgba(255, 59, 59, 0.1);
-      border: 1px solid var(--accent);
-      padding: 8px 20px;
-      color: var(--accent);
-      font-family: var(--font-mono);
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .eyebrow-line {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+    .eyebrow-text {
+      font-family: var(--mono);
       font-size: 11px;
+      color: var(--muted2);
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      margin-bottom: 2.5rem;
     }
 
     .hero h1 {
-      font-size: clamp(3.5rem, 10vw, 8rem);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: -0.04em;
-      line-height: 0.85;
-      margin-bottom: 2rem;
+      font-family: var(--serif);
+      font-size: clamp(4rem, 9vw, 7.5rem);
+      font-weight: 300;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+      color: var(--text);
     }
-
-    .hero h1 span {
-      display: block;
+    .hero h1 em {
+      font-style: italic;
       color: var(--accent);
     }
 
-    .hero-sub {
-      font-size: clamp(1.1rem, 2vw, 1.8rem);
-      max-width: 750px;
-      margin-bottom: 3.5rem;
-      font-weight: 400;
-      color: #e0e0e0;
+    .hero-desc {
+      font-family: var(--sans);
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--muted2);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 48px;
     }
 
-    .hero-tags { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 4rem; }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 52px;
+    }
     .tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 6px 15px;
-      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border2);
+      padding: 7px 16px;
+      background: var(--surface);
+      transition: all 0.25s;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero-cta { display: flex; gap: 16px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+    .btn-gold {
+      background: var(--accent);
+      color: #0a0a0c;
+    }
+    .btn-gold:hover { background: #f0d898; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted2);
+      border: 1px solid var(--border2);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero-aside {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 20px;
+      padding-bottom: 8px;
+    }
+    .hero-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(74,222,128,0.6);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .hero-loc {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
     }
 
-    /* ── BOUTONS ── */
-    .hero-cta { display: flex; gap: 20px; }
-    .btn {
-      padding: 18px 40px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border2) 20%, var(--border2) 80%, transparent);
+    }
+
+    /* ── SECTION ── */
+    section {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 72px;
+    }
+    .section-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+      min-width: 32px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .skill-item {
+      background: var(--bg);
+      padding: 32px 36px;
+      transition: background 0.3s;
+    }
+    .skill-item:hover { background: var(--surface); }
+    .skill-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 18px;
+    }
+    .skill-name {
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+    .skill-level {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .lv-debut  { color: var(--muted); }
+    .lv-avance { color: var(--accent); }
+    .skill-bar {
+      height: 1px;
+      background: var(--border2);
+      position: relative;
+      overflow: visible;
+    }
+    .skill-fill {
+      height: 100%;
+      background: var(--accent);
+      position: absolute;
+      left: 0;
+      box-shadow: 0 0 12px rgba(232,201,126,0.4);
+    }
+    .skill-fill::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translate(50%, -50%);
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(232,201,126,0.7);
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      cursor: default;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .project-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .proj-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .proj-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    .proj-badge {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid;
+    }
+    .badge-live {
+      color: #4ade80;
+      border-color: rgba(74,222,128,0.35);
+      background: rgba(74,222,128,0.06);
+    }
+    .badge-wip {
+      color: var(--muted2);
+      border-color: var(--border2);
+      background: transparent;
+    }
+    .proj-name {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      margin-bottom: 14px;
+      color: var(--text);
+      line-height: 1;
+    }
+    .proj-desc {
+      font-size: 0.88rem;
+      color: var(--muted2);
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+    .proj-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--accent);
       text-decoration: none;
       text-transform: uppercase;
-      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: gap 0.2s;
     }
-    .btn-primary { background: var(--accent); color: white; border: 1px solid var(--accent); }
-    .btn-primary:hover { background: transparent; color: var(--accent); }
-    .btn-outline { border: 1px solid var(--text); color: white; }
-    .btn-outline:hover { background: white; color: black; }
+    .proj-link:hover { gap: 14px; }
 
-    /* ── SECTIONS ── */
-    section { padding: 8rem 0; border-top: 1px solid var(--border); }
-    .section-title { font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; letter-spacing: 0.4em; margin-bottom: 5rem; text-transform: uppercase; }
-
-    /* Compétences */
-    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; }
-    .skill-name { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; display: block; }
-    .skill-bar { height: 2px; background: var(--border); position: relative; }
-    .skill-fill { height: 100%; background: var(--accent); position: absolute; left: 0; box-shadow: 0 0 10px var(--accent); }
-
-    /* Projets */
-    .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-    .project-card { 
-      background: var(--surface);
-      padding: 3rem;
-      border: 1px solid var(--border);
-      transition: 0.4s;
+    /* ── CONTACT ── */
+    .links-list { display: flex; flex-direction: column; }
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s;
+      position: relative;
+      group: true;
     }
-    .project-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-    .proj-name { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem; }
-    .proj-desc { color: var(--muted); font-size: 1rem; }
-
-    /* Liens */
-    .link-item { 
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 3rem 0; border-bottom: 1px solid var(--border);
-      text-decoration: none; color: white; font-size: 1.8rem; font-weight: 700; text-transform: uppercase;
-      transition: 0.3s;
+    .link-item::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.4s ease;
     }
-    .link-item:hover { color: var(--accent); padding-left: 1.5rem; }
+    .link-item:hover { color: var(--accent); }
+    .link-item:hover::after { width: 100%; }
+    .link-item:hover .link-arrow { transform: translate(6px, -6px); }
 
-    footer { padding: 5rem 0; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+    .link-ico {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border2);
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      transition: border-color 0.3s;
+    }
+    .link-item:hover .link-ico { border-color: var(--accent); }
 
+    .link-meta { flex: 1; }
+    .link-name {
+      font-family: var(--sans);
+      font-size: 1.2rem;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .link-url {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .link-arrow {
+      font-size: 1.2rem;
+      color: var(--muted);
+      transition: transform 0.3s, color 0.3s;
+      flex-shrink: 0;
+    }
+    .link-item:hover .link-arrow { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    footer p {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    footer span { color: var(--accent); }
+
+    /* ── FADE IN ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.7s ease forwards;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.35s; }
+    .delay-4 { animation-delay: 0.5s; }
+    .delay-5 { animation-delay: 0.65s; }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
+      .wrap { padding: 0 24px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-aside { flex-direction: row; justify-content: flex-start; }
+      .hero-loc { writing-mode: horizontal-tb; transform: none; }
       .projects-grid { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 3.5rem; }
+      .hero h1 { font-size: clamp(3rem, 12vw, 5rem); }
     }
   </style>
 </head>
 <body>
 
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-
   <div class="wrap">
 
     <!-- NAV -->
     <nav class="fade-up">
-      <div class="nav-logo">MON_PORTFOLIO</div>
+      <div class="nav-logo">EL · Portfolio</div>
       <div class="nav-links">
         <a href="#competences">Compétences</a>
         <a href="#projets">Projets</a>
@@ -186,32 +532,44 @@
     </nav>
 
     <!-- HERO -->
-    <section class="hero">
-      <div class="hero-label fade-up delay-1">Bellevigny, France</div>
-      <div>
-        <p>..........</p>
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-eyebrow fade-up delay-1">
+          <span class="eyebrow-line"></span>
+          <span class="eyebrow-text">Futur administrateur réseau & cybersécurité</span>
+        </div>
+        <h1 class="fade-up delay-2">
+          Elie<br>
+          <em>Limouzin</em>
+        </h1>
+        <p class="hero-desc fade-up delay-3">
+          Entrepreneur digital avec ma propre boutique de produits numériques. Passionné par les réseaux, la cybersécurité et le web.
+        </p>
+        <div class="hero-tags fade-up delay-3">
+          <span class="tag">Admin Réseau</span>
+          <span class="tag">Cybersécurité</span>
+          <span class="tag">Produits Digitaux</span>
+        </div>
+        <div class="hero-cta fade-up delay-4">
+          <a href="https://v3clix-shop.com/" target="_blank" class="btn btn-gold">🛒 Ma boutique</a>
+          <a href="https://www.linkedin.com/in/elie-limouzin" target="_blank" class="btn btn-ghost">LinkedIn ↗</a>
+        </div>
       </div>
-      <h1 class="fade-up delay-2">
-        Elie
-        <span>Limouzin</span>
-      </h1>
-      <p class="hero-sub fade-up delay-3">
-        Futur administrateur réseau &amp; cybersécurité. Entrepreneur digital avec ma propre boutique de produits numériques.
-      </p>
-      <div class="hero-tags fade-up delay-3">
-        <span class="tag tag-b">Admin Réseau</span>
-        <span class="tag tag-g">Cybersécurité</span>
-        <span class="tag tag-p">Produits Digitaux</span>
+      <div class="hero-aside fade-up delay-2">
+        <div class="hero-status">
+          <span class="status-dot"></span>
+          Disponible
+        </div>
+        <div class="hero-loc">Bellevigny, France</div>
       </div>
-      <div class="hero-cta fade-up delay-4">
-        <a href="https://v3clix-shop.com/" target="_blank" class="btn btn-primary">🛒 Ma boutique</a>
-        <a href="https://www.linkedin.com/in/elie-limouzin" target="_blank" class="btn btn-outline">💼 LinkedIn</a>
-      </div>
-    </section>
+    </div>
 
     <!-- COMPÉTENCES -->
-    <section id="competences" class="skills fade-up delay-3">
-      <div class="section-title">// compétences</div>
+    <section id="competences">
+      <div class="section-header fade-up">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Mes <em>compétences</em></h2>
+      </div>
       <div class="skills-grid">
 
         <div class="skill-item">
@@ -219,7 +577,7 @@
             <span class="skill-name">Réseaux TCP/IP</span>
             <span class="skill-level lv-debut">Débutant</span>
           </div>
-          <div class="skill-bar"><div class="skill-fill fill-b" style="width:30%"></div></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:30%"></div></div>
         </div>
 
         <div class="skill-item">
@@ -227,7 +585,7 @@
             <span class="skill-name">Cybersécurité</span>
             <span class="skill-level lv-debut">Débutant</span>
           </div>
-          <div class="skill-bar"><div class="skill-fill fill-g" style="width:25%"></div></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:25%"></div></div>
         </div>
 
         <div class="skill-item">
@@ -235,7 +593,7 @@
             <span class="skill-name">Linux / Systèmes</span>
             <span class="skill-level lv-debut">Débutant</span>
           </div>
-          <div class="skill-bar"><div class="skill-fill fill-p" style="width:30%"></div></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:30%"></div></div>
         </div>
 
         <div class="skill-item">
@@ -243,7 +601,7 @@
             <span class="skill-name">E-commerce digital</span>
             <span class="skill-level lv-avance">Avancé</span>
           </div>
-          <div class="skill-bar"><div class="skill-fill fill-a" style="width:80%"></div></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
         </div>
 
         <div class="skill-item">
@@ -251,66 +609,70 @@
             <span class="skill-name">VLAN / Routage</span>
             <span class="skill-level lv-debut">Débutant</span>
           </div>
-          <div class="skill-bar"><div class="skill-fill fill-b" style="width:20%"></div></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:20%"></div></div>
         </div>
 
         <div class="skill-item">
           <div class="skill-top">
             <span class="skill-name">HTML / CSS</span>
-            <span class="skill-level lv-debut">Avancé</span>
+            <span class="skill-level lv-avance">Avancé</span>
           </div>
-          <div class="skill-bar"><div class="skill-fill fill-p" style="width:60%"></div></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div>
         </div>
 
       </div>
     </section>
 
     <!-- PROJETS -->
-    <section id="projets" class="projects fade-up delay-4">
-      <div class="section-title">// projets</div>
+    <section id="projets">
+      <div class="section-header fade-up">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Mes <em>projets</em></h2>
+      </div>
       <div class="projects-grid">
 
-        <div class="project-card card-accent-g">
+        <div class="project-card">
           <div class="proj-head">
             <span class="proj-icon">🛒</span>
-            <span class="proj-badge badge-live">LIVE</span>
+            <span class="proj-badge badge-live">Live</span>
           </div>
           <div class="proj-name">V3Clix Shop</div>
           <div class="proj-desc">Boutique en ligne de vente de produits numériques. Gestion complète du shop, du catalogue et des ventes.</div>
           <a href="https://v3clix-shop.com/" target="_blank" class="proj-link">v3clix-shop.com →</a>
         </div>
 
-        <div class="project-card card-accent-b">
+        <div class="project-card">
           <div class="proj-head">
             <span class="proj-icon">🔐</span>
-            <span class="proj-badge badge-wip">EN COURS</span>
+            <span class="proj-badge badge-wip">En cours</span>
           </div>
           <div class="proj-name">Voiture solaire</div>
-          <div class="proj-desc">Voici mon projet de fin d'année en STI2D</div>
-          <!-- <a href="#" class="proj-link">Voir le projet →</a> -->
+          <div class="proj-desc">Projet de fin d'année en STI2D — conception et développement d'un véhicule à énergie solaire.</div>
         </div>
 
-        <div class="project-card card-accent-p">
+        <div class="project-card">
           <div class="proj-head">
             <span class="proj-icon">🌐</span>
-            <span class="proj-badge badge-wip">EN COURS</span>
+            <span class="proj-badge badge-wip">En cours</span>
           </div>
           <div class="proj-name">Infrastructure réseau</div>
-          <div class="proj-desc"><!-- Modifie ici : décris ton projet réseau (config, routage, etc.) --></div>
-          <!-- <a href="#" class="proj-link">Voir le projet →</a> -->
+          <div class="proj-desc">Conception d'une infrastructure réseau complète avec VLAN, routage et sécurisation des accès.</div>
         </div>
 
       </div>
     </section>
 
-    <!-- LIENS & CONTACT -->
-    <section id="contact" class="links-section fade-up delay-5">
-      <div class="section-title">// contact &amp; liens</div>
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="section-header fade-up">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Contact <em>&amp; liens</em></h2>
+      </div>
       <div class="links-list">
 
         <a href="https://v3clix-shop.com/" target="_blank" class="link-item">
-          <div class="link-ico" style="background:rgba(0,180,255,0.1)">🌐</div>
-          <div>
+          <div class="link-ico">🌐</div>
+          <div class="link-meta">
             <div class="link-name">Boutique V3Clix</div>
             <div class="link-url">v3clix-shop.com</div>
           </div>
@@ -318,8 +680,8 @@
         </a>
 
         <a href="https://www.linkedin.com/in/elie-limouzin" target="_blank" class="link-item">
-          <div class="link-ico" style="background:rgba(0,100,200,0.1)">💼</div>
-          <div>
+          <div class="link-ico">💼</div>
+          <div class="link-meta">
             <div class="link-name">LinkedIn</div>
             <div class="link-url">linkedin.com/in/elie-limouzin</div>
           </div>
@@ -327,8 +689,8 @@
         </a>
 
         <a href="https://discord.com/users/v3clix" target="_blank" class="link-item">
-          <div class="link-ico" style="background:rgba(100,80,255,0.1)">💬</div>
-          <div>
+          <div class="link-ico">💬</div>
+          <div class="link-meta">
             <div class="link-name">Discord</div>
             <div class="link-url">v3clix</div>
           </div>
@@ -339,8 +701,9 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="fade-up delay-5">
-      <p>Conçu &amp; développé par <span>Elie Limouzin</span> · <span>v3clix</span></p>
+    <footer>
+      <p>Conçu &amp; développé par <span>Elie Limouzin</span></p>
+      <p><span>v3clix</span> · 2025</p>
     </footer>
 
   </div>
