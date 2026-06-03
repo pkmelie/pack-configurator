@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Frigo — DIY</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap');
+
+    /* ─── Variables ─────────────────────────────────────── */
+    :root {
+      --bg:          #f5f3ee;
+      --surface:     #ffffff;
+      --border:      #e0dcd2;
+      --text:        #1c1a16;
+      --muted:       #7a7670;
+      --accent:      #c84b2f;
+      --accent-bg:   #fdeee9;
+      --radius:      10px;
+      --gap:         2rem;
+    }
+
+    /* ─── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img, video, iframe { display: block; max-width: 100%; }
+
+    /* ─── Base ──────────────────────────────────────────── */
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ─── Conteneur principal ───────────────────────────── */
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    /* ─── En-tête projet ────────────────────────────────── */
+    .project-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-bottom: .75rem;
+    }
+
+    .project-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: .5rem;
+      /* ✏️ REMPLACER : Titre de votre projet */
+      /* Exemple : "Étagère murale en bois brut" */
+    }
+
+    .project-subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      /* ✏️ REMPLACER : Courte description / sous-titre */
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .meta-item strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ─── Bloc média (image ou vidéo) ───────────────────── */
+    .media-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* Image principale */
+    .media-block img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      /* ✏️ Optionnel : limiter la hauteur */
+      /* max-height: 480px; */
+    }
+
+    /* Vidéo locale */
+    .media-block video {
+      width: 100%;
+      height: auto;
+    }
+
+    /* Embed YouTube / iframe */
+    .media-block .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+    }
+
+    .media-block .video-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .media-caption {
+      padding: .6rem 1rem;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      /* ✏️ REMPLACER : Légende de l'image ou vidéo */
+    }
+
+    /* ─── Galerie (plusieurs images côte à côte) ─────────── */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: var(--surface);
+    }
+
+    /* ─── Bloc texte ────────────────────────────────────── */
+    .text-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .block-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+
+    .text-block p {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: .75rem;
+    }
+
+    .text-block p:last-child { margin-bottom: 0; }
+
+    /* ─── Bloc matériaux ────────────────────────────────── */
+    .materials-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: .5rem;
+      margin-top: .75rem;
+    }
+
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: 14px;
+      padding: .5rem .75rem;
+      background: var(--bg);
+      border-radius: 6px;
+    }
+
+    .material-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Bloc étapes ───────────────────────────────────── */
+    .steps-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: .75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ─── Bloc conseil / note ───────────────────────────── */
+    .tip-block {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      font-size: 14px;
+    }
+
+    .tip-block strong {
+      display: block;
+      font-weight: 500;
+      margin-bottom: .25rem;
+      color: var(--accent);
+    }
+
+    /* ─── Footer ────────────────────────────────────────── */
+    .project-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    /* ─── Responsive ────────────────────────────────────── */
+    @media (max-width: 520px) {
+      .project-meta { gap: .75rem; }
+      .materials-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<main class="page">
+
+  <!-- ════════════════════════════════════════
+       EN-TÊTE — Modifiez le titre, sous-titre
+       et les métadonnées
+  ════════════════════════════════════════ -->
+  <header class="project-header">
+    <span class="project-tag">Mini Frigo DIY</span>
+
+    <h1 class="project-title">
+      Mini Frigo DIY
+    </h1>
+
+    <p class="project-subtitle">
+      Création d'un mini frigo
+    </p>
+
+    <div class="project-meta">
+      <span class="meta-item">Durée : <strong>1 week-end</strong></span>
+      <span class="meta-item">Difficulté : <strong>Facile</strong></span>
+      <span class="meta-item">Budget : <strong>~30 €</strong></span>
+    </div>
+  </header>
+
+
+  <!-- ════════════════════════════════════════
+       IMAGE PRINCIPALE
+       → Remplacer src par votre image
+       → Ou supprimer ce bloc si non utilisé
+  ════════════════════════════════════════ -->
+  <div class="media-block">
+    <img
+      src="https://placehold.co/780x440/e8e4dc/7a7670?text=Photo+principale"
+      alt="Photo principale du projet"
+    />
+    <p class="media-caption">Légende de la photo — ex : Vue finale du projet</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       INTRODUCTION / DESCRIPTION
+       → Modifier les paragraphes ci-dessous
+  ════════════════════════════════════════ -->
+  <div class="text-block">
+    <p class="block-label">Description</p>
+
+    <p>
+      Présentez ici votre projet : l'idée de départ, pourquoi vous l'avez
+      réalisé, à quoi il sert. Quelques phrases suffisent.
+    </p>
+
+    <p>
+      Vous pouvez ajouter un second paragraphe pour plus de contexte,
+      expliquer les contraintes techniques ou les choix esthétiques.
+    </p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       MATÉRIAUX & OUTILS
+       → Ajouter / supprimer des <li>
+  ════════════════════════════════════════ -->
+  <div class="materials-block">
+    <p class="block-label">Matériaux &amp; outils</p>
+
+    <ul class="materials-grid" style="list-style:none;">
+      <li class="material-item"><span class="material-dot"></span>Matériau 1 — quantité</li>
+      <li class="material-item"><span class="material-dot"></span>Matériau 2 — quantité</li>
+      <li class="material-item"><span class="material-dot"></span>Matériau 3 — quantité</li>
+      <li class="material-item"><span class="material-dot"></span>Outil 1</li>
+      <li class="material-item"><span class="material-dot"></span>Outil 2</li>
+      <li class="material-item"><span class="material-dot"></span>Outil 3</li>
+    </ul>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       VIDÉO LOCALE
+       → Remplacer src par votre fichier vidéo
+       → Ou supprimer ce bloc
+  ════════════════════════════════════════ -->
+  <!--
+  <div class="media-block">
+    <video controls>
+      <source src="votre-video.mp4" type="video/mp4" />
+    </video>
+    <p class="media-caption">Légende de la vidéo</p>
+  </div>
+  -->
+
+
+  <!-- ════════════════════════════════════════
+       VIDÉO YOUTUBE
+       → Remplacer XXXXXXXXXX par l'ID de
+         votre vidéo YouTube
+       → Ou supprimer ce bloc
+  ════════════════════════════════════════ -->
+  <!--
+  <div class="media-block">
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/XXXXXXXXXX"
+        allowfullscreen
+        title="Vidéo du projet"
+      ></iframe>
+    </div>
+    <p class="media-caption">Légende de la vidéo YouTube</p>
+  </div>
+  -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉTAPES DE RÉALISATION
+       → Dupliquer / supprimer des <li class="step">
+  ════════════════════════════════════════ -->
+  <div class="steps-block">
+    <p class="block-label">Étapes de réalisation</p>
+
+    <ol class="steps-list">
+
+      <li class="step">
+        <span class="step-number">1</span>
+        <div class="step-content">
+          <p class="step-title">Conception</p>
+          <p class="step-desc">Création de la base du mini frigo sur Fusion360</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="step-number">2</span>
+        <div class="step-content">
+          <p class="step-title">Isolation</p>
+          <p class="step-desc">J'ai recuperé du Polystyrène extrudé XPS qui été dans le garage. /n Decoupage du XPS et au bonne dimenssion.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="step-number">3</span>
+        <div class="step-content">
+          <p class="step-title">Assemblage et Cablage</p>
+          <p class="step-desc">Assemblage du module peltier et des 2 ventirad. Cablage de l'amientation 12V 8A,module peltier, abaisseur de tension, wemos D1 mini via wago.</p>
+        </div>
+      </li>
+
+    </ol>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       IMAGE INTERMÉDIAIRE (pendant la réalisation)
+       → Remplacer src ou supprimer
+  ════════════════════════════════════════ -->
+  <div class="media-block">
+    <img
+      src="https://placehold.co/780x360/e8e4dc/7a7670?text=Photo+en+cours"
+      alt="Photo en cours de réalisation"
+    />
+    <p class="media-caption">En cours de réalisation</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       GALERIE (plusieurs photos)
+       → Ajouter / supprimer des <img>
+       → Supprimer le bloc si non utilisé
+  ════════════════════════════════════════ -->
+  <div class="gallery">
+    <img src="https://placehold.co/400x300/e8e4dc/7a7670?text=Photo+1" alt="Détail 1" />
+    <img src="https://placehold.co/400x300/d9d5cc/7a7670?text=Photo+2" alt="Détail 2" />
+    <img src="https://placehold.co/400x300/e8e4dc/7a7670?text=Photo+3" alt="Détail 3" />
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       CONSEIL / NOTE
+       → Modifier le texte ou supprimer
+  ════════════════════════════════════════ -->
+  <div class="tip-block">
+    <strong>Conseil</strong>
+    Partagez ici une astuce, une erreur à éviter ou une variante possible.
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       RÉSULTAT FINAL
+       → Photo du résultat terminé
+  ════════════════════════════════════════ -->
+  <div class="text-block">
+    <p class="block-label">Résultat</p>
+    <p>
+      Décrivez le résultat obtenu, ce que vous feriez différemment,
+      ce qui a bien marché. Une conclusion personnelle rend la présentation
+      plus authentique.
+    </p>
+  </div>
+
+  <div class="media-block">
+    <img
+      src="https://placehold.co/780x440/e8e4dc/7a7670?text=Photo+finale"
+      alt="Résultat final"
+    />
+    <p class="media-caption">Résultat final</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       PIED DE PAGE
+       → Modifier date et nom
+  ════════════════════════════════════════ -->
+  <footer class="project-footer">
+    <span>Réalisé par <strong>Votre Nom</strong></span>
+    <span>Juin 2026</span>
+  </footer>
+
+</main>
+
+</body>
+</html>
