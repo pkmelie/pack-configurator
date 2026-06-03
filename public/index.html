@@ -31,12 +31,14 @@
 
 *{margin:0;padding:0;box-sizing:border-box;}
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Bai Jamjuree',sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Bai Jamjuree', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* scrollbar */
@@ -109,10 +111,8 @@ nav{
 .nav-btn:hover{opacity:0.85;box-shadow:0 0 40px var(--accent-glow);}
 
 /* ── SECTION WRAPPER ── */
-.section{
-  max-width:1360px;
-  margin:0 auto;
-  padding:3rem 2rem 5rem;
+.section {
+  flex: 1;
 }
 
 /* ── SECTION HEADER ── */
@@ -433,7 +433,6 @@ footer{
 <footer>
   <div class="footer-logo">Nex<em>Shop</em></div>
   <div class="footer-links">
-    <a href="admin/index.html">Panel Admin</a>
     <a href="#" onclick="openTicket()">Support</a>
     <a href="#vitrine">Vitrine</a>
   </div>
