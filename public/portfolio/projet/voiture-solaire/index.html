@@ -3,232 +3,524 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projet STI2D — Voiture Solaire Télécommandée</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <title>Voiture solaire</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap');
+
+    /* ─── Variables ─────────────────────────────────────── */
     :root {
-      --black: #0e0e0e; --white: #f7f5f0; --accent: #d4a84b; --accent-light: #f0e4c3;
-      --gray-light: #ebebeb; --gray-mid: #a0a0a0; --gray-dark: #3a3a3a;
-      --font-display: "DM Serif Display", Georgia, serif; --font-body: "DM Sans", sans-serif;
+      --bg:          #f5f3ee;
+      --surface:     #ffffff;
+      --border:      #e0dcd2;
+      --text:        #1c1a16;
+      --muted:       #7a7670;
+      --accent:      #c84b2f;
+      --accent-bg:   #fdeee9;
+      --radius:      10px;
+      --gap:         2rem;
     }
-    html { scroll-behavior: smooth; }
-    body { background: var(--white); color: var(--black); font-family: var(--font-body); font-weight: 300; line-height: 1.75; }
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 4rem; background: rgba(247,245,240,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--gray-light); }
-    .nav-logo { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.01em; }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-    .nav-links a { text-decoration: none; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-dark); transition: color 0.2s; }
-    .nav-links a:hover { color: var(--accent); }
-    .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 80px; }
-    .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 6rem 4rem 6rem 6rem; border-right: 1px solid var(--gray-light); }
-    .hero-tag { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; }
-    .hero-tag::before { content: ""; display: inline-block; width: 32px; height: 1px; background: var(--accent); }
-    .hero h1 { font-family: var(--font-display); font-size: clamp(2.6rem,4vw,4rem); line-height: 1.1; font-weight: 400; margin-bottom: 2rem; }
-    .hero h1 em { font-style: italic; color: var(--accent); }
-    .hero-desc { font-size: 1rem; color: var(--gray-dark); max-width: 400px; line-height: 1.8; margin-bottom: 3rem; }
-    .hero-meta { display: flex; gap: 3rem; }
-    .meta-item label { display: block; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-mid); margin-bottom: 0.25rem; }
-    .meta-item span { font-size: 0.9rem; font-weight: 500; }
-    .hero-right { display: flex; align-items: center; justify-content: center; background: var(--gray-light); position: relative; overflow: hidden; }
-    .hero-right img { width: 100%; height: 100%; object-fit: cover; }
-    section { padding: 7rem 6rem; }
-    section:nth-child(even) { background: #f0ede6; }
-    .section-header { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 4rem; }
-    .section-number { font-family: var(--font-display); font-size: 4rem; color: var(--gray-light); line-height: 1; letter-spacing: -0.02em; user-select: none; }
-    .section-eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; }
-    .section-title { font-family: var(--font-display); font-size: clamp(1.8rem,3vw,2.6rem); font-weight: 400; line-height: 1.15; }
-    .presentation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-    .presentation-text p { font-size: 1rem; color: var(--gray-dark); line-height: 1.85; margin-bottom: 1.25rem; }
-    .presentation-image { background: var(--gray-light); border-radius: 4px; aspect-ratio: 4/3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; color: var(--gray-mid); font-size: 0.8rem; letter-spacing: 0.04em; }
-    .problematique-inner { max-width: 800px; }
-    .quote-block { border-left: 3px solid var(--accent); padding: 1.5rem 2.5rem; margin: 2.5rem 0; background: var(--accent-light); border-radius: 0 4px 4px 0; }
-    .quote-block p { font-family: var(--font-display); font-size: 1.35rem; font-weight: 400; line-height: 1.5; color: var(--black); }
-    .problematique-text p { font-size: 1rem; color: var(--gray-dark); line-height: 1.85; margin-bottom: 1rem; }
-    .solution-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
-    .solution-main p { font-size: 1rem; color: var(--gray-dark); line-height: 1.85; margin-bottom: 1.25rem; }
-    .cards-list { display: flex; flex-direction: column; gap: 1rem; }
-    .card { background: var(--white); border: 1px solid var(--gray-light); border-radius: 4px; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; align-items: start; }
-    .card-icon { width: 2.5rem; height: 2.5rem; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-    .card h3 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.25rem; }
-    .card p { font-size: 0.85rem; color: var(--gray-mid); line-height: 1.6; }
-    .solution-schema { background: var(--gray-light); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; min-height: 350px; color: var(--gray-mid); font-size: 0.8rem; letter-spacing: 0.04em; text-align: center; padding: 2rem; }
-    .resultats-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-bottom: 4rem; }
-    .stat-box { background: var(--white); border: 1px solid var(--gray-light); border-radius: 4px; padding: 2rem 1.5rem; text-align: center; }
-    .stat-value { font-family: var(--font-display); font-size: 2.8rem; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
-    .stat-label { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-mid); }
-    .resultats-gallery { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 240px 240px; gap: 1rem; }
-    .gallery-item { background: var(--gray-light); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gray-mid); font-size: 0.75rem; letter-spacing: 0.04em; gap: 0.5rem; }
-    .gallery-item:first-child { grid-row: span 2; }
-    .gallery-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
-    .bilan-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
-    .bilan-text p { font-size: 1rem; color: var(--gray-dark); line-height: 1.85; margin-bottom: 1.25rem; }
-    .bilan-lists { display: flex; flex-direction: column; gap: 2rem; }
-    .bilan-list h3 { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; font-weight: 500; }
-    .bilan-list ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-    .bilan-list li { display: flex; gap: 0.75rem; font-size: 0.92rem; color: var(--gray-dark); align-items: flex-start; }
-    .bilan-list li::before { content: "—"; color: var(--accent); flex-shrink: 0; margin-top: 0.05em; }
-    footer { background: var(--black); color: var(--white); padding: 3rem 6rem; display: flex; justify-content: space-between; align-items: center; }
-    footer p { font-size: 0.82rem; color: #888; }
-    footer strong { color: var(--accent); font-weight: 500; }
-    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .fade-in.visible { opacity: 1; transform: none; }
-    @media (max-width: 900px) {
-      nav { padding: 1rem 1.5rem; } .nav-links { display: none; }
-      .hero { grid-template-columns: 1fr; } .hero-right { min-height: 40vw; }
-      section { padding: 4rem 1.5rem; } .section-number { font-size: 2.5rem; }
-      .presentation-grid, .solution-grid, .bilan-inner { grid-template-columns: 1fr; }
-      .resultats-stats { grid-template-columns: 1fr 1fr; }
-      .resultats-gallery { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-      .gallery-item:first-child { grid-row: auto; }
-      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+
+    /* ─── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img, video, iframe { display: block; max-width: 100%; }
+
+    /* ─── Base ──────────────────────────────────────────── */
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ─── Conteneur principal ───────────────────────────── */
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    /* ─── En-tête projet ────────────────────────────────── */
+    .project-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-bottom: .75rem;
+    }
+
+    .project-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: .5rem;
+      /* ✏️ REMPLACER : Titre de votre projet */
+      /* Exemple : "Étagère murale en bois brut" */
+    }
+
+    .project-subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      /* ✏️ REMPLACER : Courte description / sous-titre */
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .meta-item strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ─── Bloc média (image ou vidéo) ───────────────────── */
+    .media-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* Image principale */
+    .media-block img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      /* ✏️ Optionnel : limiter la hauteur */
+      /* max-height: 480px; */
+    }
+
+    /* Vidéo locale */
+    .media-block video {
+      width: 100%;
+      height: auto;
+    }
+
+    /* Embed YouTube / iframe */
+    .media-block .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+    }
+
+    .media-block .video-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .media-caption {
+      padding: .6rem 1rem;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      /* ✏️ REMPLACER : Légende de l'image ou vidéo */
+    }
+
+    /* ─── Galerie (plusieurs images côte à côte) ─────────── */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: var(--surface);
+    }
+
+    /* ─── Bloc texte ────────────────────────────────────── */
+    .text-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .block-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+
+    .text-block p {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: .75rem;
+    }
+
+    .text-block p:last-child { margin-bottom: 0; }
+
+    /* ─── Bloc matériaux ────────────────────────────────── */
+    .materials-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: .5rem;
+      margin-top: .75rem;
+    }
+
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: 14px;
+      padding: .5rem .75rem;
+      background: var(--bg);
+      border-radius: 6px;
+    }
+
+    .material-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Bloc étapes ───────────────────────────────────── */
+    .steps-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: .75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ─── Bloc conseil / note ───────────────────────────── */
+    .tip-block {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      font-size: 14px;
+    }
+
+    .tip-block strong {
+      display: block;
+      font-weight: 500;
+      margin-bottom: .25rem;
+      color: var(--accent);
+    }
+
+    /* ─── Footer ────────────────────────────────────────── */
+    .project-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    /* ─── Responsive ────────────────────────────────────── */
+    @media (max-width: 520px) {
+      .project-meta { gap: .75rem; }
+      .materials-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <nav>
-    <span class="nav-logo">Projet STI2D · 2024–2025</span>
-    <ul class="nav-links">
-      <li><a href="#presentation">Présentation</a></li>
-      <li><a href="#problematique">Problématique</a></li>
-      <li><a href="#solution">Solution</a></li>
-      <li><a href="#resultats">Résultats</a></li>
-    </ul>
-  </nav>
 
-  <div class="hero">
-    <div class="hero-left fade-in">
-      <div class="hero-tag">Projet de fin d'année — STI2D</div>
-      <h1>Voiture solaire<br><em>télécommandée</em></h1>
-      <p class="hero-desc">Conception et réalisation d'un véhicule miniature alimenté par l'énergie photovoltaïque, piloté sans fil. Un projet alliant électronique, énergie et développement durable.</p>
-      <div class="hero-meta">
-        <div class="meta-item"><label>Filière</label><span>STI2D</span></div>
-        <div class="meta-item"><label>Année</label><span>2024 – 2025</span></div>
-        <div class="meta-item"><label>Domaine</label><span>Énergie & Numérique</span></div>
-      </div>
+<main class="page">
+
+  <!-- ════════════════════════════════════════
+       EN-TÊTE — Modifiez le titre, sous-titre
+       et les métadonnées
+  ════════════════════════════════════════ -->
+  <header class="project-header">
+    <span class="project-tag">Projet STI2D</span>
+
+    <h1 class="project-title">
+      Voiture Télécomandé à Energie Solaire !
+    </h1>
+
+    <p class="project-subtitle">
+      Conception et création d'une voiture 100% autonome via des panneaux solaires.
+    </p>
+
+    <div class="project-meta">
+      <span class="meta-item">Durée : <strong>72H</strong></span>
+      <span class="meta-item">Difficulté : <strong>Intermédiaire</strong></span>
+      <span class="meta-item">Budget : <strong>~250 €</strong></span>
     </div>
-    <div class="hero-right">
-      <img src="data:image/jpeg;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+k1Mz1rdvpNpOJAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoAMlAAAAOPM9a3b6TUzPWt2+k2k4kAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgAyUAAAA48z1rdvpNTM9a3b6TaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaADJQAAADjzPWt2+kwaTiQB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/Z" alt="Photo du véhicule" />
-    </div>
+  </header>
+
+
+  <!-- ════════════════════════════════════════
+       IMAGE PRINCIPALE
+       → Remplacer src par votre image
+       → Ou supprimer ce bloc si non utilisé
+  ════════════════════════════════════════ -->
+  <div class="media-block">
+    <img
+      src="https://i.ibb.co/7dM72Zw3/Capture-d-cran-2026-06-04-111104.png"
+      alt="Photo principale du projet"
+    />
+    <p class="media-caption">Vue finale du projet</p>
   </div>
 
-  <section id="presentation">
-    <div class="section-header fade-in">
-      <span class="section-number">01</span>
-      <div class="section-title-block">
-        <div class="section-eyebrow">Introduction</div>
-        <h2 class="section-title">Présentation du projet</h2>
-      </div>
-    </div>
-    <div class="presentation-grid fade-in">
-      <div class="presentation-text">
-        <p>Ce projet a été réalisé dans le cadre du cours de STI2D. L'objectif était de concevoir, construire et tester un véhicule miniature capable de se déplacer grâce à l'énergie captée par des panneaux solaires, tout en étant piloté à distance par télécommande.</p>
-        <p>Le projet a mobilisé des compétences en électronique, en énergie renouvelable et en conception mécanique. [Complète avec les détails de ton projet ici.]</p>
-      </div>
-      <div class="presentation-image">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="4" width="32" height="32" rx="2" stroke="#a0a0a0" stroke-width="1.2"/><path d="M4 14h32M14 4v32" stroke="#a0a0a0" stroke-width="1.2"/></svg>
-        <p style="font-size:0.78rem; text-align:center; max-width:160px;">Insère ici une image de présentation / schéma général</p>
-      </div>
-    </div>
-  </section>
 
-  <section id="problematique">
-    <div class="section-header fade-in">
-      <span class="section-number">02</span>
-      <div class="section-title-block">
-        <div class="section-eyebrow">Enjeux & contexte</div>
-        <h2 class="section-title">Problématique</h2>
-      </div>
-    </div>
-    <div class="problematique-inner fade-in">
-      <div class="quote-block">
-        <p>« Comment concevoir un véhicule télécommandé autonome en énergie, capable d'utiliser l'énergie solaire pour se déplacer de façon efficace ? »</p>
-      </div>
-      <div class="problematique-text">
-        <p>Face aux enjeux environnementaux actuels, la recherche de solutions de mobilité utilisant des énergies renouvelables est primordiale. Ce projet s'inscrit dans cette démarche en explorant la faisabilité d'un véhicule entièrement alimenté par l'énergie photovoltaïque.</p>
-        <p>Les principales contraintes identifiées étaient : [liste tes contraintes — puissance disponible, poids du véhicule, portée de la télécommande, etc.]</p>
-      </div>
-    </div>
-  </section>
+  <!-- ════════════════════════════════════════
+       INTRODUCTION / DESCRIPTION
+       → Modifier les paragraphes ci-dessous
+  ════════════════════════════════════════ -->
+  <div class="text-block">
+    <p class="block-label">Description</p>
 
-  <section id="solution">
-    <div class="section-header fade-in">
-      <span class="section-number">03</span>
-      <div class="section-title-block">
-        <div class="section-eyebrow">Conception & réalisation</div>
-        <h2 class="section-title">La solution développée</h2>
-      </div>
+    <p>
+      Pour notre projet de terminale STI2D, nous devions concevoir une voiture télécommandé 100% autonome.
+      Nous n'avions rien au départ à part un chassis de voiture RC.
+    </p>
+
+    <p>
+      Nous avons du réalisé pas mal de test et bien se reseigné sur le sujet, nous n'avons pas conté nos heures sur le projet.
+      De la mannette a la voiture nous avons tout réalisé. 
+    </p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       MATÉRIAUX & OUTILS
+       → Ajouter / supprimer des <li>
+  ════════════════════════════════════════ -->
+  <div class="materials-block">
+    <p class="block-label">Matériaux &amp; outils</p>
+
+    <ul class="materials-grid" style="list-style:none;">
+      <li class="material-item"><span class="material-dot"></span>ESP32</li>
+      <li class="material-item"><span class="material-dot"></span>chassis voiture rc</li>
+      <li class="material-item"><span class="material-dot"></span>Variateur DC-DC</li>
+      <li class="material-item"><span class="material-dot"></span>Joystick</li>
+      <li class="material-item"><span class="material-dot"></span>Ecran lcd</li>
+      <li class="material-item"><span class="material-dot"></span>Batterie 7,2V NiMh</li>
+    </ul>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       VIDÉO LOCALE
+       → Remplacer src par votre fichier vidéo
+       → Ou supprimer ce bloc
+  ════════════════════════════════════════ -->
+  <!--
+  <div class="media-block">
+    <video controls>
+      <source src="votre-video.mp4" type="video/mp4" />
+    </video>
+    <p class="media-caption">Légende de la vidéo</p>
+  </div>
+  -->
+
+
+  <!-- ════════════════════════════════════════
+       VIDÉO YOUTUBE
+       → Remplacer XXXXXXXXXX par l'ID de
+         votre vidéo YouTube
+       → Ou supprimer ce bloc
+  ════════════════════════════════════════ -->
+  <!--
+  <div class="media-block">
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/XXXXXXXXXX"
+        allowfullscreen
+        title="Vidéo du projet"
+      ></iframe>
     </div>
-    <div class="solution-grid fade-in">
-      <div class="solution-main">
-        <p>La solution retenue repose sur un châssis léger équipé de panneaux photovoltaïques en surface, reliés à un circuit de régulation de charge alimentant les moteurs et le module de réception radio.</p>
-        <br>
-        <div class="cards-list">
-          <div class="card"><div class="card-icon">☀️</div><div><h3>Captage solaire</h3><p>Panneaux photovoltaïques [X] W — positionnés sur le toit du véhicule pour maximiser l'exposition.</p></div></div>
-          <div class="card"><div class="card-icon">⚡</div><div><h3>Gestion de l'énergie</h3><p>Régulateur de charge + batterie tampon [X] mAh permettant de stocker l'énergie en cas d'ensoleillement variable.</p></div></div>
-          <div class="card"><div class="card-icon">📡</div><div><h3>Télécommande sans fil</h3><p>Module radio [fréquence] — portée de [X] mètres, contrôle directionnel et vitesse.</p></div></div>
-          <div class="card"><div class="card-icon">🔧</div><div><h3>Châssis & motorisation</h3><p>Structure en [matériau] — moteurs DC [X] V — [X] roues motrices.</p></div></div>
+    <p class="media-caption">Légende de la vidéo YouTube</p>
+  </div>
+  -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉTAPES DE RÉALISATION
+       → Dupliquer / supprimer des <li class="step">
+  ════════════════════════════════════════ -->
+  <div class="steps-block">
+    <p class="block-label">Étapes de réalisation</p>
+
+    <ol class="steps-list">
+
+      <li class="step">
+        <span class="step-number">1</span>
+        <div class="step-content">
+          <p class="step-title">Réalisation des schémas.</p>
+          <p class="step-desc">Grace au logiciel Qelectrotech, nous avons réalisé des schémas de cablage et fait valider par notre professeur.</p>
         </div>
-      </div>
-      <div class="solution-schema">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="#a0a0a0" stroke-width="1.2"/><path d="M14 22h16M22 14v16" stroke="#a0a0a0" stroke-width="1.2"/><circle cx="22" cy="22" r="4" fill="#d4a84b" opacity="0.5"/></svg>
-        <p>Insère ici ton schéma technique<br>ou diagramme de fonctionnement</p>
-      </div>
-    </div>
-  </section>
+      </li>
 
-  <section id="resultats">
-    <div class="section-header fade-in">
-      <span class="section-number">04</span>
-      <div class="section-title-block">
-        <div class="section-eyebrow">Tests & évaluation</div>
-        <h2 class="section-title">Résultats obtenus</h2>
-      </div>
-    </div>
-    <div class="resultats-stats fade-in">
-      <div class="stat-box"><div class="stat-value">X W</div><div class="stat-label">Puissance solaire captée</div></div>
-      <div class="stat-box"><div class="stat-value">X m</div><div class="stat-label">Portée télécommande</div></div>
-      <div class="stat-box"><div class="stat-value">X km/h</div><div class="stat-label">Vitesse max atteinte</div></div>
-    </div>
-    <div class="resultats-gallery fade-in">
-      <div class="gallery-item"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="3" y="3" width="30" height="30" rx="2" stroke="#a0a0a0" stroke-width="1.2"/></svg><p>Photo principale du projet</p></div>
-      <div class="gallery-item"><p>Photo détail 1</p></div>
-      <div class="gallery-item"><p>Photo détail 2</p></div>
-      <div class="gallery-item"><p>Photo test / démonstration</p></div>
-      <div class="gallery-item"><p>Graphique / mesures</p></div>
-    </div>
-  </section>
+      <li class="step">
+        <span class="step-number">2</span>
+        <div class="step-content">
+          <p class="step-title">Mise en oeuvre</p>
+          <p class="step-desc">Nous avons fait l'achat des composant, puis fait les cablage et pour ma part en plus du reste tout le code de communication.</p>
+        </div>
+      </li>
 
-  <section id="bilan" style="background:#f0ede6;">
-    <div class="section-header fade-in">
-      <span class="section-number">05</span>
-      <div class="section-title-block">
-        <div class="section-eyebrow">Retour d'expérience</div>
-        <h2 class="section-title">Bilan & perspectives</h2>
-      </div>
-    </div>
-    <div class="bilan-inner fade-in">
-      <div class="bilan-text">
-        <p>Ce projet m'a permis de mettre en pratique de nombreuses compétences acquises tout au long de l'année en STI2D, notamment en électronique, en énergie et en modélisation. [Développe ici ton bilan personnel.]</p>
-        <p>Des améliorations sont envisageables, notamment en ce qui concerne [l'efficacité des panneaux, l'autonomie, la précision de la télécommande…].</p>
-      </div>
-      <div class="bilan-lists">
-        <div class="bilan-list"><h3>Points forts</h3><ul><li>Fonctionnement en conditions réelles de soleil</li><li>Bonne portée de la télécommande</li><li>Structure légère et robuste</li></ul></div>
-        <div class="bilan-list"><h3>Difficultés rencontrées</h3><ul><li>Gestion de l'énergie par temps nuageux</li><li>Interférences radio à longue portée</li><li>[Autre difficulté rencontrée]</li></ul></div>
-        <div class="bilan-list"><h3>Perspectives</h3><ul><li>Ajout d'une batterie à recharge solaire plus performante</li><li>Intégration d'une interface de pilotage sur smartphone</li><li>[Autre idée d'amélioration]</li></ul></div>
-      </div>
-    </div>
-  </section>
+      <li class="step">
+        <span class="step-number">3</span>
+        <div class="step-content">
+          <p class="step-title">Test</p>
+          <p class="step-desc">Réalisation des test pour respecter le cahier des charges.</p>
+        </div>
+      </li>
 
-  <footer>
-    <p>Projet STI2D · Voiture solaire télécommandée · <strong>2024–2025</strong></p>
-    <p>Réalisé par <strong>[Ton prénom]</strong> · Classe [Ta classe]</p>
+    </ol>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       IMAGE INTERMÉDIAIRE (pendant la réalisation)
+       → Remplacer src ou supprimer
+  ════════════════════════════════════════ -->
+  <div class="media-block">
+    <img
+      src="https://i.ibb.co/yB575YZ4/IMG-8250.jpg"
+      alt="Photo en cours de réalisation"
+    />
+    <p class="media-caption">En cours de réalisation</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       GALERIE (plusieurs photos)
+       → Ajouter / supprimer des <img>
+       → Supprimer le bloc si non utilisé
+  ════════════════════════════════════════ -->
+  <div class="gallery">
+    <img src="https://i.ibb.co/1NG5Tcr/photo-manette.jpg" alt="Détail 1" />
+    <img src="https://i.ibb.co/WNzxnby5/Capture-d-cran-2026-04-09-164326.png" alt="Détail 2" />
+    <img src="https://i.ibb.co/SwYNW2tq/Capture-d-cran-2026-04-09-165404.png" alt="Détail 3" />
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       CONSEIL / NOTE
+       → Modifier le texte ou supprimer
+  ════════════════════════════════════════ -->
+  <div class="tip-block">
+    <strong>Conseil</strong>
+    Lors des test, nous avons remarqué que lorsque l'on fesait un appel de courant au niveau des moteurs la tension de la batterie chute pendant un court instant(mais ça on le sait), juste nous n'avions pas pris en compte que cela allez faire décrocher notre ESP32 (communication).
+    Donc nous avons du mettre 2 batteries.
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       RÉSULTAT FINAL
+       → Photo du résultat terminé
+  ════════════════════════════════════════ -->
+  <div class="text-block">
+    <p class="block-label">Résultat</p>
+    <p>
+      Donc notre voiture, peut tourner environ 1h sans etre rechargé et un peu plus quand elle est au soleil avec les panneaux.
+    </p>
+  </div>
+
+  <div class="media-block">
+  <video controls>
+    <source src="IMG_8168.mov" type="video/mp4" />
+  </video>
+    <p class="media-caption">Résultat final</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       PIED DE PAGE
+       → Modifier date et nom
+  ════════════════════════════════════════ -->
+  <footer class="project-footer">
+    <span>Réalisé par <strong>Limouzin Elie</strong></span>
+    <span>Juin 2026</span>
   </footer>
 
-  <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
-    }, { threshold: 0.12 });
-    document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
-  </script>
+</main>
+
 </body>
 </html>
