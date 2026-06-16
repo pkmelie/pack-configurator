@@ -9,7 +9,7 @@
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "@anthropic-ai/sdk": "^0.20.0",
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.39.0", 
     "stripe": "^14.0.0"
   }
 }
