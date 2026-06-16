@@ -1,0 +1,12 @@
+{
+  "name": "pack-configurator",
+  "version": "1.0.0",
+  "description": "Pack configurator with admin panel",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
