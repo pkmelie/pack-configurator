@@ -10,6 +10,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
 <title>NexShop — Boutique</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -215,10 +216,403 @@
     <a href="#vitrine">Vitrine</a>
     <a href="#" onclick="openTicket()">Support</a>
     
+=======
+<meta name="description" content="Découvrez la boutique VShop. Téléchargez nos packs graphiques GTA / FiveM exclusifs, mods et ressources premium ou gratuits pour booster vos designs et streams.">
+<meta name="keywords" content="pack graphique, ressources design, stream, vshop, gfx pack, mod design">
+<title>VShop — Boutique | Pack graphique / Mod FiveM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0b0909;
+  --surface:  #111010;
+  --surface2: #161212;
+  --border:   rgba(255,255,255,0.1);
+  --border2:  rgba(255,255,255,0.18);
+  --c: 131,40,255;
+  --accent:   rgba(var(--c));
+  --accent-glow: rgba(var(--c),0.35);
+  --accent-dim:  rgba(var(--c),0.12);
+  --text:     #ffffff;
+  --muted:    rgba(255,255,255,0.5);
+  --green:    #22c55e;
+  --gold:     #f59e0b;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Bai Jamjuree', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(var(--c),0.5);border-radius:4px;}
+
+/* ── TICKER ── */
+.ticker{
+  background:rgba(var(--c),0.08);
+  border-bottom:1px solid rgba(var(--c),0.2);
+  overflow:hidden;
+  white-space:nowrap;
+  padding:8px 0;
+}
+.ticker-inner{
+  display:inline-flex;
+  animation:tick 30s linear infinite;
+}
+.ticker-item{
+  padding:0 2.5rem;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.ticker-item b{color:var(--accent);}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(11,9,9,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 2rem;height:62px;gap:2rem;
+}
+.nav-logo{
+  font-family:'Inter',sans-serif;
+  font-size:1.35rem;font-weight:800;
+  letter-spacing:-0.01em;
+  color:var(--text);text-decoration:none;
+  flex-shrink:0;
+}
+.nav-logo em{color:var(--accent);font-style:normal;}
+.nav-links{display:flex;align-items:center;gap:0.25rem;flex:1;}
+.nav-links a{
+  color:var(--muted);
+  font-size:14px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.05em;
+  text-decoration:none;padding:6px 14px;
+  border-radius:4px;
+  transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+.nav-btn{
+  margin-left:auto;
+  background:var(--accent);
+  color:#fff;border:none;
+  padding:9px 20px;border-radius:6px;
+  font-family:'Bai Jamjuree',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:0.05em;text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 0 28px var(--accent-glow);
+  transition:box-shadow .2s,opacity .2s;
+}
+.nav-btn:hover{opacity:0.85;box-shadow:0 0 40px var(--accent-glow);}
+
+/* ── SECTION WRAPPER ── */
+.section {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+  width: 100%;
+  flex: 1;
+}
+/* ── SECTION HEADER ── */
+.section-header{
+  display:flex;align-items:flex-end;
+  justify-content:space-between;
+  margin-bottom:2rem;
+  padding-bottom:1.25rem;
+  border-bottom:1px solid var(--border);
+}
+.section-title-wrap{}
+.section-eyebrow{
+  font-size:11px;font-weight:700;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:6px;
+}
+.section-title{
+  font-family:'Inter',sans-serif;
+  font-size:2.2rem;font-weight:800;
+  color:var(--text);line-height:1;
+}
+.section-count{
+  font-size:13px;color:var(--muted);
+  font-weight:600;
+}
+
+/* ── FILTERS ── */
+.filters{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin-bottom:2.5rem;
+}
+.filter-btn{
+  padding:7px 18px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--muted);
+  font-family:'Bai Jamjuree',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:0.05em;text-transform:uppercase;
+  border-radius:5px;cursor:pointer;
+  transition:all .2s;
+}
+.filter-btn:hover{border-color:rgba(var(--c),0.5);color:var(--text);}
+.filter-btn.active{
+  background:var(--accent-dim);
+  border-color:rgba(var(--c),0.6);
+  color:var(--accent);
+  box-shadow:0 0 14px rgba(var(--c),0.15);
+}
+
+/* ── GRID ── */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(295px,1fr));
+  gap:20px;
+}
+
+/* ── CARD ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:border-color .25s, transform .25s, box-shadow .25s;
+  display:flex;flex-direction:column;
+}
+.card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(var(--c),0.45);
+  box-shadow:0 8px 40px rgba(var(--c),0.12);
+}
+
+/* THUMB */
+.card-thumb{
+  position:relative;
+  width:100%;aspect-ratio:16/9;
+  background:#000;overflow:hidden;
+}
+.card-thumb iframe{
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+.card-thumb .overlay{
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+  pointer-events: none;
+}
+.card:hover .overlay{opacity:1;}
+.play-btn{
+  width:50px;height:50px;border-radius:50%;
+  background:rgba(var(--c),0.85);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 24px var(--accent-glow);
+}
+.play-btn::after{
+  content:'';
+  border-style:solid;
+  border-width:8px 0 8px 15px;
+  border-color:transparent transparent transparent #fff;
+  margin-left:3px;
+}
+
+/* LOCK */
+.lock-overlay{
+  position:absolute;inset:0;
+  background:rgba(11,9,9,0.72);
+  backdrop-filter:blur(3px);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+}
+.lock-icon{font-size:1.6rem;}
+.lock-overlay p{
+  font-size:11px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+}
+
+/* BADGE */
+.badge{
+  position:absolute;top:10px;left:10px;z-index:2;
+  padding:3px 11px;border-radius:4px;
+  font-size:10px;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;
+  font-family:'Inter',sans-serif;
+}
+.badge.free{background:rgba(34,197,94,0.18);color:var(--green);border:1px solid rgba(34,197,94,0.35);}
+.badge.paid{background:rgba(var(--c),0.18);color:var(--accent);border:1px solid rgba(var(--c),0.35);}
+
+/* ACCENT BAR — purple left border on hover */
+.card::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:var(--accent);
+  border-radius:8px 0 0 8px;
+  box-shadow:0 0 20px var(--accent-glow);
+  opacity:0;
+  transition:opacity .25s;
+}
+.card{position:relative;}
+.card:hover::before{opacity:1;}
+
+/* CARD BODY */
+.card-body{
+  padding:1.1rem 1.3rem 1.3rem;
+  flex:1;display:flex;flex-direction:column;
+}
+.card-cat{
+  font-size:10px;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:6px;
+}
+.card-title{
+  font-family:'Inter',sans-serif;
+  font-size:1rem;font-weight:700;
+  color:var(--text);line-height:1.35;
+  margin-bottom:6px;
+}
+.card-desc{
+  font-size:13px;color:var(--muted);
+  line-height:1.65;flex:1;margin-bottom:1rem;
+}
+.card-footer{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding-top:0.9rem;
+  border-top:1px solid var(--border);
+}
+.price{
+  font-family:'Inter',sans-serif;
+  font-size:1.25rem;font-weight:800;
+}
+.price.free-price{color:var(--green);}
+.price.paid-price{color:var(--accent);}
+.card-btn{
+  padding:8px 18px;border-radius:5px;
+  font-family:'Bai Jamjuree',sans-serif;
+  font-size:12px;font-weight:700;
+  letter-spacing:0.05em;text-transform:uppercase;
+  cursor:pointer;border:none;
+  transition:box-shadow .2s,opacity .2s;
+}
+.card-btn.get{
+  background:rgba(34,197,94,0.15);
+  color:var(--green);
+  border:1px solid rgba(34,197,94,0.35);
+}
+.card-btn.get:hover{
+  background:rgba(34,197,94,0.25);
+  box-shadow:0 0 14px rgba(34,197,94,0.2);
+}
+.card-btn.buy{
+  background:var(--accent);
+  color:#fff;
+  box-shadow:0 0 18px var(--accent-glow);
+}
+.card-btn.buy:hover{opacity:0.85;box-shadow:0 0 28px var(--accent-glow);}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:300;
+  background:var(--surface2);
+  border:1px solid rgba(var(--c),0.3);
+  border-radius:8px;
+  padding:12px 18px;
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;font-weight:600;
+  box-shadow:0 0 30px rgba(var(--c),0.15);
+  transform:translateY(80px);opacity:0;
+  transition:all .3s;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:1.5rem 2rem;
+  display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:1rem;
+}
+.footer-logo{
+  font-family:'Inter',sans-serif;
+  font-size:1.1rem;font-weight:800;
+  color:var(--text);
+}
+.footer-logo em{color:var(--accent);font-style:normal;}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{
+  font-size:12px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  transition:color .2s;
+}
+.footer-links a:hover{color:var(--text);}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.25);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav{padding:0 1rem;}
+  .nav-links{display:none;}
+  .section{padding:2rem 1rem 4rem;}
+  .section-header{flex-direction:column;align-items:flex-start;gap:0.5rem;}
+  footer{flex-direction:column;text-align:center;}
+  .footer-links{justify-content:center;}
+}
+
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><b>★</b> Ressources disponibles</span>
+    <span class="ticker-item"><b>—</b> 2 400+ membres actifs</span>
+    <span class="ticker-item"><b>★</b> Nouveaux packs ajoutés</span>
+    <span class="ticker-item"><b>—</b> Support 24h/24</span>
+    <span class="ticker-item"><b>★</b> 98% satisfaction client</span>
+    <span class="ticker-item"><b>—</b> Accès immédiat via Discord</span>
+    <span class="ticker-item"><b>★</b> Ressources disponibles</span>
+    <span class="ticker-item"><b>—</b> 2 400+ membres actifs</span>
+    <span class="ticker-item"><b>★</b> Nouveaux packs ajoutés</span>
+    <span class="ticker-item"><b>—</b> Support 24h/24</span>
+    <span class="ticker-item"><b>★</b> 98% satisfaction client</span>
+    <span class="ticker-item"><b>—</b> Accès immédiat via Discord</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">V<em>Shop</em></a>
+  <div class="nav-links">
+    <a href="#vitrine">Vitrine</a>
+    <a href="#" onclick="openTicket()">Support</a>
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
   </div>
   <button class="nav-btn" onclick="openTicket()">Ouvrir un ticket</button>
 </nav>
 
+<<<<<<< HEAD
 <section class="hero">
   <div class="hero-badge">🚀 Nouvelles ressources disponibles</div>
   <h1>Accédez aux meilleurs<br><span>contenus & outils</span></h1>
@@ -239,29 +633,63 @@
 <section class="section" id="vitrine">
   <div class="section-title">Notre Vitrine</div>
   <div class="section-sub">Filtrez par catégorie ou par type d'accès</div>
+=======
+<!-- VITRINE -->
+<div class="section" id="vitrine">
+  <div class="section-header">
+    <div class="section-title-wrap">
+      <div class="section-eyebrow">Nouvelle collection disponible</div>
+      <div class="section-title">Vitrine</div>
+    </div>
+    <div class="section-count" id="count-label">Chargement...</div>
+  </div>
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
 
   <div class="filters">
     <button class="filter-btn active" onclick="filterCards('all',this)">Tous</button>
     <button class="filter-btn" onclick="filterCards('free',this)">Gratuit</button>
     <button class="filter-btn" onclick="filterCards('paid',this)">Premium</button>
+<<<<<<< HEAD
     
+=======
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
     <button class="filter-btn" onclick="filterCards('Pack',this)">Pack</button>
     <button class="filter-btn" onclick="filterCards('Mod',this)">Mod</button>
     <button class="filter-btn" onclick="filterCards('Sound',this)">Sound</button>
   </div>
 
+<<<<<<< HEAD
   <div class="grid" id="grid"></div>
 </section>
 
 
 
+=======
+  <div class="grid" id="grid">
+    <p style="color:var(--muted);padding:4rem;grid-column:1/-1;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-align:center;">Chargement...</p>
+  </div>
+</div>
+
+<!-- TOAST -->
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
 <div class="toast" id="toast">
   <div class="toast-dot"></div>
   <span id="toastMsg">Action effectuée</span>
 </div>
 
+<<<<<<< HEAD
 <footer>
   © 2025 NexShop — <a href="admin/index.html">Panel Admin</a> · <a href="#" onclick="openTicket()">Support</a>
+=======
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">V<em>Shop</em></div>
+  <div class="footer-links">
+    <a href="#" onclick="openTicket()">Support</a>
+    <a href="#vitrine">Vitrine</a>
+  </div>
+  <div class="footer-copy">© 2025 VShop</div>
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
 </footer>
 
 <script>
@@ -269,6 +697,7 @@ let PRODUCTS = [];
 
 function renderCards(list) {
   const grid = document.getElementById('grid');
+<<<<<<< HEAD
   grid.innerHTML = '';
   if (!list.length) { grid.innerHTML = '<p style="color:var(--muted);text-align:center;padding:3rem;">Aucun produit disponible.</p>'; return; }
   list.forEach(p => {
@@ -318,13 +747,72 @@ function handleCard(id) {
 function openTicket() {
   window.open('https://discord.gg/7zUw3gDv', '_blank');
 }
+=======
+  const label = document.getElementById('count-label');
+  if (label) label.textContent = `${list.length} produit${list.length!==1?'s':''}`;
+  grid.innerHTML = '';
+  if (!list.length) {
+    grid.innerHTML = '<p style="color:var(--muted);padding:4rem;grid-column:1/-1;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-align:center;">Aucun produit disponible.</p>';
+    return;
+  }
+  list.forEach(p => {
+    const isPaid = p.type === 'paid';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-thumb">
+        <iframe src="https://www.youtube.com/embed/${p.yt}?controls=0&modestbranding=1&rel=0" allowfullscreen loading="lazy"></iframe>
+        <span class="badge ${p.type}">${isPaid ? '⭐ Premium' : '✓ Gratuit'}</span>
+        ${isPaid ? `<div class="lock-overlay"><div class="lock-icon">🔒</div><p>Contenu verrouillé</p></div>` : ''}
+        <div class="overlay"><div class="play-btn"></div></div>
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.cat}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="card-footer">
+          <div class="price ${isPaid?'paid-price':'free-price'}">${p.price}</div>
+          <button class="card-btn ${isPaid?'buy':'get'}" onclick="handleCard(${p.id})">${isPaid?'Acheter':'Accéder'}</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+(async () => {
+  const { data, error } = await window.supabase
+    .from('products').select('*').order('id',{ascending:false});
+  if (data && data.length > 0) { PRODUCTS = data; renderCards(PRODUCTS); }
+  else renderCards([]);
+  if (error) console.error('Supabase:', error);
+})();
+
+function filterCards(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if (type==='all') return renderCards(PRODUCTS);
+  if (type==='free'||type==='paid') return renderCards(PRODUCTS.filter(p=>p.type===type));
+  renderCards(PRODUCTS.filter(p=>p.cat===type));
+}
+
+function handleCard(id) { window.open('https://discord.gg/khqmFkEUet','_blank'); }
+function openTicket()   { window.open('https://discord.gg/7zUw3gDv','_blank'); }
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
   t.classList.add('show');
+<<<<<<< HEAD
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 </script>
 </body>
 </html>
+=======
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc

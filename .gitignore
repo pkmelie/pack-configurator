@@ -1,3 +1,6 @@
 .vercel
 .env*.local
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc

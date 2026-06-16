@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<<<<<<< HEAD
   <title>Projet STI2D — Voiture Solaire Télécommandée</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -81,10 +82,313 @@
       .resultats-gallery { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
       .gallery-item:first-child { grid-row: auto; }
       footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+=======
+  <title>Voiture solaire</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap');
+
+    /* ─── Variables ─────────────────────────────────────── */
+    :root {
+      --bg:          #f5f3ee;
+      --surface:     #ffffff;
+      --border:      #e0dcd2;
+      --text:        #1c1a16;
+      --muted:       #7a7670;
+      --accent:      #c84b2f;
+      --accent-bg:   #fdeee9;
+      --radius:      10px;
+      --gap:         2rem;
+    }
+
+    /* ─── Reset ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img, video, iframe { display: block; max-width: 100%; }
+
+    /* ─── Base ──────────────────────────────────────────── */
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ─── Conteneur principal ───────────────────────────── */
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    /* ─── En-tête projet ────────────────────────────────── */
+    .project-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-bottom: .75rem;
+    }
+
+    .project-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: .5rem;
+      /* ✏️ REMPLACER : Titre de votre projet */
+      /* Exemple : "Étagère murale en bois brut" */
+    }
+
+    .project-subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      /* ✏️ REMPLACER : Courte description / sous-titre */
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .meta-item strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ─── Bloc média (image ou vidéo) ───────────────────── */
+    .media-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* Image principale */
+    .media-block img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      /* ✏️ Optionnel : limiter la hauteur */
+      /* max-height: 480px; */
+    }
+
+    /* Vidéo locale */
+    .media-block video {
+      width: 100%;
+      height: auto;
+    }
+
+    /* Embed YouTube / iframe */
+    .media-block .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+    }
+
+    .media-block .video-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .media-caption {
+      padding: .6rem 1rem;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      /* ✏️ REMPLACER : Légende de l'image ou vidéo */
+    }
+
+    /* ─── Galerie (plusieurs images côte à côte) ─────────── */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: var(--surface);
+    }
+
+    /* ─── Bloc texte ────────────────────────────────────── */
+    .text-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .block-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+
+    .text-block p {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: .75rem;
+    }
+
+    .text-block p:last-child { margin-bottom: 0; }
+
+    /* ─── Bloc matériaux ────────────────────────────────── */
+    .materials-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: .5rem;
+      margin-top: .75rem;
+    }
+
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: 14px;
+      padding: .5rem .75rem;
+      background: var(--bg);
+      border-radius: 6px;
+    }
+
+    .material-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Bloc étapes ───────────────────────────────────── */
+    .steps-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: .75rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ─── Bloc conseil / note ───────────────────────────── */
+    .tip-block {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      font-size: 14px;
+    }
+
+    .tip-block strong {
+      display: block;
+      font-weight: 500;
+      margin-bottom: .25rem;
+      color: var(--accent);
+    }
+
+    /* ─── Footer ────────────────────────────────────────── */
+    .project-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    /* ─── Responsive ────────────────────────────────────── */
+    @media (max-width: 520px) {
+      .project-meta { gap: .75rem; }
+      .materials-grid { grid-template-columns: 1fr; }
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
     }
   </style>
 </head>
 <body>
+<<<<<<< HEAD
   <nav>
     <span class="nav-logo">Projet STI2D · 2024–2025</span>
     <ul class="nav-links">
@@ -232,3 +536,222 @@
   </script>
 </body>
 </html>
+=======
+<script defer src="/_vercel/insights/script.js"></script>
+<main class="page">
+
+  <!-- ════════════════════════════════════════
+       EN-TÊTE — Modifiez le titre, sous-titre
+       et les métadonnées
+  ════════════════════════════════════════ -->
+  <header class="project-header">
+    <span class="project-tag">Projet STI2D</span>
+
+    <h1 class="project-title">
+      Voiture Télécomandé à Energie Solaire !
+    </h1>
+
+    <p class="project-subtitle">
+      Conception et création d'une voiture 100% autonome via des panneaux solaires.
+    </p>
+
+    <div class="project-meta">
+      <span class="meta-item">Durée : <strong>72H</strong></span>
+      <span class="meta-item">Difficulté : <strong>Intermédiaire</strong></span>
+      <span class="meta-item">Budget : <strong>~250 €</strong></span>
+    </div>
+  </header>
+
+
+  <!-- ════════════════════════════════════════
+       IMAGE PRINCIPALE
+       → Remplacer src par votre image
+       → Ou supprimer ce bloc si non utilisé
+  ════════════════════════════════════════ -->
+  <div class="media-block">
+    <img
+      src="https://i.ibb.co/7dM72Zw3/Capture-d-cran-2026-06-04-111104.png"
+      alt="Photo principale du projet"
+    />
+    <p class="media-caption">Vue finale du projet</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       INTRODUCTION / DESCRIPTION
+       → Modifier les paragraphes ci-dessous
+  ════════════════════════════════════════ -->
+  <div class="text-block">
+    <p class="block-label">Description</p>
+
+    <p>
+      Pour notre projet de terminale STI2D, nous devions concevoir une voiture télécommandé 100% autonome.
+      Nous n'avions rien au départ à part un chassis de voiture RC.
+    </p>
+
+    <p>
+      Nous avons du réalisé pas mal de test et bien se reseigné sur le sujet, nous n'avons pas conté nos heures sur le projet.
+      De la mannette a la voiture nous avons tout réalisé. 
+    </p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       MATÉRIAUX & OUTILS
+       → Ajouter / supprimer des <li>
+  ════════════════════════════════════════ -->
+  <div class="materials-block">
+    <p class="block-label">Matériaux &amp; outils</p>
+
+    <ul class="materials-grid" style="list-style:none;">
+      <li class="material-item"><span class="material-dot"></span>ESP32</li>
+      <li class="material-item"><span class="material-dot"></span>chassis voiture rc</li>
+      <li class="material-item"><span class="material-dot"></span>Variateur DC-DC</li>
+      <li class="material-item"><span class="material-dot"></span>Joystick</li>
+      <li class="material-item"><span class="material-dot"></span>Ecran lcd</li>
+      <li class="material-item"><span class="material-dot"></span>Batterie 7,2V NiMh</li>
+    </ul>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       VIDÉO LOCALE
+       → Remplacer src par votre fichier vidéo
+       → Ou supprimer ce bloc
+  ════════════════════════════════════════ -->
+  <!--
+  <div class="media-block">
+    <video controls>
+      <source src="votre-video.mp4" type="video/mp4" />
+    </video>
+    <p class="media-caption">Légende de la vidéo</p>
+  </div>
+  -->
+
+
+  <!-- ════════════════════════════════════════
+       VIDÉO YOUTUBE
+       → Remplacer XXXXXXXXXX par l'ID de
+         votre vidéo YouTube
+       → Ou supprimer ce bloc
+  ════════════════════════════════════════ -->
+  <!--
+  <div class="media-block">
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/XXXXXXXXXX"
+        allowfullscreen
+        title="Vidéo du projet"
+      ></iframe>
+    </div>
+    <p class="media-caption">Légende de la vidéo YouTube</p>
+  </div>
+  -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉTAPES DE RÉALISATION
+       → Dupliquer / supprimer des <li class="step">
+  ════════════════════════════════════════ -->
+  <div class="steps-block">
+    <p class="block-label">Étapes de réalisation</p>
+
+    <ol class="steps-list">
+
+      <li class="step">
+        <span class="step-number">1</span>
+        <div class="step-content">
+          <p class="step-title">Réalisation des schémas.</p>
+          <p class="step-desc">Grace au logiciel Qelectrotech, nous avons réalisé des schémas de cablage et fait valider par notre professeur.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="step-number">2</span>
+        <div class="step-content">
+          <p class="step-title">Mise en oeuvre</p>
+          <p class="step-desc">Nous avons fait l'achat des composant, puis fait les cablage et pour ma part en plus du reste tout le code de communication.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="step-number">3</span>
+        <div class="step-content">
+          <p class="step-title">Test</p>
+          <p class="step-desc">Réalisation des test pour respecter le cahier des charges.</p>
+        </div>
+      </li>
+
+    </ol>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       IMAGE INTERMÉDIAIRE (pendant la réalisation)
+       → Remplacer src ou supprimer
+  ════════════════════════════════════════ -->
+  <div class="media-block">
+    <img
+      src="https://i.ibb.co/yB575YZ4/IMG-8250.jpg"
+      alt="Photo en cours de réalisation"
+    />
+    <p class="media-caption">En cours de réalisation</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       GALERIE (plusieurs photos)
+       → Ajouter / supprimer des <img>
+       → Supprimer le bloc si non utilisé
+  ════════════════════════════════════════ -->
+  <div class="gallery">
+    <img src="https://i.ibb.co/1NG5Tcr/photo-manette.jpg" alt="Détail 1" />
+    <img src="https://i.ibb.co/WNzxnby5/Capture-d-cran-2026-04-09-164326.png" alt="Détail 2" />
+    <img src="https://i.ibb.co/SwYNW2tq/Capture-d-cran-2026-04-09-165404.png" alt="Détail 3" />
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       CONSEIL / NOTE
+       → Modifier le texte ou supprimer
+  ════════════════════════════════════════ -->
+  <div class="tip-block">
+    <strong>Conseil</strong>
+    Lors des test, nous avons remarqué que lorsque l'on fesait un appel de courant au niveau des moteurs la tension de la batterie chute pendant un court instant(mais ça on le sait), juste nous n'avions pas pris en compte que cela allez faire décrocher notre ESP32 (communication).
+    Donc nous avons du mettre 2 batteries.
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       RÉSULTAT FINAL
+       → Photo du résultat terminé
+  ════════════════════════════════════════ -->
+  <div class="text-block">
+    <p class="block-label">Résultat</p>
+    <p>
+      Donc notre voiture, peut tourner environ 1h sans etre rechargé et un peu plus quand elle est au soleil avec les panneaux.
+    </p>
+  </div>
+
+  <div class="media-block">
+  <video controls>
+    <source src="/portfolio/projet/voiture-solaire/z.mp4" type="video/mp4" />
+  </video>
+    <p class="media-caption">Résultat final</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       PIED DE PAGE
+       → Modifier date et nom
+  ════════════════════════════════════════ -->
+  <footer class="project-footer">
+    <span>Réalisé par <strong>Limouzin Elie</strong></span>
+    <span>Juin 2026</span>
+  </footer>
+
+</main>
+
+</body>
+</html>
+>>>>>>> cb785a33d4d906d978f93c7f91a840900e64b6dc
