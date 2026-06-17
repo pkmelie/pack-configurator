@@ -161,6 +161,6 @@ module.exports = async (req, res) => {
         res.json({ text, creditsLeft: nouveauSolde, provider: useGemini ? "gemini" : "claude" });
     } catch (err) {
         console.error("Erreur IA:", err.message);
-        res.status(500).json({ error: "Erreur de génération : " + err.message });
+        res.status(500).json({ error: "Erreur de génération : // " + err.message });
     }
 };
