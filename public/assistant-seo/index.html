@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant Rédaction SEO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --primary: #534AB7;
+            --primary-light: #EEEDFE;
+            --primary-dark: #3C3489;
+            --bg: #f9fafb;
+            --bg-card: #ffffff;
+            --border: #e5e7eb;
+            --text: #111827;
+            --text-muted: #6b7280;
+            --text-faint: #9ca3af;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        /* Header */
+        .header { margin-bottom: 20px; }
+        .header h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+        .header p { font-size: 14px; color: var(--text-muted); margin: 0; }
+
+        /* Bannière crédits */
+        .credits-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+        }
+        .credits-bar .label { font-size: 13px; color: var(--text-muted); }
+        .credits-bar .value { font-size: 18px; font-weight: 700; color: #16a34a; }
+        .credits-bar .value.low { color: #dc2626; }
+        .btn-buy {
+            padding: 8px 14px; background: #2563eb; color: #fff;
+            border: none; border-radius: var(--radius-md); cursor: pointer;
+            font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-buy:hover { background: #1d4ed8; }
+
+        /* Modes */
+        .modes { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .mode-btn {
+            display: flex; align-items: center; gap: 7px;
+            padding: 9px 15px; border-radius: var(--radius-lg);
+            border: 1px solid var(--border); background: var(--bg-card);
+            color: var(--text-muted); cursor: pointer; font-size: 13px;
+            transition: all .15s;
+        }
+        .mode-btn.active {
+            border-color: var(--primary); background: var(--primary-light);
+            color: var(--primary-dark); font-weight: 600;
+        }
+        .mode-btn i { font-size: 16px; }
+
+        /* Grid */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+        /* Formulaire */
+        .form-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 16px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+        .input {
+            padding: 10px 12px; border: 1px solid var(--border);
+            border-radius: var(--radius-md); font-size: 14px; outline: none;
+            width: 100%; background: var(--bg-card); color: var(--text);
+        }
+        .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(83,74,183,.1); }
+        textarea.input { resize: vertical; }
+
+        .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pill {
+            padding: 5px 12px; border-radius: 99px; font-size: 12px;
+            border: 1px solid var(--border); background: transparent;
+            cursor: pointer; color: var(--text-muted); transition: all .12s;
+        }
+        .pill.active {
+            border-color: var(--primary); background: var(--primary-light);
+            color: var(--primary-dark); font-weight: 600;
+        }
+
+        .btn-generate {
+            padding: 12px 16px; border-radius: var(--radius-lg);
+            background: var(--primary); color: #fff; border: none;
+            cursor: pointer; font-size: 14px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background .15s;
+        }
+        .btn-generate:hover { background: var(--primary-dark); }
+        .btn-generate.danger { background: #dc2626; }
+        .btn-generate:disabled { background: #d1d5db; cursor: not-allowed; }
+
+        .tip {
+            padding: 10px 12px; background: var(--bg);
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            font-size: 12px; color: var(--text-muted); line-height: 1.6;
+        }
+
+        /* Résultat */
+        .result-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); display: flex;
+            flex-direction: column; min-height: 420px; overflow: hidden;
+        }
+        .result-header {
+            padding: 10px 14px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .result-header .title { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        .result-header .chars { font-size: 11px; color: var(--text-faint); margin-left: 8px; }
+        .btn-copy {
+            padding: 5px 12px; border: 1px solid var(--border); background: var(--bg);
+            border-radius: var(--radius-md); cursor: pointer; font-size: 12px;
+            display: none; align-items: center; gap: 5px; color: var(--text-muted);
+        }
+        .btn-copy:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-copy.visible { display: flex; }
+        .btn-copy.copied { background: #dcfce7; border-color: #16a34a; color: #16a34a; }
+
+        .result-body {
+            padding: 16px; flex: 1; overflow-y: auto;
+            font-size: 13px; line-height: 1.75; color: var(--text);
+        }
+        .result-body h1 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+        .result-body h2 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
+        .result-body h3 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+        .result-body p { margin: 0 0 10px; }
+        .result-body ul, .result-body ol { margin: 6px 0 10px 20px; }
+        .result-body li { margin: 3px 0; }
+        .result-body strong { font-weight: 600; }
+        .result-body hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; height: 300px; gap: 10px;
+            color: var(--text-faint); text-align: center;
+        }
+        .empty-state i { font-size: 36px; }
+        .empty-state p { margin: 0; font-size: 13px; }
+
+        .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; gap: 12px; color: var(--text-muted); }
+        .loading-state i { font-size: 32px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin .9s linear infinite; }
+
+        .error-msg {
+            padding: 10px 14px; background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: var(--radius-md); color: #dc2626; font-size: 13px;
+        }
+
+        /* Modale de packs de crédits */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5);
+            align-items: center; justify-content: center; z-index: 100; padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--bg-card); border-radius: var(--radius-lg);
+            padding: 24px; max-width: 560px; width: 100%;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; margin: 0; }
+        .modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted); line-height: 1; }
+        .modal-close:hover { color: var(--text); }
+
+        .packs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        @media (max-width: 520px) { .packs-grid { grid-template-columns: 1fr; } }
+        .pack-card {
+            border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+            padding: 16px 12px; text-align: center; cursor: pointer;
+            transition: border-color .15s, background .15s; position: relative;
+        }
+        .pack-card:hover { border-color: var(--primary); background: var(--primary-light); }
+        .pack-card.featured { border-color: var(--primary); }
+        .pack-card .badge {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #fff; font-size: 10px; font-weight: 600;
+            padding: 2px 10px; border-radius: 99px; white-space: nowrap;
+        }
+        .pack-card .pack-name { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+        .pack-card .pack-price { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .pack-card .pack-credits { font-size: 12px; color: var(--text-faint); }
+
+        .modal-loading {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 13px; color: var(--text-muted); padding: 8px 0;
+        }
+
+        /* Écran de connexion */
+        .auth-screen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 70vh;
+        }
+        .auth-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 32px; max-width: 380px; width: 100%;
+        }
+        .auth-card h2 { font-size: 18px; font-weight: 600; margin: 0 0 4px; text-align: center; }
+        .auth-card p.sub { font-size: 13px; color: var(--text-muted); text-align: center; margin: 0 0 20px; }
+        .auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .auth-field label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        .auth-toggle { text-align: center; margin-top: 14px; font-size: 13px; color: var(--text-muted); }
+        .auth-toggle a { color: var(--primary); cursor: pointer; font-weight: 500; text-decoration: none; }
+        .auth-toggle a:hover { text-decoration: underline; }
+        .app-content { display: none; }
+        .app-content.visible { display: block; }
+        .user-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; color: var(--text-muted); margin-bottom: 12px;
+        }
+        .btn-logout {
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 4px;
+        }
+        .btn-logout:hover { color: #dc2626; }
+    </style>
+</head>
+<body>
+
+<div class="auth-screen" id="auth-screen">
+    <div class="auth-card">
+        <h2 id="auth-title">Connexion</h2>
+        <p class="sub" id="auth-subtitle">Connecte-toi pour accéder à l'assistant SEO</p>
+
+        <div class="auth-field">
+            <label>Email</label>
+            <input type="email" id="auth-email" class="input" placeholder="toi@exemple.com">
+        </div>
+        <div class="auth-field">
+            <label>Mot de passe</label>
+            <input type="password" id="auth-password" class="input" placeholder="••••••••" onkeydown="if(event.key==='Enter') soumettreAuth()">
+        </div>
+
+        <div id="auth-error" style="display:none;" class="error-msg" style="margin-bottom:12px;"></div>
+
+        <button class="btn-generate" id="auth-submit-btn" onclick="soumettreAuth()">
+            <span id="auth-submit-label">Se connecter</span>
+        </button>
+
+        <div class="auth-toggle">
+            <span id="auth-toggle-text">Pas encore de compte ?</span>
+            <a onclick="basculerModeAuth()" id="auth-toggle-link">Créer un compte</a>
+        </div>
+    </div>
+</div>
+
+<div class="app-content" id="app-content">
+
+<div class="user-bar">
+    <span id="user-email-display"></span>
+    <button class="btn-logout" onclick="deconnexion()">
+        <i class="ti ti-logout"></i> Déconnexion
+    </button>
+</div>
+
+<div class="header">
+    <h1>✍️ Assistant rédaction SEO</h1>
+    <p>Génère des articles, méta-données et audits SEO optimisés avec l'IA</p>
+</div>
+
+<!-- Crédits -->
+<div class="credits-bar">
+    <div>
+        <div class="label">Crédits disponibles</div>
+        <div class="value" id="credits-display">…</div>
+    </div>
+    <button class="btn-buy" onclick="ouvrirModalePacks()">
+        <i class="ti ti-credit-card"></i> Acheter des crédits
+    </button>
+</div>
+
+<!-- Modale de sélection de pack -->
+<div class="modal-overlay" id="pack-modal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Choisis ton pack de crédits</h2>
+            <button class="modal-close" onclick="fermerModalePacks()" aria-label="Fermer">&times;</button>
+        </div>
+
+        <div class="packs-grid">
+            <div class="pack-card" onclick="choisirPack('micro')">
+                <div class="pack-name">Micro</div>
+                <div class="pack-price">1 €</div>
+                <div class="pack-credits">23 crédits</div>
+            </div>
+            <div class="pack-card featured" onclick="choisirPack('starter')">
+                <div class="badge">Le plus populaire</div>
+                <div class="pack-name">Starter</div>
+                <div class="pack-price">5 €</div>
+                <div class="pack-credits">159 crédits</div>
+            </div>
+            <div class="pack-card" onclick="choisirPack('pro')">
+                <div class="pack-name">Pro</div>
+                <div class="pack-price">8 €</div>
+                <div class="pack-credits">291 crédits</div>
+            </div>
+        </div>
+
+        <div id="modal-status" style="display:none;" class="modal-loading">
+            <i class="ti ti-loader spin"></i> Redirection vers le paiement sécurisé…
+        </div>
+    </div>
+</div>
+
+<!-- Modes -->
+<div class="modes">
+    <button class="mode-btn active" data-mode="article" onclick="changerMode(this, 'article')">
+        <i class="ti ti-article"></i> Article SEO
+    </button>
+    <button class="mode-btn" data-mode="meta" onclick="changerMode(this, 'meta')">
+        <i class="ti ti-tags"></i> Méta-données
+    </button>
+    <button class="mode-btn" data-mode="score" onclick="changerMode(this, 'score')">
+        <i class="ti ti-chart-bar"></i> Audit SEO
+    </button>
+</div>
+
+<!-- Grille principale -->
+<div class="grid">
+
+    <!-- Formulaire -->
+    <div class="form-card">
+
+        <div class="field">
+            <label id="lbl-keyword">Mot-clé principal</label>
+            <input type="text" id="keyword" class="input" placeholder="ex : apprendre la guitare adulte" onkeydown="if(event.key==='Enter') generer()">
+        </div>
+
+        <!-- Options article / meta -->
+        <div id="block-options">
+            <div class="field" style="margin-bottom: 12px;">
+                <label>Ton rédactionnel</label>
+                <div class="pills" id="pills-tone">
+                    <button class="pill active" onclick="selPill(this,'tone','Informatif')">Informatif</button>
+                    <button class="pill" onclick="selPill(this,'tone','Expert')">Expert</button>
+                    <button class="pill" onclick="selPill(this,'tone','Persuasif')">Persuasif</button>
+                    <button class="pill" onclick="selPill(this,'tone','Journalistique')">Journalistique</button>
+                </div>
+            </div>
+            <div class="field">
+                <label>Longueur</label>
+                <div class="pills" id="pills-length">
+                    <button class="pill" onclick="selPill(this,'length','Court (500 mots)')">Court</button>
+                    <button class="pill active" onclick="selPill(this,'length','Moyen (1000 mots)')">Moyen</button>
+                    <button class="pill" onclick="selPill(this,'length','Long (2000 mots)')">Long</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Options audit -->
+        <div id="block-audit" style="display:none;">
+            <div class="field">
+                <label>Texte à analyser</label>
+                <textarea id="existing-text" class="input" rows="7" placeholder="Colle ton article ou contenu ici…"></textarea>
+            </div>
+        </div>
+
+        <div id="error-box" style="display:none;" class="error-msg"></div>
+
+        <button class="btn-generate" id="btn-gen" onclick="generer()">
+            <i class="ti ti-sparkles"></i>
+            <span id="btn-label">Générer le contenu (1 crédit)</span>
+        </button>
+
+        <div class="tip" id="tip-box">
+            💡 Utilise un mot-clé longue traîne (4–6 mots) pour un meilleur positionnement Google.
+        </div>
+
+    </div>
+
+    <!-- Résultat -->
+    <div class="result-card">
+        <div class="result-header">
+            <div>
+                <span class="title">Résultat</span>
+                <span class="chars" id="char-count"></span>
+            </div>
+            <button class="btn-copy" id="btn-copy" onclick="copier()">
+                <i class="ti ti-copy"></i> Copier
+            </button>
+        </div>
+        <div class="result-body" id="result-body">
+            <div class="empty-state">
+                <i class="ti ti-file-text"></i>
+                <p>Le contenu généré apparaîtra ici</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+    const SERVER = "";
+    const SUPABASE_URL = "https://ccwjrlcxuexlrsirgltn.supabase.co";
+    const SUPABASE_ANON_KEY = "REMPLACE_PAR_TA_CLE_ANON_PUBLIC";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let mode = "article";
+    let tone = "Informatif";
+    let length = "Moyen (1000 mots)";
+    let credits = 0;
+    let brut = "";
+    let modeInscription = false;
+    let currentSession = null;
+
+    const TIPS = {
+        article: "💡 Utilise un mot-clé longue traîne (4–6 mots) pour un meilleur positionnement Google.",
+        meta: "💡 Teste plusieurs variantes de titres avec Google Search Console pour maximiser le CTR.",
+        score: "💡 Un score > 70 est bon. Vise > 85 pour des pages très compétitives."
+    };
+
+    // ---- Init ----
+    initAuth();
+
+    async function initAuth() {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data.session) {
+            currentSession = data.session;
+            afficherApp();
+        } else {
+            document.getElementById("auth-screen").style.display = "flex";
+        }
+    }
+
+    function basculerModeAuth() {
+        modeInscription = !modeInscription;
+        document.getElementById("auth-title").textContent = modeInscription ? "Créer un compte" : "Connexion";
+        document.getElementById("auth-subtitle").textContent = modeInscription
+            ? "3 crédits offerts à l'inscription"
+            : "Connecte-toi pour accéder à l'assistant SEO";
+        document.getElementById("auth-submit-label").textContent = modeInscription ? "Créer mon compte" : "Se connecter";
+        document.getElementById("auth-toggle-text").textContent = modeInscription ? "Déjà un compte ?" : "Pas encore de compte ?";
+        document.getElementById("auth-toggle-link").textContent = modeInscription ? "Se connecter" : "Créer un compte";
+        cacherAuthErreur();
+    }
+
+    async function soumettreAuth() {
+        const email = document.getElementById("auth-email").value.trim();
+        const password = document.getElementById("auth-password").value;
+        cacherAuthErreur();
+
+        if (!email || !password) { afficherAuthErreur("Email et mot de passe requis."); return; }
+        if (password.length < 6) { afficherAuthErreur("Le mot de passe doit faire au moins 6 caractères."); return; }
+
+        const btn = document.getElementById("auth-submit-btn");
+        btn.disabled = true;
+
+        try {
+            if (modeInscription) {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) throw error;
+                if (data.session) {
+                    currentSession = data.session;
+                    afficherApp();
+                } else {
+                    afficherAuthErreur("Vérifie ta boîte mail pour confirmer ton compte.");
+                }
+            } else {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                currentSession = data.session;
+                afficherApp();
+            }
+        } catch (err) {
+            afficherAuthErreur(traduireErreurAuth(err.message));
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function traduireErreurAuth(msg) {
+        if (msg.includes("Invalid login credentials")) return "Email ou mot de passe incorrect.";
+        if (msg.includes("already registered")) return "Un compte existe déjà avec cet email.";
+        if (msg.includes("Password should be")) return "Mot de passe trop court (6 caractères minimum).";
+        return msg;
+    }
+
+    function afficherAuthErreur(msg) {
+        const el = document.getElementById("auth-error");
+        el.textContent = "⚠️ " + msg;
+        el.style.display = "block";
+    }
+    function cacherAuthErreur() {
+        document.getElementById("auth-error").style.display = "none";
+    }
+
+    async function deconnexion() {
+        await supabaseClient.auth.signOut();
+        currentSession = null;
+        document.getElementById("app-content").classList.remove("visible");
+        document.getElementById("auth-screen").style.display = "flex";
+    }
+
+    function afficherApp() {
+        document.getElementById("auth-screen").style.display = "none";
+        document.getElementById("app-content").classList.add("visible");
+        document.getElementById("user-email-display").textContent = currentSession.user.email;
+        chargerCredits();
+        gererRetourPaiement();
+    }
+
+    // Détecte le retour de Stripe (?paiement=succes ou ?paiement=annule)
+    // et affiche une confirmation, puis nettoie l'URL.
+    function gererRetourPaiement() {
+        const params = new URLSearchParams(window.location.search);
+        const statut = params.get("paiement");
+        if (!statut) return;
+
+        if (statut === "succes") {
+            // Le webhook peut prendre 1-2 secondes à créditer le compte,
+            // on réessaie le chargement des crédits après un court délai.
+            setTimeout(() => {
+                chargerCredits();
+                alert("✅ Paiement confirmé ! Tes crédits ont été ajoutés.");
+            }, 1500);
+        } else if (statut === "annule") {
+            alert("Paiement annulé. Aucun crédit n'a été débité.");
+        }
+
+        // Nettoie l'URL pour éviter de réafficher le message au refresh
+        window.history.replaceState({}, "", window.location.pathname);
+    }
+
+    // Construit les headers avec le token d'auth pour chaque appel API
+    function headersAuth() {
+        return {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${currentSession.access_token}`
+        };
+    }
+
+    async function chargerCredits() {
+        if (!currentSession) return;
+        try {
+            const r = await fetch(`${SERVER}/api/user`, { headers: headersAuth() });
+            if (r.status === 401) { deconnexion(); return; }
+            const d = await r.json();
+            credits = d.credits;
+            const el = document.getElementById("credits-display");
+            el.textContent = credits + " crédit(s)";
+            el.className = "value" + (credits <= 2 ? " low" : "");
+            majBouton();
+        } catch {
+            document.getElementById("credits-display").textContent = "Serveur hors ligne";
+        }
+    }
+
+    function majBouton() {
+        const btn = document.getElementById("btn-gen");
+        const lbl = document.getElementById("btn-label");
+        if (credits <= 0) {
+            btn.className = "btn-generate danger";
+            lbl.textContent = "Acheter des crédits pour continuer";
+        } else {
+            btn.className = "btn-generate";
+            lbl.textContent = "Générer le contenu (1 crédit)";
+        }
+    }
+
+    // ---- Changement de mode ----
+    function changerMode(btn, m) {
+        mode = m;
+        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("block-options").style.display = m === "score" ? "none" : "block";
+        document.getElementById("block-audit").style.display = m === "score" ? "block" : "none";
+        document.getElementById("lbl-keyword").textContent = m === "score" ? "Mot-clé cible" : "Mot-clé principal";
+        document.getElementById("tip-box").textContent = TIPS[m];
+        cacherErreur();
+    }
+
+    // ---- Sélection de pill ----
+    function selPill(btn, group, val) {
+        if (group === "tone") tone = val;
+        if (group === "length") length = val;
+        const pid = group === "tone" ? "pills-tone" : "pills-length";
+        document.querySelectorAll(`#${pid} .pill`).forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+    }
+
+    // ---- Génération ----
+    async function generer() {
+        cacherErreur();
+
+        if (credits <= 0) { recharger(); return; }
+
+        const keyword = document.getElementById("keyword").value.trim();
+        const existingText = document.getElementById("existing-text").value.trim();
+
+        if (!keyword) { afficherErreur("Saisis un mot-clé avant de générer."); return; }
+        if (mode === "score" && !existingText) { afficherErreur("Colle un texte à analyser."); return; }
+
+        // Affiche le loader
+        document.getElementById("result-body").innerHTML = `
+            <div class="loading-state">
+                <i class="ti ti-sparkles spin"></i>
+                <p>Claude rédige votre contenu…</p>
+            </div>`;
+        document.getElementById("btn-copy").className = "btn-copy";
+        document.getElementById("char-count").textContent = "";
+        document.getElementById("btn-gen").disabled = true;
+
+        try {
+            const res = await fetch(`${SERVER}/api/generate`, {
+                method: "POST",
+                headers: headersAuth(),
+                body: JSON.stringify({ mode, keyword, tone, length, existingText })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                afficherErreur(data.error || "Erreur serveur.");
+                document.getElementById("result-body").innerHTML = `<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Échec de la génération</p></div>`;
+                return;
+            }
+
+            brut = data.text;
+            document.getElementById("result-body").innerHTML = renderMarkdown(brut);
+            document.getElementById("btn-copy").className = "btn-copy visible";
+            document.getElementById("char-count").textContent = `· ${brut.length} caractères`;
+            await chargerCredits();
+
+        } catch (e) {
+            afficherErreur("Impossible de joindre le serveur. Est-il démarré ?");
+            document.getElementById("result-body").innerHTML = `<div class="empty-state"><i class="ti ti-wifi-off"></i><p>Serveur inaccessible</p></div>`;
+        } finally {
+            document.getElementById("btn-gen").disabled = false;
+        }
+    }
+
+    // ---- Copier ----
+    function copier() {
+        navigator.clipboard.writeText(brut).then(() => {
+            const btn = document.getElementById("btn-copy");
+            btn.className = "btn-copy visible copied";
+            btn.innerHTML = `<i class="ti ti-check"></i> Copié !`;
+            setTimeout(() => {
+                btn.className = "btn-copy visible";
+                btn.innerHTML = `<i class="ti ti-copy"></i> Copier`;
+            }, 2000);
+        });
+    }
+
+    // ---- Modale de packs ----
+    function ouvrirModalePacks() {
+        document.getElementById("pack-modal").classList.add("open");
+    }
+    function fermerModalePacks() {
+        document.getElementById("pack-modal").classList.remove("open");
+    }
+
+    async function choisirPack(packId) {
+        const statusEl = document.getElementById("modal-status");
+        statusEl.style.display = "flex";
+
+        try {
+            const res = await fetch(`${SERVER}/api/create-checkout-session`, {
+                method: "POST",
+                headers: headersAuth(),
+                body: JSON.stringify({ packId })
+            });
+            const d = await res.json();
+            if (d.url) {
+                window.location.href = d.url;
+            } else {
+                alert(d.error || "Erreur lors de la création du paiement.");
+                statusEl.style.display = "none";
+            }
+        } catch {
+            alert("Serveur de paiement inaccessible. Vérifie que le backend tourne.");
+            statusEl.style.display = "none";
+        }
+    }
+
+    // ---- Render Markdown simple ----
+    function renderMarkdown(md) {
+        return md
+            .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+            .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+            .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+            .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.+?)\*/g, "<em>$1</em>")
+            .replace(/^- (.+)$/gm, "<li>$1</li>")
+            .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+            .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
+            .replace(/^---$/gm, "<hr>")
+            .replace(/\n\n/g, "</p><p>")
+            .replace(/^(?!<[h|u|l|p|h])(.+)$/gm, m => m.startsWith("<") ? m : `<p>${m}</p>`);
+    }
+
+    function afficherErreur(msg) {
+        const el = document.getElementById("error-box");
+        el.textContent = "⚠️ " + msg;
+        el.style.display = "block";
+    }
+    function cacherErreur() {
+        document.getElementById("error-box").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
