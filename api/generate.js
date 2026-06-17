@@ -1,11 +1,9 @@
 const { createClient } = require("@supabase/supabase-js");
-const Anthropic = require("@anthropic-ai/sdk");
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 function buildPrompt(mode, keyword, tone, length, existingText) {
     if (mode === "article") {
@@ -64,6 +62,53 @@ Format : Markdown.`;
     }
 }
 
+const SYSTEM_PROMPT = "Tu es un expert en rédaction SEO francophone. Réponds toujours en français avec un Markdown bien structuré.";
+
+// -----------------------------------------------------------------------
+// Appelle Gemini (gratuit, pour les tests)
+// -----------------------------------------------------------------------
+async function callGemini(prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            generationConfig: { maxOutputTokens: 4000 },
+        }),
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+        throw new Error(data.error.message || "Erreur Gemini inconnue.");
+    }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error("Réponse Gemini vide ou bloquée par les filtres de sécurité.");
+
+    return text;
+}
+
+// -----------------------------------------------------------------------
+// Appelle Claude (production, payant mais peu cher)
+// -----------------------------------------------------------------------
+async function callClaude(prompt) {
+    const Anthropic = require("@anthropic-ai/sdk");
+    const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+    const msg = await claude.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 4000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: prompt }],
+    });
+
+    return msg.content[0].text;
+}
+
 module.exports = async (req, res) => {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Méthode non autorisée." });
@@ -102,20 +147,20 @@ module.exports = async (req, res) => {
 
     const prompt = buildPrompt(mode, keyword, tone, length, existingText);
 
+    // Bascule automatique : si GEMINI_API_KEY existe, on l'utilise (gratuit).
+    // Sinon on utilise Claude (production). Pour forcer Claude même avec une
+    // clé Gemini présente, mets AI_PROVIDER=claude dans les variables d'env.
+    const useGemini = process.env.AI_PROVIDER !== "claude" && !!process.env.GEMINI_API_KEY;
+
     try {
-        const msg = await claude.messages.create({
-            model: "claude-sonnet-4-6",
-            max_tokens: 4000,
-            system: "Tu es un expert en rédaction SEO francophone. Réponds toujours en français avec un Markdown bien structuré.",
-            messages: [{ role: "user", content: prompt }],
-        });
+        const text = useGemini ? await callGemini(prompt) : await callClaude(prompt);
 
         const nouveauSolde = profile.credits - 1;
         await supabase.from("profiles").update({ credits: nouveauSolde }).eq("id", userId);
 
-        res.json({ text: msg.content[0].text, creditsLeft: nouveauSolde });
+        res.json({ text, creditsLeft: nouveauSolde, provider: useGemini ? "gemini" : "claude" });
     } catch (err) {
-        console.error("Erreur Claude:", err.message);
-        res.status(500).json({ error: "Erreur API Claude : " + err.message });
+        console.error("Erreur IA:", err.message);
+        res.status(500).json({ error: "Erreur de génération : " + err.message });
     }
 };
