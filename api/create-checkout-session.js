@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
                 quantity: 1,
             }],
             metadata: { userId: authData.user.id, packId },
-            success_url: `${baseUrl}/?paiement=succes`,
+            success_url: `${baseUrl}/assistant-seo/?paiement=succes`,
             cancel_url: `${baseUrl}/?paiement=annule`,
         });
 
