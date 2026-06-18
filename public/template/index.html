@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssistDoc — Assistant administratif IA</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --accent: #534AB7;
+            --accent-soft: color-mix(in srgb, var(--accent) 9%, white);
+            --ink: #18181f;
+            --ink-muted: #6b6877;
+            --ink-faint: #9a96a3;
+            --paper: #ffffff;
+            --line: #ebe9f1;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --serif: 'Fraunces', serif;
+            --sans: 'Inter', system-ui, sans-serif;
+        }
+
+        html { background: #ffffff; }
+
+        body {
+            font-family: var(--sans);
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 36px 20px 60px;
+            background:
+                radial-gradient(900px 480px at 8% -8%, color-mix(in srgb, var(--accent) 10%, white) 0%, transparent 60%),
+                radial-gradient(700px 420px at 100% 0%, #f4f6ff 0%, transparent 55%),
+                #ffffff;
+            color: var(--ink);
+            font-size: 14px;
+        }
+
+        /* ---- Top bar ---- */
+        .topbar {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            flex-wrap: wrap; gap: 16px; margin-bottom: 6px;
+        }
+        .brand .eyebrow {
+            display: block; font: 600 11px var(--sans); text-transform: uppercase;
+            letter-spacing: .09em; color: var(--accent); margin-bottom: 4px;
+        }
+        .brand h1 {
+            font-family: var(--serif); font-weight: 600; font-size: 27px;
+            margin: 0; letter-spacing: -.01em; color: var(--ink);
+        }
+        .lede {
+            font-size: 14px; color: var(--ink-muted); max-width: 540px;
+            margin: 6px 0 28px;
+        }
+
+        .account { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .v-divider { width: 1px; height: 22px; background: var(--line); }
+        .user-email { font-size: 13px; color: var(--ink-muted); }
+
+        .credit-chip {
+            display: flex; align-items: center; gap: 7px;
+            padding: 7px 14px; border: 1px solid var(--line); border-radius: 99px;
+            background: var(--paper); font-size: 13px;
+        }
+        .credit-chip .credit-label {
+            font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em;
+            color: var(--ink-faint);
+        }
+        .value { font-weight: 700; color: #16a34a; }
+        .value.low { color: #dc2626; }
+        .value::before {
+            content: ""; display: inline-block; width: 7px; height: 7px;
+            border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: middle;
+        }
+
+        .btn-buy {
+            padding: 8px 16px; background: #2563eb; color: #fff;
+            border: none; border-radius: 99px; cursor: pointer;
+            font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-buy:hover { background: #1d4ed8; }
+
+        .btn-logout {
+            background: none; border: none; color: var(--ink-muted);
+            cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px;
+            padding: 6px 4px;
+        }
+        .btn-logout:hover { color: #dc2626; }
+
+        /* ---- Sidebar + layout ---- */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 760px) { .app-layout { grid-template-columns: 1fr; } }
+
+        .sidebar {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 12px 8px;
+            position: sticky; top: 20px;
+        }
+        .sidebar-label {
+            font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .08em; color: var(--ink-faint);
+            padding: 6px 10px 8px;
+        }
+        .theme-btn {
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; padding: 9px 10px; border-radius: var(--radius-md);
+            border: none; background: none; cursor: pointer;
+            font: 500 13px var(--sans); color: var(--ink-muted);
+            text-align: left; transition: all .12s;
+        }
+        .theme-btn:hover { background: var(--accent-soft); color: var(--ink); }
+        .theme-btn.active {
+            background: var(--accent-soft); color: var(--accent); font-weight: 600;
+        }
+        .theme-emoji { font-size: 15px; flex-shrink: 0; }
+        .theme-cost {
+            margin-left: auto; font-size: 10.5px; color: var(--ink-faint);
+            background: color-mix(in srgb, var(--line) 60%, white);
+            padding: 1px 7px; border-radius: 99px;
+        }
+
+        /* ---- Main content ---- */
+        .main-col { display: flex; flex-direction: column; gap: 0; }
+
+        .welcome-banner {
+            padding: 18px 20px 20px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-top: 3px solid var(--accent);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(24,24,31,.03);
+        }
+        .welcome-banner h2 {
+            font-family: var(--serif); font-weight: 600; font-size: 19px;
+            margin: 0 0 4px; color: var(--ink);
+        }
+        .welcome-banner p { font-size: 13px; color: var(--ink-muted); margin: 0; }
+
+        /* ---- Grid form/result ---- */
+        .grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 22px; align-items: start; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+        /* ---- Form card ---- */
+        .form-card {
+            background: var(--paper); border: 1px solid var(--line);
+            border-top: 3px solid var(--accent);
+            border-radius: var(--radius-lg); padding: 20px;
+            display: flex; flex-direction: column; gap: 16px;
+            box-shadow: 0 1px 2px rgba(24,24,31,.03);
+        }
+        .field { display: flex; flex-direction: column; gap: 7px; }
+        .field label {
+            font-size: 11.5px; font-weight: 600; color: var(--ink-faint);
+            text-transform: uppercase; letter-spacing: .06em;
+        }
+        .input {
+            padding: 11px 13px; border: 1px solid var(--line);
+            border-radius: var(--radius-md); font-size: 14px; outline: none;
+            width: 100%; background: var(--paper); color: var(--ink);
+            font-family: var(--sans); transition: border-color .15s, box-shadow .15s;
+        }
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+        }
+        textarea.input { resize: vertical; }
+        select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a96a3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+        .pills { display: flex; flex-wrap: wrap; gap: 7px; }
+        .pill {
+            padding: 6px 13px; border-radius: 99px; font-size: 12.5px;
+            border: 1px solid var(--line); background: transparent;
+            cursor: pointer; color: var(--ink-muted); font-family: var(--sans);
+            transition: all .12s;
+        }
+        .pill:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+        .pill.active {
+            border-color: var(--accent); background: var(--accent-soft);
+            color: var(--accent); font-weight: 600;
+        }
+
+        .btn-generate {
+            padding: 13px 16px; border-radius: var(--radius-md);
+            background: var(--accent); color: #fff; border: none;
+            cursor: pointer; font-size: 14px; font-weight: 600;
+            font-family: var(--sans);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: background .15s;
+        }
+        .btn-generate:hover { background: color-mix(in srgb, var(--accent) 82%, black); }
+        .btn-generate.danger { background: #dc2626; }
+        .btn-generate:disabled { background: #d8d6e0; cursor: not-allowed; }
+
+        .tip {
+            padding: 11px 14px; background: var(--accent-soft);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-size: 12.5px; font-style: italic; color: var(--ink-muted); line-height: 1.6;
+        }
+
+        .cost-note {
+            font-size: 12px; color: var(--ink-faint);
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* ---- Result ---- */
+        .result-card {
+            background: var(--paper); border: 1px solid var(--line);
+            border-top: 3px solid var(--accent);
+            border-radius: var(--radius-lg); display: flex;
+            flex-direction: column; min-height: 460px; overflow: hidden;
+            box-shadow: 0 1px 2px rgba(24,24,31,.03);
+        }
+        .result-header {
+            padding: 12px 16px; border-bottom: 1px solid var(--line);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .result-header .title {
+            font-size: 11.5px; font-weight: 600; color: var(--ink-faint);
+            text-transform: uppercase; letter-spacing: .06em;
+        }
+        .result-header .chars { font-size: 11px; color: var(--ink-faint); margin-left: 8px; }
+        .result-actions { display: flex; gap: 6px; }
+        .btn-copy, .btn-dl {
+            padding: 5px 13px; border: 1px solid var(--line); background: var(--paper);
+            border-radius: var(--radius-md); cursor: pointer; font-size: 12px;
+            font-family: var(--sans);
+            display: none; align-items: center; gap: 5px; color: var(--ink-muted);
+        }
+        .btn-copy:hover, .btn-dl:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-copy.visible, .btn-dl.visible { display: flex; }
+        .btn-copy.copied { background: #dcfce7; border-color: #16a34a; color: #16a34a; }
+
+        .result-body {
+            padding: 22px 24px; flex: 1; overflow-y: auto;
+            font-size: 13.5px; line-height: 1.8; color: var(--ink);
+            white-space: pre-wrap; word-break: break-word;
+        }
+        .result-body h1 { font-family: var(--serif); font-weight: 600; font-size: 21px; margin: 0 0 14px; color: var(--ink); white-space: normal; }
+        .result-body h2 { font-family: var(--serif); font-weight: 600; font-size: 17px; margin: 22px 0 9px; color: var(--ink); white-space: normal; }
+        .result-body h3 { font-family: var(--serif); font-weight: 500; font-size: 15px; margin: 17px 0 7px; color: var(--ink); white-space: normal; }
+        .result-body p { margin: 0 0 11px; white-space: normal; }
+        .result-body ul, .result-body ol { margin: 6px 0 11px 20px; white-space: normal; }
+        .result-body li { margin: 3px 0; }
+        .result-body strong { font-weight: 600; }
+        .result-body hr { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
+
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; height: 320px; gap: 10px;
+            color: var(--ink-faint); text-align: center;
+        }
+        .empty-state i { font-size: 34px; }
+        .empty-state p { margin: 0; font-size: 13px; }
+
+        .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 320px; gap: 12px; color: var(--ink-muted); }
+        .loading-state i { font-size: 30px; color: var(--accent); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin .9s linear infinite; }
+
+        .error-msg {
+            padding: 10px 14px; background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: var(--radius-md); color: #dc2626; font-size: 13px;
+        }
+
+        /* ---- Modal crédits ---- */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(24,24,31,.45);
+            align-items: center; justify-content: center; z-index: 100; padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--paper); border-radius: var(--radius-lg);
+            padding: 26px; max-width: 560px; width: 100%;
+            box-shadow: 0 24px 60px rgba(24,24,31,.18);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .modal-header h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; }
+        .modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--ink-muted); line-height: 1; }
+        .modal-close:hover { color: var(--ink); }
+
+        .packs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        @media (max-width: 520px) { .packs-grid { grid-template-columns: 1fr; } }
+        .pack-card {
+            border: 1.5px solid var(--line); border-radius: var(--radius-lg);
+            padding: 18px 12px; text-align: center; cursor: pointer;
+            transition: border-color .15s, background .15s; position: relative;
+        }
+        .pack-card:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .pack-card.featured { border-color: var(--accent); }
+        .pack-card .badge {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #fff; font-size: 10px; font-weight: 600;
+            padding: 2px 10px; border-radius: 99px; white-space: nowrap;
+        }
+        .pack-card .pack-name { font-size: 13px; color: var(--ink-muted); margin-bottom: 6px; }
+        .pack-card .pack-price { font-family: var(--serif); font-size: 23px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+        .pack-card .pack-credits { font-size: 12px; color: var(--ink-faint); }
+        .pack-card .pack-per { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+
+        .modal-loading {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 13px; color: var(--ink-muted); padding: 8px 0;
+        }
+        .stripe-note {
+            text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 10px;
+        }
+
+        /* ---- Auth ---- */
+        .auth-screen { display: flex; align-items: center; justify-content: center; min-height: 80vh; }
+        .auth-card {
+            background: var(--paper); border: 1px solid var(--line);
+            border-top: 3px solid var(--accent);
+            border-radius: var(--radius-lg); padding: 34px; max-width: 380px; width: 100%;
+            box-shadow: 0 1px 3px rgba(24,24,31,.05);
+        }
+        .auth-card h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0 0 4px; text-align: center; }
+        .auth-card p.sub { font-size: 13px; color: var(--ink-muted); text-align: center; margin: 0 0 22px; }
+        .auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .auth-field label { font-size: 11.5px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .05em; }
+        .auth-toggle { text-align: center; margin-top: 16px; font-size: 13px; color: var(--ink-muted); }
+        .auth-toggle a { color: var(--accent); cursor: pointer; font-weight: 500; text-decoration: none; }
+        .auth-toggle a:hover { text-decoration: underline; }
+
+        .app-content { display: none; }
+        .app-content.visible { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- ==================== AUTH ==================== -->
+<div class="auth-screen" id="auth-screen">
+    <div class="auth-card">
+        <h2 id="auth-title">Connexion</h2>
+        <p class="sub" id="auth-subtitle">Connecte-toi pour accéder à l'assistant</p>
+
+        <div class="auth-field">
+            <label>Email</label>
+            <input type="email" id="auth-email" class="input" placeholder="toi@exemple.com">
+        </div>
+        <div class="auth-field">
+            <label>Mot de passe</label>
+            <input type="password" id="auth-password" class="input" placeholder="••••••••" onkeydown="if(event.key==='Enter') soumettreAuth()">
+        </div>
+
+        <div id="auth-error" style="display:none;margin-bottom:12px;" class="error-msg"></div>
+
+        <button class="btn-generate" id="auth-submit-btn" onclick="soumettreAuth()">
+            <span id="auth-submit-label">Se connecter</span>
+        </button>
+
+        <div class="auth-toggle">
+            <span id="auth-toggle-text">Pas encore de compte ?</span>
+            <a onclick="basculerModeAuth()" id="auth-toggle-link">Créer un compte</a>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div class="app-content" id="app-content">
+
+    <!-- Top bar -->
+    <div class="topbar">
+        <div class="brand">
+            <span class="eyebrow">AssistDoc</span>
+            <h1>Assistant administratif</h1>
+        </div>
+        <div class="account">
+            <span class="user-email" id="user-email-display"></span>
+            <div class="v-divider"></div>
+            <div class="credit-chip">
+                <span class="credit-label">Crédits</span>
+                <span class="value" id="credits-display">…</span>
+            </div>
+            <button class="btn-buy" onclick="ouvrirModalePacks()">
+                <i class="ti ti-credit-card"></i> Acheter
+            </button>
+            <button class="btn-logout" onclick="deconnexion()">
+                <i class="ti ti-logout"></i> Déconnexion
+            </button>
+        </div>
+    </div>
+
+    <p class="lede">Réponds à quelques questions et obtiens ta checklist personnalisée + template à remplir</p>
+
+    <!-- Layout sidebar + main -->
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-label">Démarches</div>
+            <button class="theme-btn active" id="theme-demenagement" onclick="selectTheme('demenagement')">
+                <span class="theme-emoji">🏠</span> Déménagement <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-naissance" onclick="selectTheme('naissance')">
+                <span class="theme-emoji">👶</span> Naissance <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-mariage" onclick="selectTheme('mariage')">
+                <span class="theme-emoji">💍</span> Mariage / PACS <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-autoentrepreneur" onclick="selectTheme('autoentrepreneur')">
+                <span class="theme-emoji">💼</span> Auto-entrepreneur <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-logement" onclick="selectTheme('logement')">
+                <span class="theme-emoji">🎓</span> Logement étudiant <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-emploi" onclick="selectTheme('emploi')">
+                <span class="theme-emoji">📝</span> Premier CDI <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-immobilier" onclick="selectTheme('immobilier')">
+                <span class="theme-emoji">🏦</span> Achat immobilier <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-voyage" onclick="selectTheme('voyage')">
+                <span class="theme-emoji">✈️</span> Voyage à l'étranger <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-animal" onclick="selectTheme('animal')">
+                <span class="theme-emoji">🐾</span> Adopter un animal <span class="theme-cost">2 cr.</span>
+            </button>
+            <button class="theme-btn" id="theme-impots" onclick="selectTheme('impots')">
+                <span class="theme-emoji">📊</span> Préparer ses impôts <span class="theme-cost">2 cr.</span>
+            </button>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main-col">
+
+            <div class="welcome-banner">
+                <h2 id="banner-title">Checklist déménagement</h2>
+                <p id="banner-desc">Répondez à quelques questions et obtenez votre checklist personnalisée + template à remplir.</p>
+            </div>
+
+            <div class="grid">
+
+                <!-- Formulaire -->
+                <div class="form-card">
+                    <div id="dynamic-form"></div>
+
+                    <div id="error-box" style="display:none;" class="error-msg"></div>
+
+                    <button class="btn-generate" id="btn-gen" onclick="generer()">
+                        <i class="ti ti-sparkles"></i>
+                        <span id="btn-label">Générer ma checklist (2 crédits)</span>
+                    </button>
+
+                    <div class="tip" id="tip-box">
+                        Répondez à toutes les questions pour obtenir une checklist la plus précise possible.
+                    </div>
+                </div>
+
+                <!-- Résultat -->
+                <div class="result-card">
+                    <div class="result-header">
+                        <div>
+                            <span class="title" id="result-title">Résultat</span>
+                            <span class="chars" id="char-count"></span>
+                        </div>
+                        <div class="result-actions">
+                            <button class="btn-copy" id="btn-copy" onclick="copier()">
+                                <i class="ti ti-copy"></i> Copier
+                            </button>
+                            <button class="btn-dl" id="btn-dl" onclick="telecharger()">
+                                <i class="ti ti-download"></i> .txt
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-body" id="result-body">
+                        <div class="empty-state">
+                            <i class="ti ti-file-text"></i>
+                            <p>Votre checklist apparaîtra ici</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL CRÉDITS ==================== -->
+<div class="modal-overlay" id="pack-modal" onclick="handleModalBg(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Acheter des crédits</h2>
+            <button class="modal-close" onclick="fermerModalePacks()" aria-label="Fermer">&times;</button>
+        </div>
+        <p style="font-size:13px;color:var(--ink-muted);margin:0 0 18px;">Chaque génération coûte 2 crédits. Vos crédits n'expirent jamais.</p>
+
+        <div class="packs-grid">
+            <div class="pack-card" onclick="choisirPack('micro')">
+                <div class="pack-name">Micro</div>
+                <div class="pack-price">1 €</div>
+                <div class="pack-credits">20 crédits</div>
+                <div class="pack-per">0,05 €/crédit</div>
+            </div>
+            <div class="pack-card featured" onclick="choisirPack('starter')">
+                <div class="badge">Le plus populaire</div>
+                <div class="pack-name">Starter</div>
+                <div class="pack-price">5 €</div>
+                <div class="pack-credits">120 crédits</div>
+                <div class="pack-per">0,04 €/crédit</div>
+            </div>
+            <div class="pack-card" onclick="choisirPack('pro')">
+                <div class="pack-name">Pro</div>
+                <div class="pack-price">9 €</div>
+                <div class="pack-credits">250 crédits</div>
+                <div class="pack-per">0,036 €/crédit</div>
+            </div>
+        </div>
+
+        <div id="modal-status" style="display:none;" class="modal-loading">
+            <i class="ti ti-loader spin"></i> Redirection vers le paiement sécurisé…
+        </div>
+        <div class="stripe-note">🔐 Paiement sécurisé — Aucune donnée bancaire stockée</div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG — à remplacer par vos vraies clés
+// ═══════════════════════════════════════
+const CONFIG = {
+    SUPABASE_URL:      'https://VOTRE_PROJECT.supabase.co',
+    SUPABASE_ANON_KEY: 'VOTRE_ANON_KEY',
+    GEMINI_KEY:        'VOTRE_CLE_GEMINI', // proxy en prod !
+    STRIPE_PRICES: {
+        micro:   'price_XXXXXXXXXXXXXXXX',
+        starter: 'price_XXXXXXXXXXXXXXXX',
+        pro:     'price_XXXXXXXXXXXXXXXX'
+    },
+    CHECKOUT_ENDPOINT: 'https://VOTRE_PROJET.supabase.co/functions/v1/create-checkout',
+    CREDITS_COST: 2
+}
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let state = {
+    user: null,
+    credits: 0,
+    currentTheme: 'demenagement',
+    lastResult: ''
+}
+let formValues = {}
+let modeInscription = false
+
+// ═══════════════════════════════════════
+// SUPABASE MINI-CLIENT
+// ═══════════════════════════════════════
+const sb = {
+    async req(path, method = 'GET', body = null, token = null) {
+        const headers = { 'apikey': CONFIG.SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }
+        if (token) headers['Authorization'] = 'Bearer ' + token
+        const opts = { method, headers }
+        if (body) opts.body = JSON.stringify(body)
+        const r = await fetch(CONFIG.SUPABASE_URL + path, opts)
+        return r.json()
+    },
+    async signIn(email, pwd) { return this.req('/auth/v1/token?grant_type=password','POST',{email,password:pwd}) },
+    async signUp(email, pwd) { return this.req('/auth/v1/signup','POST',{email,password:pwd}) },
+    async getProfile(token) { return this.req('/rest/v1/profiles?select=*&limit=1','GET',null,token) },
+    async updateCredits(userId, credits, token) { return this.req(`/rest/v1/profiles?id=eq.${userId}`,'PATCH',{credits},token) }
+}
+
+// ═══════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════
+function basculerModeAuth() {
+    modeInscription = !modeInscription
+    document.getElementById('auth-title').textContent = modeInscription ? 'Créer un compte' : 'Connexion'
+    document.getElementById('auth-subtitle').textContent = modeInscription ? '3 crédits offerts à l\'inscription' : 'Connecte-toi pour accéder à l\'assistant'
+    document.getElementById('auth-submit-label').textContent = modeInscription ? 'Créer mon compte' : 'Se connecter'
+    document.getElementById('auth-toggle-text').textContent = modeInscription ? 'Déjà un compte ?' : 'Pas encore de compte ?'
+    document.getElementById('auth-toggle-link').textContent = modeInscription ? 'Se connecter' : 'Créer un compte'
+    cacherAuthErreur()
+}
+
+async function soumettreAuth() {
+    const email = document.getElementById('auth-email').value.trim()
+    const pwd   = document.getElementById('auth-password').value
+    cacherAuthErreur()
+    if (!email || !pwd) { afficherAuthErreur('Email et mot de passe requis.'); return }
+    if (pwd.length < 6) { afficherAuthErreur('Le mot de passe doit faire au moins 6 caractères.'); return }
+    const btn = document.getElementById('auth-submit-btn')
+    btn.disabled = true
+    try {
+        if (modeInscription) {
+            const res = await sb.signUp(email, pwd)
+            if (res.error) throw new Error(res.error.message)
+            afficherAuthErreur('Vérifie ta boîte mail pour confirmer ton compte.')
+            document.getElementById('auth-error').style.background = '#f0fdf4'
+            document.getElementById('auth-error').style.borderColor = '#bbf7d0'
+            document.getElementById('auth-error').style.color = '#16a34a'
+        } else {
+            const res = await sb.signIn(email, pwd)
+            if (res.error) throw new Error(traduireErreurAuth(res.error.message))
+            state.user = { id: res.user?.id, email, access_token: res.access_token }
+            try {
+                const profile = await sb.getProfile(res.access_token)
+                if (profile && profile[0]) {
+                    state.credits = profile[0].credits || 0
+                    state.user.name = profile[0].full_name
+                }
+            } catch(e) {}
+            afficherApp()
+        }
+    } catch(e) {
+        // mode démo si Supabase non configuré
+        if (e.message.includes('fetch') || CONFIG.SUPABASE_URL.includes('VOTRE')) {
+            demoLogin(email)
+        } else {
+            afficherAuthErreur(e.message)
+        }
+    } finally { btn.disabled = false }
+}
+
+function demoLogin(email) {
+    state.user = { id: 'demo', email, access_token: 'demo', name: email.split('@')[0] }
+    state.credits = 10
+    afficherApp()
+}
+
+function traduireErreurAuth(msg) {
+    if (msg.includes('Invalid login credentials')) return 'Email ou mot de passe incorrect.'
+    if (msg.includes('already registered')) return 'Un compte existe déjà avec cet email.'
+    return msg
+}
+
+function afficherAuthErreur(msg) {
+    const el = document.getElementById('auth-error')
+    el.textContent = '⚠️ ' + msg; el.style.display = 'block'
+}
+function cacherAuthErreur() { document.getElementById('auth-error').style.display = 'none' }
+
+function deconnexion() {
+    state.user = null; state.credits = 0
+    document.getElementById('app-content').classList.remove('visible')
+    document.getElementById('auth-screen').style.display = 'flex'
+    localStorage.removeItem('assistdoc_session')
+}
+
+function afficherApp() {
+    document.getElementById('auth-screen').style.display = 'none'
+    document.getElementById('app-content').classList.add('visible')
+    document.getElementById('user-email-display').textContent = state.user.email
+    majCreditsUI()
+    selectTheme('demenagement')
+    gererRetourPaiement()
+    localStorage.setItem('assistdoc_session', JSON.stringify({ user: state.user, credits: state.credits }))
+}
+
+function majCreditsUI() {
+    const el = document.getElementById('credits-display')
+    el.textContent = state.credits + ' crédit(s)'
+    el.className = 'value' + (state.credits <= 2 ? ' low' : '')
+    const btn = document.getElementById('btn-gen')
+    const lbl = document.getElementById('btn-label')
+    if (!btn) return
+    if (state.credits < CONFIG.CREDITS_COST) {
+        btn.className = 'btn-generate danger'
+        lbl.textContent = 'Acheter des crédits pour continuer'
+    } else {
+        btn.className = 'btn-generate'
+        lbl.textContent = 'Générer ma checklist (2 crédits)'
+    }
+}
+
+function gererRetourPaiement() {
+    const params = new URLSearchParams(window.location.search)
+    const statut = params.get('paiement')
+    if (!statut) return
+    if (statut === 'succes') {
+        setTimeout(() => { majCreditsUI(); alert('✅ Paiement confirmé ! Tes crédits ont été ajoutés.') }, 1500)
+    } else if (statut === 'annule') {
+        alert('Paiement annulé. Aucun crédit n\'a été débité.')
+    }
+    window.history.replaceState({}, '', window.location.pathname)
+}
+
+// ═══════════════════════════════════════
+// THÈMES
+// ═══════════════════════════════════════
+const THEMES = {
+    demenagement: {
+        label: 'Checklist déménagement',
+        desc: 'Répondez à quelques questions et obtenez votre checklist personnalisée + template à remplir.',
+        tip: 'Précisez votre ville d\'arrivée pour des conseils adaptés (opérateurs, mairie locale…)',
+        fields: [
+            { id: 'situation', label: 'Situation actuelle', type: 'pills', options: ['Locataire', 'Propriétaire', 'Chez mes parents'] },
+            { id: 'destination', label: 'Ville de destination', type: 'input', placeholder: 'Ex : Lyon, Bordeaux…' },
+            { id: 'famille', label: 'Composition du foyer', type: 'pills', options: ['Seul(e)', 'En couple', 'Avec enfants'] },
+            { id: 'delai', label: 'Dans combien de temps ?', type: 'pills', options: ['Moins d\'1 mois', '1 à 3 mois', 'Plus de 3 mois'] }
+        ],
+        buildPrompt: (v) => `Tu es un expert en démarches administratives françaises. Génère une checklist complète et un template de suivi pour un déménagement en France.\n\nSituation :\n- Statut actuel : ${v.situation||'non précisé'}\n- Ville de destination : ${v.destination||'non précisée'}\n- Foyer : ${v.famille||'non précisé'}\n- Délai : ${v.delai||'non précisé'}\n\nGénère :\n1. Une checklist en sections (avant / pendant / après)\n2. Un template de suivi : Démarche | Délai | Organisme | Fait ✓\n\nSois précis, pratique, avec des délais réalistes.`
+    },
+    naissance: {
+        label: 'Checklist naissance',
+        desc: 'Toutes les démarches à faire lors de l\'arrivée de votre enfant.',
+        tip: 'Pensez à faire les démarches CAF dans les 60 jours suivant la naissance pour ne pas perdre de prestations.',
+        fields: [
+            { id: 'situation', label: 'Situation familiale', type: 'pills', options: ['Marié(e)', 'Pacsé(e)', 'En couple', 'Parent solo'] },
+            { id: 'emploi', label: 'Situation professionnelle', type: 'pills', options: ['Salarié(e)', 'Auto-entrepreneur', 'Sans emploi', 'Fonctionnaire'] },
+            { id: 'rang', label: 'Rang de l\'enfant', type: 'pills', options: ['1er enfant', '2ème enfant', '3ème ou +'] }
+        ],
+        buildPrompt: (v) => `Tu es un expert en démarches administratives françaises. Génère une checklist complète pour la naissance d'un enfant en France.\n\nSituation :\n- Familiale : ${v.situation||'non précisé'}\n- Professionnelle : ${v.emploi||'non précisé'}\n- Rang enfant : ${v.rang||'non précisé'}\n\nInclus : déclaration de naissance, CAF, mairie, congé maternité/paternité, sécurité sociale, allocations, et un template de suivi.`
+    },
+    mariage: {
+        label: 'Checklist mariage / PACS',
+        desc: 'Préparez sereinement votre union avec toutes les démarches.',
+        tip: 'Pour un mariage civil, la publication des bans doit être faite au moins 10 jours avant.',
+        fields: [
+            { id: 'type', label: 'Type d\'union', type: 'pills', options: ['Mariage civil', 'PACS', 'Les deux'] },
+            { id: 'situation', label: 'Situation', type: 'pills', options: ['Deux Français', 'Dont un étranger', 'Binationaux'] },
+            { id: 'delai', label: 'Délai prévu', type: 'pills', options: ['Moins de 3 mois', '3 à 6 mois', 'Plus de 6 mois'] }
+        ],
+        buildPrompt: (v) => `Expert démarches administratives françaises. Checklist complète pour ${v.type||'un mariage/PACS'} en France.\nContexte : ${v.situation||'non précisé'} — délai : ${v.delai||'non précisé'}\nInclus toutes les démarches avant/après et un template de suivi.`
+    },
+    autoentrepreneur: {
+        label: 'Création auto-entreprise',
+        desc: 'Lancez votre activité en toute sérénité avec le bon statut.',
+        tip: 'Vérifiez si votre activité nécessite une qualification ou un diplôme obligatoire (artisanat, santé…).',
+        fields: [
+            { id: 'activite', label: 'Type d\'activité', type: 'input', placeholder: 'Ex : graphisme, plomberie, consulting…' },
+            { id: 'statut', label: 'Situation actuelle', type: 'pills', options: ['Salarié(e)', 'Étudiant(e)', 'Demandeur d\'emploi', 'Déjà entrepreneur'] },
+            { id: 'regime', label: 'Régime souhaité', type: 'pills', options: ['BIC vente', 'BIC service', 'BNC libéral', 'Je ne sais pas'] }
+        ],
+        buildPrompt: (v) => `Expert création d'entreprise en France. Plan de lancement auto-entrepreneur pour : ${v.activite||'activité non précisée'}\nProfil : ${v.statut||'non précisé'} — régime : ${v.regime||'non précisé'}\nInclus : étapes de création, documents nécessaires, obligations fiscales/sociales, calendrier de déclarations, template de suivi.`
+    },
+    logement: {
+        label: 'Dossier logement étudiant',
+        desc: 'Constituez un dossier de location béton.',
+        tip: 'Commencez les démarches Visale (garantie gratuite) avant même de trouver un logement.',
+        fields: [
+            { id: 'garant', label: 'Garant disponible ?', type: 'pills', options: ['Oui, parents', 'Oui, autre', 'Non', 'Visale/Garantme'] },
+            { id: 'bourse', label: 'Bourse étudiant ?', type: 'pills', options: ['Boursier', 'Non boursier'] },
+            { id: 'ville', label: 'Ville visée', type: 'input', placeholder: 'Ex : Paris, Toulouse…' }
+        ],
+        buildPrompt: (v) => `Expert logement étudiant en France. Dossier de location — ${v.ville||'ville non précisée'}.\nGarant : ${v.garant||'non précisé'} — ${v.bourse||'non précisé'}\nInclus : liste documents, lettre de motivation type, checklist APL/CAF, template suivi candidatures.`
+    },
+    emploi: {
+        label: 'Premier CDI',
+        desc: 'Toutes les démarches administratives à votre arrivée en poste.',
+        tip: 'Remettez votre RIB à votre employeur dès le premier jour pour éviter tout retard de salaire.',
+        fields: [
+            { id: 'age', label: 'Situation', type: 'pills', options: ['Primo-accédant', 'Fin d\'alternance', 'Reconversion', 'Changement de poste'] },
+            { id: 'mutuelle', label: 'Mutuelle', type: 'pills', options: ['Mutuelle employeur', 'Mutuelle perso', 'Je ne sais pas'] }
+        ],
+        buildPrompt: (v) => `Expert RH et démarches administratives. Checklist premier CDI en France pour : ${v.age||'non précisé'}.\nMutuelle : ${v.mutuelle||'non précisé'}\nInclus : documents à fournir à l'employeur, démarches URSSAF, mutuelle, prévoyance, épargne, template de suivi.`
+    },
+    immobilier: {
+        label: 'Premier achat immobilier',
+        desc: 'Préparez votre dossier de prêt et toutes vos démarches.',
+        tip: 'Un dossier de prêt complet dès le départ accélère de plusieurs semaines l\'obtention du crédit.',
+        fields: [
+            { id: 'budget', label: 'Budget approximatif', type: 'pills', options: ['< 150 000 €', '150–300 000 €', '300–500 000 €', '> 500 000 €'] },
+            { id: 'situation', label: 'Situation', type: 'pills', options: ['Seul(e)', 'En couple', 'En SCI'] },
+            { id: 'type', label: 'Type de bien', type: 'pills', options: ['Neuf', 'Ancien', 'Résidence principale', 'Investissement'] }
+        ],
+        buildPrompt: (v) => `Expert achat immobilier en France. Guide complet pour un premier achat : ${v.type||'non précisé'} — budget ${v.budget||'non précisé'} — ${v.situation||'non précisé'}.\nInclus : étapes de l'achat, documents pour le dossier de prêt, frais de notaire, PTZ, DPE, template de suivi.`
+    },
+    voyage: {
+        label: 'Voyage à l\'étranger',
+        desc: 'Préparez votre voyage sans rien oublier.',
+        tip: 'Vérifiez la validité de votre passeport : certains pays exigent 6 mois de validité après le retour.',
+        fields: [
+            { id: 'pays', label: 'Pays de destination', type: 'input', placeholder: 'Ex : Japon, États-Unis, Maroc…' },
+            { id: 'duree', label: 'Durée du séjour', type: 'pills', options: ['Moins de 2 semaines', '2 sem. à 1 mois', 'Plus d\'1 mois'] },
+            { id: 'motif', label: 'Motif', type: 'pills', options: ['Tourisme', 'Travail', 'Études', 'PVT'] }
+        ],
+        buildPrompt: (v) => `Expert voyages internationaux depuis la France. Checklist complète pour voyager ${v.pays?'au/en '+v.pays:'à destination non précisée'}.\nDurée : ${v.duree||'non précisé'} — motif : ${v.motif||'non précisé'}\nInclus : visa/formalités, vaccins recommandés, assurance, documents, démarches CAF/sécu, template checklist pré-départ.`
+    },
+    animal: {
+        label: 'Adopter un animal',
+        desc: 'Accueillez votre nouvel ami dans les règles.',
+        tip: 'L\'identification par puce électronique est obligatoire en France pour les chiens et les chats.',
+        fields: [
+            { id: 'type', label: 'Type d\'animal', type: 'pills', options: ['Chien', 'Chat', 'Lapin', 'Autre NAC'] },
+            { id: 'source', label: 'Source d\'adoption', type: 'pills', options: ['SPA / Refuge', 'Éleveur', 'Particulier'] },
+            { id: 'logement', label: 'Type de logement', type: 'pills', options: ['Maison avec jardin', 'Appartement', 'Appartement > 50 m²'] }
+        ],
+        buildPrompt: (v) => `Expert adoption animale en France. Checklist pour adopter un(e) ${v.type||'animal'} depuis ${v.source||'une source non précisée'} — logement : ${v.logement||'non précisé'}.\nInclus : démarches légales, identification/puce, vaccinations, assurance animale, budget mensuel estimé, template carnet de santé.`
+    },
+    impots: {
+        label: 'Préparer ses impôts',
+        desc: 'Organisez vos documents et préparez votre déclaration sereinement.',
+        tip: 'Cette checklist est un guide d\'organisation, pas un conseil fiscal. Pour votre situation personnelle, consultez un expert-comptable.',
+        fields: [
+            { id: 'situation', label: 'Situation fiscale', type: 'pills', options: ['Salarié(e)', 'Auto-entrepreneur', 'Retraité(e)', 'Mixte'] },
+            { id: 'foyer', label: 'Foyer fiscal', type: 'pills', options: ['Seul(e)', 'Couple sans enfants', 'Couple avec enfants'] },
+            { id: 'revenus', label: 'Revenus complémentaires ?', type: 'pills', options: ['Loyers perçus', 'Dividendes', 'Aucun', 'Plusieurs'] }
+        ],
+        buildPrompt: (v) => `Expert fiscalité française (conseil organisationnel uniquement, sans conseil fiscal engageant).\nChecklist d'organisation pour préparer sa déclaration de revenus.\nProfil : ${v.situation||'non précisé'} — foyer : ${v.foyer||'non précisé'} — revenus complémentaires : ${v.revenus||'non précisé'}\nInclus : liste documents à rassembler, calendrier fiscal, cases importantes, template classeur de documents.\nRappel : cette checklist est un guide d'organisation, pas un conseil fiscal.`
+    }
+}
+
+function selectTheme(key) {
+    state.currentTheme = key
+    formValues = {}
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'))
+    document.getElementById('theme-' + key)?.classList.add('active')
+    const theme = THEMES[key]
+    document.getElementById('banner-title').textContent = theme.label
+    document.getElementById('banner-desc').textContent = theme.desc
+    document.getElementById('tip-box').textContent = theme.tip
+    renderForm(theme)
+    document.getElementById('result-body').innerHTML = '<div class="empty-state"><i class="ti ti-file-text"></i><p>Votre checklist apparaîtra ici</p></div>'
+    document.getElementById('btn-copy').className = 'btn-copy'
+    document.getElementById('btn-dl').className = 'btn-dl'
+    document.getElementById('char-count').textContent = ''
+    document.getElementById('result-title').textContent = 'Résultat'
+    cacherErreur()
+    majCreditsUI()
+}
+
+function renderForm(theme) {
+    const container = document.getElementById('dynamic-form')
+    container.innerHTML = ''
+    theme.fields.forEach(field => {
+        const div = document.createElement('div')
+        div.className = 'field'
+        div.style.marginBottom = '14px'
+        const label = document.createElement('label')
+        label.textContent = field.label
+        div.appendChild(label)
+        if (field.type === 'input') {
+            const input = document.createElement('input')
+            input.type = 'text'; input.className = 'input'
+            input.placeholder = field.placeholder || ''
+            input.oninput = () => { formValues[field.id] = input.value }
+            div.appendChild(input)
+        } else if (field.type === 'pills') {
+            const pills = document.createElement('div')
+            pills.className = 'pills'
+            field.options.forEach(opt => {
+                const btn = document.createElement('button')
+                btn.className = 'pill'; btn.textContent = opt
+                btn.onclick = () => {
+                    pills.querySelectorAll('.pill').forEach(p => p.classList.remove('active'))
+                    btn.classList.add('active')
+                    formValues[field.id] = opt
+                }
+                pills.appendChild(btn)
+            })
+            div.appendChild(pills)
+        }
+        container.appendChild(div)
+    })
+}
+
+// ═══════════════════════════════════════
+// GÉNÉRATION IA (GEMINI)
+// ═══════════════════════════════════════
+let brut = ''
+
+async function generer() {
+    cacherErreur()
+    if (state.credits < CONFIG.CREDITS_COST) { ouvrirModalePacks(); return }
+    const theme = THEMES[state.currentTheme]
+    const prompt = theme.buildPrompt(formValues)
+    const btn = document.getElementById('btn-gen')
+    btn.disabled = true
+
+    document.getElementById('result-body').innerHTML = '<div class="loading-state"><i class="ti ti-sparkles spin"></i><p>L\'IA génère votre checklist…</p></div>'
+    document.getElementById('btn-copy').className = 'btn-copy'
+    document.getElementById('btn-dl').className = 'btn-dl'
+    document.getElementById('char-count').textContent = ''
+    document.getElementById('result-title').textContent = theme.label
+
+    try {
+        const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${CONFIG.GEMINI_KEY}&alt=sse`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
+                })
+            }
+        )
+        if (!res.ok) throw new Error('Erreur API Gemini ' + res.status)
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let full = ''
+        document.getElementById('result-body').innerHTML = ''
+        while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            const chunk = decoder.decode(value)
+            for (const line of chunk.split('\n')) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const json = JSON.parse(line.slice(6))
+                        const text = json.candidates?.[0]?.content?.parts?.[0]?.text || ''
+                        full += text
+                        document.getElementById('result-body').innerHTML = renderMarkdown(full)
+                    } catch(e) {}
+                }
+            }
+        }
+        brut = full
+        document.getElementById('btn-copy').className = 'btn-copy visible'
+        document.getElementById('btn-dl').className = 'btn-dl visible'
+        document.getElementById('char-count').textContent = '· ' + brut.length + ' caractères'
+        state.credits -= CONFIG.CREDITS_COST
+        majCreditsUI()
+        if (state.user?.id !== 'demo' && state.user?.access_token) {
+            sb.updateCredits(state.user.id, state.credits, state.user.access_token)
+        }
+        localStorage.setItem('assistdoc_session', JSON.stringify({ user: state.user, credits: state.credits }))
+    } catch(err) {
+        document.getElementById('result-body').innerHTML = '<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Erreur de génération. Vérifiez votre clé Gemini dans CONFIG.</p></div>'
+        afficherErreur('Impossible de générer. Détails : ' + err.message)
+    } finally {
+        btn.disabled = false
+    }
+}
+
+function renderMarkdown(md) {
+    return md
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+        .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+        .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/^- (.+)$/gm,'<li>$1</li>')
+        .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+        .replace(/^---$/gm,'<hr>')
+        .replace(/\n\n/g,'</p><p>')
+        .replace(/^(?!<[hHuUpP])(.+)$/gm, m => m.startsWith('<') ? m : `<p>${m}</p>`)
+}
+
+function copier() {
+    navigator.clipboard.writeText(brut).then(() => {
+        const btn = document.getElementById('btn-copy')
+        btn.className = 'btn-copy visible copied'
+        btn.innerHTML = '<i class="ti ti-check"></i> Copié !'
+        setTimeout(() => { btn.className = 'btn-copy visible'; btn.innerHTML = '<i class="ti ti-copy"></i> Copier' }, 2000)
+    })
+}
+
+function telecharger() {
+    if (!brut) return
+    const blob = new Blob([brut], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url
+    a.download = 'assistdoc-' + state.currentTheme + '-' + Date.now() + '.txt'
+    a.click(); URL.revokeObjectURL(url)
+}
+
+// ═══════════════════════════════════════
+// MODAL CRÉDITS
+// ═══════════════════════════════════════
+function ouvrirModalePacks() { document.getElementById('pack-modal').classList.add('open') }
+function fermerModalePacks() {
+    document.getElementById('pack-modal').classList.remove('open')
+    document.getElementById('modal-status').style.display = 'none'
+}
+function handleModalBg(e) { if (e.target === document.getElementById('pack-modal')) fermerModalePacks() }
+
+async function choisirPack(packId) {
+    const statusEl = document.getElementById('modal-status')
+    statusEl.style.display = 'flex'
+    const priceId = CONFIG.STRIPE_PRICES[packId]
+    if (!priceId || priceId.startsWith('price_XXXX')) {
+        alert('Configurez vos Stripe Price IDs dans CONFIG.')
+        statusEl.style.display = 'none'; return
+    }
+    try {
+        const res = await fetch(CONFIG.CHECKOUT_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (state.user?.access_token||'') },
+            body: JSON.stringify({ packId, price_id: priceId, user_id: state.user?.id,
+                success_url: window.location.href + '?paiement=succes',
+                cancel_url: window.location.href + '?paiement=annule' })
+        })
+        const d = await res.json()
+        if (d.url) window.location.href = d.url
+        else { alert(d.error || 'Erreur lors de la création du paiement.'); statusEl.style.display = 'none' }
+    } catch { alert('Serveur de paiement inaccessible.'); statusEl.style.display = 'none' }
+}
+
+function afficherErreur(msg) {
+    const el = document.getElementById('error-box'); el.textContent = '⚠️ ' + msg; el.style.display = 'block'
+}
+function cacherErreur() { document.getElementById('error-box').style.display = 'none' }
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+window.addEventListener('load', () => {
+    const saved = localStorage.getItem('assistdoc_session')
+    if (saved) {
+        try {
+            const s = JSON.parse(saved)
+            state.user = s.user; state.credits = s.credits || 0
+            afficherApp(); return
+        } catch(e) {}
+    }
+    document.getElementById('auth-screen').style.display = 'flex'
+})
+</script>
+</body>
+</html>
