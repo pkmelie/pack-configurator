@@ -1,330 +1,326 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  window.supabase = supabase.createClient(
-    'https://jefxkfkwrdzagbeptyqo.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplZnhrZmt3cmR6YWdiZXB0eXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMzczOTMsImV4cCI6MjA4ODkxMzM5M30.4w42OUP_yBTeT98BjDhY88wQKCFbF8djXg1kBcVOVRw'
-  );
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexShop — Boutique</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Mes Outils — Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #080c14;
-    --surface: #0f1520;
-    --surface2: #161d2e;
-    --border: rgba(255,255,255,0.07);
-    --accent: #5b6af4;
-    --accent2: #a78bfa;
-    --gold: #f59e0b;
-    --text: #e8eaf6;
-    --muted: #6b7280;
-    --free: #10b981;
-    --paid: #f59e0b;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+    --bg: #f8f7fc;
+    --surface: #ffffff;
+    --ink: #181826;
+    --muted: #6b6678;
+    --border: rgba(24,24,38,0.09);
 
-  /* NAV */
+    --free: #1fa67a;
+    --free-bg: #ffffff;
+    --paid: #e8890c;
+    --paid-bg: #ffffff;
+
+    /* Palette des "case" — chaque outil pioche une de ces 6 couleurs, en boucle */
+    --c1: #f1542f; /* corail   */
+    --c2: #5b4bd6; /* violet   */
+    --c3: #0ea89a; /* sarcelle */
+    --c4: #3d74e0; /* bleu     */
+    --c5: #e8447b; /* rose     */
+    --c6: #232336; /* encre    */
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:var(--bg); color:var(--ink);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.brand { font-family:'Fredoka',sans-serif; }
+  a { color:inherit; }
+
+  /* ---------- NAV ---------- */
   nav {
-    position:sticky; top:0; z-index:100;
-    background:rgba(8,12,20,0.85); backdrop-filter:blur(20px);
+    position:sticky; top:0; z-index:50;
+    background:rgba(248,247,252,0.75); backdrop-filter:blur(14px);
     border-bottom:1px solid var(--border);
     display:flex; align-items:center; justify-content:space-between;
-    padding:0 2.5rem; height:64px;
+    padding:1rem 2rem;
   }
-  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.4rem; letter-spacing:-0.02em; }
-  .logo span { color:var(--accent); }
-  .nav-links { display:flex; gap:2rem; align-items:center; }
-  .nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; transition:color .2s; }
-  .nav-links a:hover { color:var(--text); }
-  .nav-btn {
-    background:var(--accent); color:#fff; border:none; padding:0.5rem 1.2rem;
-    border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500;
-    cursor:pointer; transition:opacity .2s;
+  .brand { display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.2rem; }
+  .brand-dot { width:11px; height:11px; border-radius:50%; background:var(--c1); }
+  .nav-cta {
+    background:var(--ink); color:#fff; border:none;
+    padding:0.6rem 1.3rem; border-radius:100px; font-weight:600; font-size:0.85rem;
+    font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:transform .2s;
   }
-  .nav-btn:hover { opacity:0.85; }
+  .nav-cta:hover { transform:translateY(-1px); }
 
-  /* HERO */
-  .hero {
-    padding:5rem 2.5rem 4rem;
-    text-align:center;
-    background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(91,106,244,0.15) 0%, transparent 70%);
-  }
-  .hero-badge {
+  /* ---------- HERO ---------- */
+  .hero { position:relative; overflow:hidden; padding:5.5rem 2rem 3.5rem; text-align:center; }
+  .blob { position:absolute; border-radius:50%; filter:blur(70px); opacity:0.35; z-index:0; }
+  .blob1 { width:320px; height:320px; background:var(--c1); top:-120px; left:8%; }
+  .blob2 { width:280px; height:280px; background:var(--c4); top:-80px; right:10%; }
+  .blob3 { width:240px; height:240px; background:var(--c3); bottom:-140px; left:42%; }
+
+  .eyebrow {
+    position:relative; z-index:1;
     display:inline-flex; align-items:center; gap:6px;
-    background:rgba(91,106,244,0.12); border:1px solid rgba(91,106,244,0.3);
-    color:var(--accent2); padding:4px 14px; border-radius:100px; font-size:0.78rem;
-    margin-bottom:1.5rem;
+    background:var(--surface); border:1px solid var(--border);
+    padding:6px 16px; border-radius:100px; font-size:0.82rem; font-weight:600;
+    box-shadow:0 6px 16px -8px rgba(24,24,38,0.15);
   }
-  .hero-badge::before { content:''; width:6px; height:6px; background:var(--accent); border-radius:50%; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-  .hero h1 { font-family:'Syne',sans-serif; font-size:clamp(2.2rem,5vw,3.8rem); font-weight:800; line-height:1.1; margin-bottom:1rem; }
-  .hero h1 span { color:var(--accent); }
-  .hero p { color:var(--muted); max-width:520px; margin:0 auto 2.5rem; line-height:1.7; font-size:1.05rem; }
-  .hero-cta { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
-  .btn-primary {
-    background:var(--accent); color:#fff; border:none;
-    padding:0.8rem 2rem; border-radius:10px; font-size:0.95rem; font-weight:500;
-    cursor:pointer; font-family:'DM Sans',sans-serif; transition:transform .2s,opacity .2s;
+  .hero h1 {
+    position:relative; z-index:1;
+    font-weight:700; font-size:clamp(2.1rem,5vw,3.5rem); line-height:1.1;
+    margin:1.3rem 0 1rem;
   }
-  .btn-primary:hover { transform:translateY(-1px); opacity:0.9; }
-  .btn-outline {
-    background:transparent; color:var(--text); border:1px solid var(--border);
-    padding:0.8rem 2rem; border-radius:10px; font-size:0.95rem; font-weight:500;
-    cursor:pointer; font-family:'DM Sans',sans-serif; transition:border-color .2s;
+  .hero h1 .hl { color:var(--c2); position:relative; display:inline-block; }
+  .hero h1 .hl svg { position:absolute; left:-4%; bottom:-10px; width:108%; z-index:-1; }
+  .hero p {
+    position:relative; z-index:1;
+    max-width:540px; margin:0 auto; color:var(--muted); font-size:1.05rem; line-height:1.7;
   }
-  .btn-outline:hover { border-color:rgba(255,255,255,0.25); }
 
-  /* FILTER TABS */
-  .section { padding:2rem 2.5rem 4rem; max-width:1300px; margin:0 auto; }
-  .section-title { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; margin-bottom:0.4rem; }
-  .section-sub { color:var(--muted); font-size:0.9rem; margin-bottom:2rem; }
-  .filters { display:flex; gap:0.6rem; margin-bottom:2rem; flex-wrap:wrap; }
-  .filter-btn {
-    padding:0.45rem 1.1rem; border-radius:8px; border:1px solid var(--border);
-    background:var(--surface); color:var(--muted); font-size:0.82rem; cursor:pointer;
-    font-family:'DM Sans',sans-serif; transition:all .2s;
-  }
-  .filter-btn.active, .filter-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(91,106,244,0.1); }
+  /* ---------- SHELF / GRID SECTION ---------- */
+  .shelf { max-width:1180px; margin:0 auto; padding:1rem 2rem 5rem; }
+  .shelf-head { text-align:center; margin-bottom:2.2rem; }
+  .shelf-head h2 { font-size:1.7rem; font-weight:700; margin-bottom:0.4rem; }
+  .shelf-head p.sub { color:var(--muted); font-size:0.95rem; margin-bottom:1.6rem; }
 
-  /* GRID */
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1.5rem; }
-
-  /* CARD */
-  .card {
-    background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    overflow:hidden; transition:transform .25s,border-color .25s; cursor:pointer;
+  .filters { display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; }
+  .filter {
+    padding:0.5rem 1.2rem; border-radius:100px; border:1px solid var(--border);
+    background:var(--surface); color:var(--muted); font-size:0.85rem; font-weight:600;
+    cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; transition:all .2s;
   }
-  .card:hover { transform:translateY(-4px); border-color:rgba(91,106,244,0.4); }
+  .filter.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .filter:hover { border-color:var(--ink); }
 
-  .card-thumb { position:relative; width:100%; aspect-ratio:16/9; background:#000; }
-  .card-thumb iframe { width:100%; height:100%; border:none; }
-  .card-thumb .overlay {
-    position:absolute; inset:0;
-    background:rgba(0,0,0,0.5);
-    display:flex; align-items:center; justify-content:center;
-    opacity:0; transition:opacity .2s;
-    /* AJOUTE CETTE LIGNE CI-DESSOUS */
-    pointer-events: none; 
+  .grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:1.3rem; margin-top:2.4rem;
   }
-  .card:hover .overlay { opacity:1; }
-  .play-btn {
-    width:52px; height:52px; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px);
-    border-radius:50%; display:flex; align-items:center; justify-content:center;
-    border:2px solid rgba(255,255,255,0.3);
-  }
-  .play-btn::after { content:''; border-style:solid; border-width:8px 0 8px 16px; border-color:transparent transparent transparent #fff; margin-left:3px; }
 
-  /* LOCK OVERLAY */
-  .lock-overlay {
-    position:absolute; inset:0;
-    background:rgba(8,12,20,0.75); backdrop-filter:blur(4px);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem;
+  /* ---------- CASE (la tuile d'un outil) ---------- */
+  .case {
+    display:flex; flex-direction:column; gap:0.9rem;
+    border-radius:22px; padding:1.5rem 1.4rem 1.4rem;
+    text-decoration:none; color:#fff; position:relative;
+    box-shadow:0 12px 26px -10px rgba(24,24,38,0.25);
+    transition:transform .25s ease, box-shadow .25s ease;
   }
-  .lock-icon { font-size:2rem; }
-  .lock-overlay p { font-size:0.78rem; color:rgba(255,255,255,0.6); }
+  .case:hover { transform:translateY(-6px) rotate(-0.6deg); box-shadow:0 18px 34px -10px rgba(24,24,38,0.35); }
 
-  .badge {
-    position:absolute; top:10px; right:10px; z-index:2;
-    padding:3px 10px; border-radius:100px; font-size:0.72rem; font-weight:600;
-    font-family:'Syne',sans-serif; letter-spacing:0.04em;
+  .case-c1 { background:var(--c1); }
+  .case-c2 { background:var(--c2); }
+  .case-c3 { background:var(--c3); }
+  .case-c4 { background:var(--c4); }
+  .case-c5 { background:var(--c5); }
+  .case-c6 { background:var(--c6); }
+
+  .case-top { display:flex; align-items:flex-start; justify-content:space-between; }
+  .case-icon {
+    width:44px; height:44px; border-radius:14px;
+    background:rgba(255,255,255,0.18);
+    display:flex; align-items:center; justify-content:center; font-size:1.35rem;
   }
-  .badge.free { background:rgba(16,185,129,0.2); color:var(--free); border:1px solid rgba(16,185,129,0.3); }
-  .badge.paid { background:rgba(245,158,11,0.2); color:var(--paid); border:1px solid rgba(245,158,11,0.3); }
+  .pill { font-size:0.7rem; font-weight:700; padding:4px 11px; border-radius:100px; letter-spacing:0.02em; }
+  .pill-free { background:var(--free-bg); color:var(--free); }
+  .pill-paid { background:var(--paid-bg); color:var(--paid); }
 
-  .card-body { padding:1rem 1.2rem 1.2rem; }
-  .card-cat { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.4rem; }
-  .card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:0.5rem; line-height:1.3; }
-  .card-desc { font-size:0.83rem; color:var(--muted); line-height:1.6; margin-bottom:1rem; }
-  .card-footer { display:flex; align-items:center; justify-content:space-between; }
-  .price { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; }
-  .price.free-price { color:var(--free); }
-  .price.paid-price { color:var(--paid); }
-  .card-btn {
-    padding:0.45rem 1rem; border-radius:8px; font-size:0.8rem; font-weight:500;
-    cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:opacity .2s;
+  .case-title { font-size:1.12rem; font-weight:600; }
+  .case-desc { font-size:0.85rem; line-height:1.55; opacity:0.92; flex-grow:1; }
+  .case-cta {
+    display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:0.85rem;
+    margin-top:auto;
   }
-  .card-btn.get { background:var(--free); color:#fff; }
-  .card-btn.buy { background:var(--gold); color:#000; }
-  .card-btn:hover { opacity:0.8; }
+  .case-cta svg { width:14px; height:14px; transition:transform .2s; }
+  .case:hover .case-cta svg { transform:translateX(3px); }
 
-  /* TICKET MODAL */
-  .modal-bg {
-    display:none; position:fixed; inset:0; z-index:200;
-    background:rgba(0,0,0,0.7); backdrop-filter:blur(6px);
-    align-items:center; justify-content:center;
+  /* tuile "fantôme" — repère visuel pour savoir où copier-coller la prochaine case */
+  .case-add {
+    border:2px dashed var(--border); border-radius:22px;
+    background:transparent; color:var(--muted);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:0.5rem; min-height:200px; text-align:center; font-size:0.85rem;
   }
-  .modal-bg.open { display:flex; }
-  .modal {
-    background:var(--surface2); border:1px solid var(--border); border-radius:20px;
-    padding:2rem; width:min(520px,90vw); max-height:90vh; overflow-y:auto;
+  .case-add .plus { font-size:1.8rem; font-weight:600; color:var(--c2); }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    text-align:center; padding:2.2rem; border-top:1px solid var(--border);
+    color:var(--muted); font-size:0.82rem;
   }
-  .modal h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.3rem; margin-bottom:0.3rem; }
-  .modal p.sub { color:var(--muted); font-size:0.85rem; margin-bottom:1.5rem; }
-  .form-row { margin-bottom:1rem; }
-  .form-row label { display:block; font-size:0.82rem; color:var(--muted); margin-bottom:0.4rem; }
-  .form-row input, .form-row select, .form-row textarea {
-    width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text);
-    border-radius:10px; padding:0.65rem 0.9rem; font-family:'DM Sans',sans-serif; font-size:0.9rem;
-    outline:none; transition:border-color .2s;
+  footer a { color:var(--c2); text-decoration:none; font-weight:600; }
+
+  @media (max-width:640px) {
+    nav { padding:0.9rem 1.2rem; }
+    .hero { padding:4rem 1.2rem 2.5rem; }
+    .shelf { padding:1rem 1.2rem 4rem; }
   }
-  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color:var(--accent); }
-  .form-row textarea { resize:vertical; min-height:100px; }
-  .form-row select option { background:var(--surface2); }
-  .modal-btns { display:flex; gap:0.8rem; margin-top:1.5rem; justify-content:flex-end; }
-  .close-btn { background:var(--surface); border:1px solid var(--border); color:var(--muted); padding:0.6rem 1.2rem; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; }
-  .submit-btn { background:var(--accent); color:#fff; border:none; padding:0.6rem 1.4rem; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:500; }
-  .success-msg { display:none; text-align:center; padding:2rem; }
-  .success-msg .check { font-size:3rem; margin-bottom:1rem; }
-  .success-msg h3 { font-family:'Syne',sans-serif; font-weight:700; margin-bottom:0.5rem; }
-  .success-msg p { color:var(--muted); font-size:0.9rem; }
 
-  /* STATS BAR */
-  .stats { display:flex; gap:2rem; flex-wrap:wrap; justify-content:center; padding:2rem 2.5rem; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-  .stat { text-align:center; }
-  .stat-num { font-family:'Syne',sans-serif; font-weight:800; font-size:1.8rem; color:var(--accent2); }
-  .stat-label { font-size:0.8rem; color:var(--muted); }
-
-  /* FOOTER */
-  footer { text-align:center; padding:2rem; border-top:1px solid var(--border); color:var(--muted); font-size:0.82rem; }
-  footer a { color:var(--accent); text-decoration:none; }
-
-  /* TOAST */
-  .toast {
-    position:fixed; bottom:2rem; right:2rem; z-index:300;
-    background:var(--surface2); border:1px solid var(--border); border-radius:12px;
-    padding:1rem 1.4rem; display:flex; align-items:center; gap:0.8rem;
-    transform:translateY(100px); opacity:0; transition:all .3s;
+  @media (prefers-reduced-motion: reduce) {
+    .case, .case-cta svg, .nav-cta { transition:none !important; }
+    .case:hover { transform:none; }
   }
-  .toast.show { transform:translateY(0); opacity:1; }
-  .toast-dot { width:8px; height:8px; border-radius:50%; background:var(--free); flex-shrink:0; }
-
-  .hidden { display:none !important; }
 </style>
 </head>
 <body>
 
+<!--
+  ============================================================
+  COMMENT AJOUTER UN NOUVEL OUTIL
+  ============================================================
+  1. Va dans la section <div class="grid" id="grid"> ci-dessous.
+  2. Copie-colle un bloc <a class="case ...">...</a> entier (un de ceux
+     déjà présents, ou le modèle juste avant la tuile "+ Ajoute le tien").
+  3. Change : href, l'emoji dans .case-icon, le titre, la description,
+     et le pill (pill-free ou pill-paid).
+  4. Pour la couleur de la tuile, change juste le chiffre dans la classe
+     "case-c1" → "case-c6" (il y a 6 couleurs, libre à toi de les faire
+     tourner comme tu veux).
+  5. data-status="free" ou "paid" sert juste aux boutons de filtre
+     en haut de la grille (Tous / Gratuits / Premium).
+  ============================================================
+-->
+
 <nav>
-  <div class="logo">Nex<span>Shop</span></div>
-  <div class="nav-links">
-    <a href="#vitrine">Vitrine</a>
-    <a href="#" onclick="openTicket()">Support</a>
-    
-  </div>
-  <button class="nav-btn" onclick="openTicket()">Ouvrir un ticket</button>
+  <div class="brand"><span class="brand-dot"></span>MonHub</div>
+  <button class="nav-cta" onclick="window.open('https://discord.gg/', '_blank')">Rejoindre le Discord</button>
 </nav>
 
-<section class="hero">
-  <div class="hero-badge">🚀 Nouvelles ressources disponibles</div>
-  <h1>Accédez aux meilleurs<br><span>contenus & outils</span></h1>
-  <p>Découvrez notre sélection de ressources gratuites et premium. Des tutoriels, templates et bien plus encore.</p>
-  <div class="hero-cta">
-    <button class="btn-primary" onclick="document.getElementById('vitrine').scrollIntoView({behavior:'smooth'})">Voir la vitrine</button>
-    <button class="btn-outline" onclick="openTicket()">Contactez-nous</button>
-  </div>
-</section>
+<header class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
 
-<div class="stats">
-  <div class="stat"><div class="stat-num">48+</div><div class="stat-label">Ressources disponibles</div></div>
-  <div class="stat"><div class="stat-num">2.4k</div><div class="stat-label">Membres actifs</div></div>
-  <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Satisfaction client</div></div>
-  <div class="stat"><div class="stat-num">24h</div><div class="stat-label">Support réactif</div></div>
-</div>
+  <div class="eyebrow">🧰 Boîte à outils</div>
+  <h1>Tous mes outils,<br>
+    <span class="hl">au même endroit
+      <svg viewBox="0 0 200 14" xmlns="http://www.w3.org/2000/svg"><path d="M2 11C40 2 160 2 198 9" stroke="#f1542f" stroke-width="5" stroke-linecap="round" fill="none"/></svg>
+    </span>
+  </h1>
+  <p>Une sélection d'outils, packs et ressources — certains gratuits, d'autres premium. Choisis celui qui te correspond et clique pour y accéder.</p>
+</header>
 
-<section class="section" id="vitrine">
-  <div class="section-title">Notre Vitrine</div>
-  <div class="section-sub">Filtrez par catégorie ou par type d'accès</div>
-
-  <div class="filters">
-    <button class="filter-btn active" onclick="filterCards('all',this)">Tous</button>
-    <button class="filter-btn" onclick="filterCards('free',this)">Gratuit</button>
-    <button class="filter-btn" onclick="filterCards('paid',this)">Premium</button>
-    
-    <button class="filter-btn" onclick="filterCards('Pack',this)">Pack</button>
-    <button class="filter-btn" onclick="filterCards('Mod',this)">Mod</button>
-    <button class="filter-btn" onclick="filterCards('Sound',this)">Sound</button>
+<main class="shelf" id="outils">
+  <div class="shelf-head">
+    <h2>Mes outils</h2>
+    <p class="sub">Mis à jour au fur et à mesure que j'en ajoute de nouveaux.</p>
+    <div class="filters">
+      <button class="filter active" data-filter="all">Tous</button>
+      <button class="filter" data-filter="free">Gratuits</button>
+      <button class="filter" data-filter="paid">Premium</button>
+    </div>
   </div>
 
-  <div class="grid" id="grid"></div>
-</section>
+  <div class="grid" id="grid">
 
+    <!-- ===== CASE 1 ===== -->
+    <a href="#" target="_blank" class="case case-c1" data-status="free">
+      <div class="case-top">
+        <div class="case-icon">🔄</div>
+        <span class="pill pill-free">Gratuit</span>
+      </div>
+      <h3 class="case-title">Convertisseur de fichiers</h3>
+      <p class="case-desc">Convertis tes fichiers en quelques clics, sans inscription ni installation.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
 
+    <!-- ===== CASE 2 ===== -->
+    <a href="#" target="_blank" class="case case-c3" data-status="free">
+      <div class="case-top">
+        <div class="case-icon">🎨</div>
+        <span class="pill pill-free">Gratuit</span>
+      </div>
+      <h3 class="case-title">Générateur de palettes</h3>
+      <p class="case-desc">Crée des palettes de couleurs harmonieuses pour tes prochains projets.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
 
-<div class="toast" id="toast">
-  <div class="toast-dot"></div>
-  <span id="toastMsg">Action effectuée</span>
-</div>
+    <!-- ===== CASE 3 ===== -->
+    <a href="#" target="_blank" class="case case-c2" data-status="paid">
+      <div class="case-top">
+        <div class="case-icon">📦</div>
+        <span class="pill pill-paid">Premium</span>
+      </div>
+      <h3 class="case-title">Pack Pro Complet</h3>
+      <p class="case-desc">L'ensemble premium avec toutes les fonctionnalités débloquées et le support prioritaire.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <!-- ===== CASE 4 ===== -->
+    <a href="#" target="_blank" class="case case-c4" data-status="free">
+      <div class="case-top">
+        <div class="case-icon">🤖</div>
+        <span class="pill pill-free">Gratuit</span>
+      </div>
+      <h3 class="case-title">Bot Discord Utilitaire</h3>
+      <p class="case-desc">Un bot léger à ajouter sur ton serveur pour automatiser les tâches répétitives.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <!-- ===== CASE 5 ===== -->
+    <a href="#" target="_blank" class="case case-c5" data-status="paid">
+      <div class="case-top">
+        <div class="case-icon">✨</div>
+        <span class="pill pill-paid">Premium</span>
+      </div>
+      <h3 class="case-title">Suite Design Avancée</h3>
+      <p class="case-desc">Des templates et assets premium pour aller plus vite sur tes créations.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <!-- ===== CASE 6 ===== -->
+    <a href="#" target="_blank" class="case case-c6" data-status="free">
+      <div class="case-top">
+        <div class="case-icon">🕹️</div>
+        <span class="pill pill-free">Gratuit</span>
+      </div>
+      <h3 class="case-title">Mini démo / jeu</h3>
+      <p class="case-desc">Une petite démo interactive à essayer directement dans le navigateur.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <!-- ===== MODÈLE — copie ce bloc entier pour ajouter un outil, puis modifie le contenu ===== -->
+    <!--
+    <a href="LIEN_DE_TON_OUTIL" target="_blank" class="case case-c1" data-status="free">
+      <div class="case-top">
+        <div class="case-icon">EMOJI</div>
+        <span class="pill pill-free">Gratuit</span>
+      </div>
+      <h3 class="case-title">Titre de l'outil</h3>
+      <p class="case-desc">Courte description de ce que fait l'outil.</p>
+      <span class="case-cta">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    -->
+
+    <div class="case-add">
+      <div class="plus">+</div>
+      Ajoute le tien ici
+    </div>
+
+  </div>
+</main>
 
 <footer>
-  © 2025 NexShop — <a href="admin/index.html">Panel Admin</a> · <a href="#" onclick="openTicket()">Support</a>
+  © 2026 MonHub
 </footer>
 
 <script>
-let PRODUCTS = [];
+  const filters = document.querySelectorAll('.filter');
+  const cases = () => document.querySelectorAll('.case[data-status]');
 
-function renderCards(list) {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  if (!list.length) { grid.innerHTML = '<p style="color:var(--muted);text-align:center;padding:3rem;">Aucun produit disponible.</p>'; return; }
-  list.forEach(p => {
-    const isPaid = p.type === 'paid';
-    grid.innerHTML += `
-      <div class="card" data-cat="${p.cat}" data-type="${p.type}">
-        <div class="card-thumb">
-          <iframe src="https://www.youtube.com/embed/${p.yt}?controls=0&modestbranding=1&rel=0" allowfullscreen loading="lazy"></iframe>
-          <span class="badge ${p.type}">${isPaid ? '⭐ Premium' : '✅ Gratuit'}</span>
-          ${isPaid ? `<div class="lock-overlay"><div class="lock-icon">🔒</div><p>Contenu Premium</p></div>` : ''}
-          <div class="overlay"><div class="play-btn"></div></div>
-        </div>
-        <div class="card-body">
-          <div class="card-cat">${p.cat.toUpperCase()}</div>
-          <div class="card-title">${p.title}</div>
-          <div class="card-desc">${p.desc}</div>
-          <div class="card-footer">
-            <div class="price ${isPaid ? 'paid-price' : 'free-price'}">${p.price}</div>
-            <button class="card-btn ${isPaid ? 'buy' : 'get'}" onclick="handleCard(${p.id})">${isPaid ? 'Acheter' : 'Accéder'}</button>
-          </div>
-        </div>
-      </div>`;
+  filters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filters.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.filter;
+      cases().forEach(c => {
+        c.style.display = (val === 'all' || c.dataset.status === val) ? '' : 'none';
+      });
+    });
   });
-}
-
-renderCards(PRODUCTS);
-
-(async () => {
-  const { data, error } = await window.supabase
-    .from('products').select('*').order('id', { ascending: false });
-  if (data && data.length > 0) { PRODUCTS = data; renderCards(PRODUCTS); }
-  if (error) console.error('Erreur Supabase:', error);
-})();
-
-function filterCards(type, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  if (type === 'all') return renderCards(PRODUCTS);
-  if (type === 'free' || type === 'paid') return renderCards(PRODUCTS.filter(p => p.type === type));
-  renderCards(PRODUCTS.filter(p => p.cat === type));
-}
-
-function handleCard(id) {
-  window.open('https://discord.gg/khqmFkEUet', '_blank');
-}
-
-function openTicket() {
-  window.open('https://discord.gg/7zUw3gDv', '_blank');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
 </script>
+
 </body>
 </html>
