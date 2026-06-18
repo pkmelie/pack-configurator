@@ -11,11 +11,12 @@
 
         :root {
             --primary: #534AB7;
-            --primary-light: #EEEDFE;
+            --primary-light: #F4F3FE;
             --primary-dark: #3C3489;
-            --bg: #f9fafb;
+            --bg: #ffffff;
             --bg-card: #ffffff;
-            --border: #e5e7eb;
+            --bg-subtle: #fbfbfc;
+            --border: #ededf0;
             --text: #111827;
             --text-muted: #6b7280;
             --text-faint: #9ca3af;
@@ -113,7 +114,7 @@
         .btn-generate:disabled { background: #d1d5db; cursor: not-allowed; }
 
         .tip {
-            padding: 10px 12px; background: var(--bg);
+            padding: 10px 12px; background: var(--bg-subtle);
             border: 1px solid var(--border); border-radius: var(--radius-md);
             font-size: 12px; color: var(--text-muted); line-height: 1.6;
         }
@@ -131,7 +132,7 @@
         .result-header .title { font-size: 12px; font-weight: 600; color: var(--text-muted); }
         .result-header .chars { font-size: 11px; color: var(--text-faint); margin-left: 8px; }
         .btn-copy {
-            padding: 5px 12px; border: 1px solid var(--border); background: var(--bg);
+            padding: 5px 12px; border: 1px solid var(--border); background: var(--bg-subtle);
             border-radius: var(--radius-md); cursor: pointer; font-size: 12px;
             display: none; align-items: center; gap: 5px; color: var(--text-muted);
         }
@@ -172,13 +173,14 @@
 
         /* Modale de packs de crédits */
         .modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5);
+            display: none; position: fixed; inset: 0; background: rgba(17,24,39,.45);
             align-items: center; justify-content: center; z-index: 100; padding: 16px;
         }
         .modal-overlay.open { display: flex; }
         .modal-box {
             background: var(--bg-card); border-radius: var(--radius-lg);
             padding: 24px; max-width: 560px; width: 100%;
+            box-shadow: 0 20px 50px rgba(17,24,39,.12);
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .modal-header h2 { font-size: 18px; font-weight: 600; margin: 0; }
@@ -216,6 +218,7 @@
         .auth-card {
             background: var(--bg-card); border: 1px solid var(--border);
             border-radius: var(--radius-lg); padding: 32px; max-width: 380px; width: 100%;
+            box-shadow: 0 1px 3px rgba(17,24,39,.06);
         }
         .auth-card h2 { font-size: 18px; font-weight: 600; margin: 0 0 4px; text-align: center; }
         .auth-card p.sub { font-size: 13px; color: var(--text-muted); text-align: center; margin: 0 0 20px; }
