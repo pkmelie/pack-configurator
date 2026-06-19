@@ -990,7 +990,7 @@ async function choisirPack(packId) {
         statusEl.style.display = "flex";
 
         try {
-            const res = await fetch(`${SERVER}/api/create-checkout-session`, {
+            const res = await fetch(`/api/create-checkout-session`, {
                 method: "POST",
                 headers: headersAuth(),
                 body: JSON.stringify({ packId })
