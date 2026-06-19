@@ -539,7 +539,7 @@ const CONFIG = {
         starter: 'price_XXXXXXXXXXXXXXXX',
         pro:     'price_XXXXXXXXXXXXXXXX'
     },
-    CHECKOUT_ENDPOINT: 'https://VOTRE_PROJET.supabase.co/functions/v1/create-checkout',
+    
     CREDITS_COST: 2
 }
 
@@ -654,10 +654,24 @@ function afficherApp() {
     document.getElementById('auth-screen').style.display = 'none'
     document.getElementById('app-content').classList.add('visible')
     document.getElementById('user-email-display').textContent = state.user.email
-    majCreditsUI()
+    chargerCredits()  // ← remplace majCreditsUI() par ça
     selectTheme('demenagement')
     gererRetourPaiement()
-    localStorage.setItem('assistdoc_session', JSON.stringify({ user: state.user, credits: state.credits }))
+}
+
+async function chargerCredits() {
+    try {
+        const r = await fetch('/api/user', {
+            headers: { 'Authorization': 'Bearer ' + state.user.access_token }
+        })
+        if (r.status === 401) { deconnexion(); return }
+        const d = await r.json()
+        state.credits = d.credits
+        localStorage.setItem('assistdoc_session', JSON.stringify({ user: state.user, credits: state.credits }))
+        majCreditsUI()
+    } catch {
+        majCreditsUI() // fallback sur le localStorage si offline
+    }
 }
 
 function majCreditsUI() {
@@ -681,7 +695,10 @@ function gererRetourPaiement() {
     const statut = params.get('paiement')
     if (!statut) return
     if (statut === 'succes') {
-        setTimeout(() => { majCreditsUI(); alert('✅ Paiement confirmé ! Tes crédits ont été ajoutés.') }, 1500)
+        setTimeout(() => {
+            chargerCredits()  // ← recharge depuis Supabase après webhook
+            alert('✅ Paiement confirmé ! Tes crédits ont été ajoutés.')
+        }, 1500)
     } else if (statut === 'annule') {
         alert('Paiement annulé. Aucun crédit n\'a été débité.')
     }
@@ -878,50 +895,37 @@ async function generer() {
     document.getElementById('result-title').textContent = theme.label
 
     try {
-        const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${CONFIG.GEMINI_KEY}&alt=sse`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                    generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
-                })
-            }
-        )
-        if (!res.ok) throw new Error('Erreur API Gemini ' + res.status)
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let full = ''
-        document.getElementById('result-body').innerHTML = ''
-        while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-            const chunk = decoder.decode(value)
-            for (const line of chunk.split('\n')) {
-                if (line.startsWith('data: ')) {
-                    try {
-                        const json = JSON.parse(line.slice(6))
-                        const text = json.candidates?.[0]?.content?.parts?.[0]?.text || ''
-                        full += text
-                        document.getElementById('result-body').innerHTML = renderMarkdown(full)
-                    } catch(e) {}
-                }
-            }
-        }
-        brut = full
+        const res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + state.user.access_token
+            },
+            body: JSON.stringify({
+                mode: 'article',
+                keyword: prompt,
+                tone: 'Informatif',
+                length: 'Moyen (1000 mots)',
+                existingText: ''
+            })
+        })
+
+        const data = await res.json()
+        if (!res.ok) { afficherErreur(data.error || 'Erreur serveur.'); return }
+
+        brut = data.text
+        document.getElementById('result-body').innerHTML = renderMarkdown(brut)
         document.getElementById('btn-copy').className = 'btn-copy visible'
         document.getElementById('btn-dl').className = 'btn-dl visible'
         document.getElementById('char-count').textContent = '· ' + brut.length + ' caractères'
-        state.credits -= CONFIG.CREDITS_COST
+
+        state.credits = data.creditsLeft
         majCreditsUI()
-        if (state.user?.id !== 'demo' && state.user?.access_token) {
-            sb.updateCredits(state.user.id, state.credits, state.user.access_token)
-        }
         localStorage.setItem('assistdoc_session', JSON.stringify({ user: state.user, credits: state.credits }))
+
     } catch(err) {
-        document.getElementById('result-body').innerHTML = '<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Erreur de génération. Vérifiez votre clé Gemini dans CONFIG.</p></div>'
-        afficherErreur('Impossible de générer. Détails : ' + err.message)
+        document.getElementById('result-body').innerHTML = '<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Erreur de génération.</p></div>'
+        afficherErreur('Impossible de joindre le serveur : ' + err.message)
     } finally {
         btn.disabled = false
     }
@@ -973,23 +977,19 @@ function handleModalBg(e) { if (e.target === document.getElementById('pack-modal
 async function choisirPack(packId) {
     const statusEl = document.getElementById('modal-status')
     statusEl.style.display = 'flex'
-    const priceId = CONFIG.STRIPE_PRICES[packId]
-    if (!priceId || priceId.startsWith('price_XXXX')) {
-        alert('Configurez vos Stripe Price IDs dans CONFIG.')
-        statusEl.style.display = 'none'; return
-    }
     try {
-        const res = await fetch(CONFIG.CHECKOUT_ENDPOINT, {
+        const res = await fetch('/api/create-checkout', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (state.user?.access_token||'') },
-            body: JSON.stringify({ packId, price_id: priceId, user_id: state.user?.id,
-                success_url: window.location.href + '?paiement=succes',
-                cancel_url: window.location.href + '?paiement=annule' })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + state.user.access_token
+            },
+            body: JSON.stringify({ packId })
         })
         const d = await res.json()
         if (d.url) window.location.href = d.url
-        else { alert(d.error || 'Erreur lors de la création du paiement.'); statusEl.style.display = 'none' }
-    } catch { alert('Serveur de paiement inaccessible.'); statusEl.style.display = 'none' }
+        else { alert(d.error || 'Erreur paiement.'); statusEl.style.display = 'none' }
+    } catch { alert('Serveur inaccessible.'); statusEl.style.display = 'none' }
 }
 
 function afficherErreur(msg) {
