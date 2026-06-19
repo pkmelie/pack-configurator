@@ -578,6 +578,19 @@ const sb = {
 // ═══════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════
+let currentSession = null;
+initAuth();
+
+    async function initAuth() {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data.session) {
+            currentSession = data.session;
+            afficherApp();
+        } else {
+            document.getElementById("auth-screen").style.display = "flex";
+        }
+    }
+
 function basculerModeAuth() {
     modeInscription = !modeInscription
     document.getElementById('auth-title').textContent = modeInscription ? 'Créer un compte' : 'Connexion'
