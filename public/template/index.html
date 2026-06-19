@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="icon" href="../favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AssistDoc — Assistant administratif IA</title>
@@ -975,22 +976,27 @@ function fermerModalePacks() {
 function handleModalBg(e) { if (e.target === document.getElementById('pack-modal')) fermerModalePacks() }
 
 async function choisirPack(packId) {
-    const statusEl = document.getElementById('modal-status')
-    statusEl.style.display = 'flex'
-    try {
-        const res = await fetch('/api/create-checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + state.user.access_token
-            },
-            body: JSON.stringify({ packId })
-        })
-        const d = await res.json()
-        if (d.url) window.location.href = d.url
-        else { alert(d.error || 'Erreur paiement.'); statusEl.style.display = 'none' }
-    } catch { alert('Serveur inaccessible.'); statusEl.style.display = 'none' }
-}
+        const statusEl = document.getElementById("modal-status");
+        statusEl.style.display = "flex";
+
+        try {
+            const res = await fetch(`${SERVER}/api/create-checkout-session`, {
+                method: "POST",
+                headers: headersAuth(),
+                body: JSON.stringify({ packId })
+            });
+            const d = await res.json();
+            if (d.url) {
+                window.location.href = d.url;
+            } else {
+                alert(d.error || "Erreur lors de la création du paiement.");
+                statusEl.style.display = "none";
+            }
+        } catch {
+            alert("Serveur de paiement inaccessible. Vérifie que le backend tourne.");
+            statusEl.style.display = "none";
+        }
+    }
 
 function afficherErreur(msg) {
     const el = document.getElementById('error-box'); el.textContent = '⚠️ ' + msg; el.style.display = 'block'
