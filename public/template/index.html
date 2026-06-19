@@ -822,6 +822,15 @@ const THEMES = {
     }
 }
 
+
+
+function headersAuth() {
+        return {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${currentSession.access_token}`
+        };
+    }
+
 function selectTheme(key) {
     state.currentTheme = key
     formValues = {}
