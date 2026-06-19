@@ -528,7 +528,9 @@
 </div>
 
 <script>
-import { supabase } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ═══════════════════════════════════════
 // CONFIG — à remplacer par vos vraies clés
 // ═══════════════════════════════════════
@@ -545,7 +547,7 @@ const CONFIG = {
     
     CREDITS_COST: 2
 }
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
