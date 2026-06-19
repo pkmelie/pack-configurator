@@ -526,9 +526,11 @@
         <div class="stripe-note">🔐 Paiement sécurisé — Aucune donnée bancaire stockée</div>
     </div>
 </div>
-
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js";
+</script>
 <script>
-import { createClient } from '@supabase/supabase-js';
+
 
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ═══════════════════════════════════════
