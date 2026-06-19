@@ -1002,9 +1002,9 @@ async function choisirPack(packId) {
                 alert(d.error || "Erreur lors de la création du paiement.");
                 statusEl.style.display = "none";
             }
-        } catch {
-            alert("Serveur de paiement inaccessible. Vérifie que le backend tourne.");
-            statusEl.style.display = "none";
+        } catch (e) {
+            console.error("ERREUR COMPLETE :", e);
+            alert(e?.message || JSON.stringify(e));
         }
     }
 
