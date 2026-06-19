@@ -10,9 +10,9 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 // Packs de crédits — prix fixes, crédits calculés pour marges cibles
 // Micro: 50% marge | Starter: 30% marge | Pro: 20% marge
 const PACKS = {
-    micro: { credits: 5, price: 100, name: "Pack Micro — 5 crédits" },
-    starter: { credits: 10, price: 500, name: "Pack Starter — 10 crédits" },
-    pro: { credits: 25, price: 800, name: "Pack Pro — 25 crédits" },
+    micro: { credits: 4, price: 100, name: "Pack Micro — 5 crédits" },
+    starter: { credits: 20, price: 500, name: "Pack Starter — 10 crédits" },
+    pro: { credits: 50, price: 900, name: "Pack Pro — 25 crédits" },
 };
 
 module.exports = async (req, res) => {
