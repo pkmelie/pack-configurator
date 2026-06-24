@@ -2,17 +2,71 @@
     // 1. Injection du style CSS pour le look "Robin & fils"
     const style = document.createElement('style');
     style.innerHTML = `
-        #my-custom-chat-trigger { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #D32F2F; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; z-index: 999999; }
-        #my-custom-chat-box { position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; font-family: Arial, sans-serif; z-index: 999999; }
-        #my-custom-chat-header { background: #D32F2F; color: white; padding: 15px; font-weight: bold; font-size: 16px; }
-        #my-custom-chat-header sub { display: block; font-size: 11px; opacity: 0.9; margin-top: 4px; }
-        #my-custom-chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f7f7f7; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { padding: 8px 12px; border-radius: 15px; max-width: 80%; font-size: 14px; }
-        .chat-msg.user { background: #D32F2F; color: white; align-self: flex-end; }
-        .chat-msg.bot { background: #e0e0e0; color: black; align-self: flex-start; }
-        #my-custom-chat-input-area { display: flex; border-top: 1px solid #eee; padding: 10px; background: white; }
-        #my-custom-chat-input { flex: 1; border: 1px solid #ddd; padding: 8px; border-radius: 20px; outline: none; }
-        #my-custom-chat-send { background: #D32F2F; color: white; border: none; padding: 8px 15px; margin-left: 5px; border-radius: 20px; cursor: pointer; }
+        /* 1. On importe une jolie police moderne depuis Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        #my-custom-chat-trigger { 
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; 
+            background: #D32F2F; border-radius: 50%; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4); display: flex; 
+            align-items: center; justify-content: center; color: white; font-size: 26px; z-index: 999999; 
+            transition: transform 0.2s ease;
+        }
+        #my-custom-chat-trigger:hover { transform: scale(1.05); }
+
+        #my-custom-chat-box { 
+            position: fixed; bottom: 90px; right: 20px; width: 360px; height: 520px; 
+            background: #FFFFFF; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); 
+            display: none; flex-direction: column; overflow: hidden; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* Nouvelle police */
+            z-index: 999999; 
+        }
+
+        #my-custom-chat-header { 
+            background: #D32F2F; color: white; padding: 18px; 
+            font-weight: 600; font-size: 15px; letter-spacing: -0.2px; 
+        }
+        #my-custom-chat-header sub { 
+            display: block; font-size: 12px; opacity: 0.85; margin-top: 5px; 
+            font-weight: 400; font-style: normal; 
+        }
+
+        #my-custom-chat-messages { 
+            flex: 1; padding: 15px; overflow-y: auto; background: #F8F9FA; 
+            display: flex; flex-direction: column; gap: 12px; 
+        }
+
+        /* Style des bulles de texte amélioré */
+        .chat-msg { 
+            padding: 10px 14px; border-radius: 14px; max-width: 80%; 
+            font-size: 14px; line-height: 1.45; /* Meilleur espacement entre les lignes */
+            word-wrap: break-word; 
+        }
+        .chat-msg.user { 
+            background: #D32F2F; color: white; align-self: flex-end; 
+            font-weight: 400; border-bottom-right-radius: 4px; 
+        }
+        .chat-msg.bot { 
+            background: #FFFFFF; color: #2D3748; align-self: flex-start; /* Texte gris foncé, plus doux que noir pur */
+            font-weight: 400; border-bottom-left-radius: 4px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
+        }
+
+        #my-custom-chat-input-area { 
+            display: flex; border-top: 1px solid #EDF2F7; padding: 12px; background: white; align-items: center; 
+        }
+        #my-custom-chat-input { 
+            flex: 1; border: 1px solid #E2E8F0; padding: 10px 14px; 
+            border-radius: 24px; outline: none; font-size: 14px; 
+            font-family: 'Inter', sans-serif; color: #2D3748; background: #F8F9FA; 
+        }
+        #my-custom-chat-input:focus { border-color: #D32F2F; background: white; }
+
+        #my-custom-chat-send { 
+            background: #D32F2F; color: white; border: none; width: 36px; height: 36px; 
+            margin-left: 8px; border-radius: 50%; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; font-size: 14px; 
+        }
     `;
     document.head.appendChild(style);
 
