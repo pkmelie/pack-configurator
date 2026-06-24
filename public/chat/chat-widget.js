@@ -76,8 +76,12 @@
         <div id="my-custom-chat-trigger">💬</div>
         <div id="my-custom-chat-box">
             <div id="my-custom-chat-header">
-                Robin & fils Support Agent
-                <sub>Notre agent IA est là pour répondre à vos questions !</sub>
+                
+                <img src="https://v3clix-shop.com/chat/logo.png" id="my-custom-chat-logo" alt="Logo">
+                <div id="my-custom-chat-header-text">
+                    Robin & fils Support Agent
+                    <sub>Notre agent IA est là pour répondre à vos questions !</sub>
+                </div>
             </div>
             <div id="my-custom-chat-messages">
                 <div class="chat-msg bot">Bonjour ! Comment puis-je vous aider aujourd'hui ?</div>
