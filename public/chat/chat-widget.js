@@ -67,6 +67,40 @@
             margin-left: 8px; border-radius: 50%; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; font-size: 14px; 
         }
+            #my-custom-chat-header { 
+                background: #D32F2F; 
+                color: white; 
+                padding: 15px; 
+                font-weight: 600; 
+                font-size: 15px; 
+                display: flex;         /* Aligne le logo et le texte côte à côte */
+                align-items: center;   /* Centre verticalement le logo et le texte */
+                gap: 12px;             /* Crée un espace de 12px entre le logo et le texte */
+            }
+
+            /* Style du logo rond */
+            #my-custom-chat-logo {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;    /* Rend l'image parfaitement ronde */
+                object-fit: cover;     /* Empêche l'image de se déformer */
+                background: white;     /* Fond blanc au cas où le logo est transparent */
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+
+            /* Conteneur pour le titre et le sous-titre */
+            #my-custom-chat-header-text {
+                display: flex;
+                flex-direction: column; /* Aligne le sous-titre sous le titre principal */
+            }
+
+            #my-custom-chat-header sub { 
+                display: block; 
+                font-size: 12px; 
+                opacity: 0.85; 
+                margin-top: 3px; 
+                font-weight: 400; 
+            }
     `;
     document.head.appendChild(style);
 
