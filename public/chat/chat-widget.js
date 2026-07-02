@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div id="my-custom-chat-messages">
-                <div class="chat-msg bot">Bonjour ! Comment puis-je vous aider aujourd'hui ?</div>
+                <div class="chat-msg bot">Bonjour ! Je suis un tchat bot developpé par V3clix pour l'entreprise Robin & Fils</div>
             </div>
             <div id="my-custom-chat-input-area">
                 <input type="text" id="my-custom-chat-input" placeholder="Écrivez votre message...">
