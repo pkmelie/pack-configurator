@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de QR Code Personnalisé</title>
+<meta name="description" content="Créez des QR codes personnalisés avec vos couleurs et votre logo. Export PNG haute résolution, gratuit et sans limite.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<style>
+    *,*::before,*::after{box-sizing:border-box;}
+    :root{
+        --accent:#0E7C86;
+        --accent-soft:color-mix(in srgb, var(--accent) 9%, white);
+        --ink:#18181f; --ink-muted:#6b6877; --ink-faint:#9a96a3;
+        --paper:#ffffff; --line:#e9edee;
+        --radius-md:10px; --radius-lg:16px;
+        --serif:'Fraunces',serif; --sans:'Inter',system-ui,sans-serif;
+    }
+    html{background:#fff;}
+    body{
+        font-family:var(--sans); max-width:960px; margin:0 auto;
+        padding:36px 20px 60px;
+        background:
+            radial-gradient(900px 480px at 8% -8%, color-mix(in srgb, var(--accent) 10%, white) 0%, transparent 60%),
+            radial-gradient(700px 420px at 100% 0%, #f2fbfa 0%, transparent 55%),
+            #ffffff;
+        color:var(--ink); font-size:14px;
+    }
+    .brand .eyebrow{display:block;font:600 11px var(--sans);text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin-bottom:4px;}
+    .brand h1{font-family:var(--serif);font-weight:600;font-size:27px;margin:0;letter-spacing:-.01em;}
+    .lede{font-size:14px;color:var(--ink-muted);max-width:540px;margin:6px 0 28px;}
+    .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:start;}
+    @media (max-width:760px){.grid{grid-template-columns:1fr;}}
+    .card{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--radius-lg);padding:20px;box-shadow:0 1px 2px rgba(24,24,31,.03);}
+    .field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+    .field label{font-size:11.5px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;}
+    .input{padding:11px 13px;border:1px solid var(--line);border-radius:var(--radius-md);font-size:14px;outline:none;width:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);}
+    .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .color-field{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--radius-md);padding:6px 10px;}
+    .color-field input[type=color]{width:34px;height:34px;border:none;background:none;padding:0;cursor:pointer;}
+    .color-field span{font-size:13px;color:var(--ink-muted);}
+    .pills{display:flex;flex-wrap:wrap;gap:7px;}
+    .pill{padding:6px 13px;border-radius:99px;font-size:12.5px;border:1px solid var(--line);background:transparent;cursor:pointer;color:var(--ink-muted);font-family:var(--sans);transition:all .12s;}
+    .pill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600;}
+    .upload-zone{border:1.5px dashed var(--line);border-radius:var(--radius-md);padding:16px;text-align:center;cursor:pointer;color:var(--ink-muted);font-size:13px;}
+    .upload-zone:hover{border-color:var(--accent);}
+    .upload-zone i{font-size:20px;display:block;margin-bottom:6px;color:var(--accent);}
+    .btn-clear{background:none;border:none;color:var(--ink-faint);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:6px;}
+    .preview-card{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;min-height:400px;box-shadow:0 1px 2px rgba(24,24,31,.03);}
+    #qr-canvas{border-radius:8px;box-shadow:0 2px 12px rgba(24,24,31,.08);}
+    .empty-preview{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--ink-faint);text-align:center;}
+    .empty-preview i{font-size:34px;}
+    .download-row{display:flex;gap:10px;margin-top:20px;width:100%;}
+    .btn-download{flex:1;padding:12px 16px;border-radius:var(--radius-md);background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-download:hover{background:color-mix(in srgb, var(--accent) 82%, black);}
+    .btn-download.secondary{background:var(--paper);color:var(--accent);border:1px solid var(--accent);}
+    .tip{padding:11px 14px;background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 var(--radius-md) var(--radius-md) 0;font-size:12.5px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div class="brand">
+    <span class="eyebrow">Studio SEO — Outils</span>
+    <h1>Générateur de QR Code</h1>
+</div>
+<p class="lede">Créez un QR code personnalisé avec vos couleurs et votre logo, puis téléchargez-le en haute résolution.</p>
+
+<div class="grid">
+    <div class="card">
+        <div class="field">
+            <label>Contenu du QR code</label>
+            <input type="text" id="qr-content" class="input" placeholder="https://votre-site.com" value="https://v3clix-shop.com">
+        </div>
+
+        <div class="field">
+            <label>Couleurs</label>
+            <div class="row2">
+                <div class="color-field">
+                    <input type="color" id="fg-color" value="#18181f">
+                    <span>Premier plan</span>
+                </div>
+                <div class="color-field">
+                    <input type="color" id="bg-color" value="#ffffff">
+                    <span>Fond</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Correction d'erreur</label>
+            <div class="pills" id="pills-level">
+                <button class="pill" onclick="selLevel(this,'L')">Basse (L)</button>
+                <button class="pill active" onclick="selLevel(this,'M')">Moyenne (M)</button>
+                <button class="pill" onclick="selLevel(this,'Q')">Haute (Q)</button>
+                <button class="pill" onclick="selLevel(this,'H')">Max (H)</button>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Taille d'export</label>
+            <div class="pills" id="pills-size">
+                <button class="pill" onclick="selSize(this,400)">400px</button>
+                <button class="pill active" onclick="selSize(this,800)">800px</button>
+                <button class="pill" onclick="selSize(this,1200)">1200px</button>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Logo au centre (optionnel)</label>
+            <div class="upload-zone" onclick="document.getElementById('logo-input').click()">
+                <i class="ti ti-photo-up"></i>
+                <span id="upload-label">Cliquez pour ajouter une image</span>
+            </div>
+            <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="onLogoUpload(event)">
+            <button class="btn-clear" id="btn-clear-logo" style="display:none" onclick="clearLogo()">Retirer le logo</button>
+        </div>
+
+        <div class="tip">Utilisez le niveau de correction "Max (H)" si vous ajoutez un logo — le QR code reste lisible même avec une partie masquée.</div>
+    </div>
+
+    <div class="preview-card">
+        <div id="preview-empty" class="empty-preview">
+            <i class="ti ti-qrcode"></i>
+            <p>Votre QR code apparaîtra ici</p>
+        </div>
+        <canvas id="qr-canvas" width="800" height="800" style="display:none;max-width:100%;height:auto;"></canvas>
+        <div class="download-row" id="download-row" style="display:none;">
+            <button class="btn-download" onclick="telecharger('png')"><i class="ti ti-download"></i> Télécharger PNG</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let level = 'M';
+    let exportSize = 800;
+    let logoImg = null;
+
+    const content = document.getElementById('qr-content');
+    const fgColor = document.getElementById('fg-color');
+    const bgColor = document.getElementById('bg-color');
+
+    [content, fgColor, bgColor].forEach(el => el.addEventListener('input', generer));
+
+    function selLevel(btn, val){
+        level = val;
+        document.querySelectorAll('#pills-level .pill').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        generer();
+    }
+    function selSize(btn, val){
+        exportSize = val;
+        document.querySelectorAll('#pills-size .pill').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        generer();
+    }
+
+    function onLogoUpload(e){
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev){
+            const img = new Image();
+            img.onload = function(){
+                logoImg = img;
+                document.getElementById('upload-label').textContent = file.name;
+                document.getElementById('btn-clear-logo').style.display = 'inline';
+                generer();
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    function clearLogo(){
+        logoImg = null;
+        document.getElementById('logo-input').value = '';
+        document.getElementById('upload-label').textContent = 'Cliquez pour ajouter une image';
+        document.getElementById('btn-clear-logo').style.display = 'none';
+        generer();
+    }
+
+    function generer(){
+        const text = content.value.trim();
+        const canvas = document.getElementById('qr-canvas');
+
+        if(!text){
+            canvas.style.display = 'none';
+            document.getElementById('download-row').style.display = 'none';
+            document.getElementById('preview-empty').style.display = 'flex';
+            return;
+        }
+
+        new QRious({
+            element: canvas,
+            value: text,
+            size: exportSize,
+            level: level,
+            foreground: fgColor.value,
+            background: bgColor.value
+        });
+
+        if(logoImg){
+            const ctx = canvas.getContext('2d');
+            const logoSize = exportSize * 0.22;
+            const x = (exportSize - logoSize) / 2;
+            const y = (exportSize - logoSize) / 2;
+            const pad = logoSize * 0.12;
+            ctx.fillStyle = bgColor.value;
+            ctx.fillRect(x - pad, y - pad, logoSize + pad*2, logoSize + pad*2);
+            ctx.drawImage(logoImg, x, y, logoSize, logoSize);
+        }
+
+        canvas.style.display = 'block';
+        document.getElementById('preview-empty').style.display = 'none';
+        document.getElementById('download-row').style.display = 'flex';
+    }
+
+    function telecharger(){
+        const canvas = document.getElementById('qr-canvas');
+        const link = document.createElement('a');
+        link.download = 'qrcode.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    generer();
+</script>
+
+</body>
+</html>

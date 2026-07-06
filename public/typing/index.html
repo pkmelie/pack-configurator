@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test de Vitesse de Frappe — Mesurez vos mots par minute</title>
+<meta name="description" content="Testez votre vitesse de frappe en français. Mesurez vos mots par minute (MPM) et votre précision, gratuitement, sans inscription.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+    *,*::before,*::after{box-sizing:border-box;}
+    :root{
+        --accent:#3454D1;
+        --accent-soft:color-mix(in srgb, var(--accent) 9%, white);
+        --ink:#18181f; --ink-muted:#6b6877; --ink-faint:#9a96a3;
+        --paper:#ffffff; --line:#e6e9f5;
+        --radius-md:10px; --radius-lg:16px;
+        --serif:'Fraunces',serif; --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+        --correct:#16a34a; --wrong:#dc2626;
+    }
+    html{background:#fff;}
+    body{
+        font-family:var(--sans); max-width:820px; margin:0 auto;
+        padding:36px 20px 60px;
+        background:
+            radial-gradient(900px 480px at 8% -8%, color-mix(in srgb, var(--accent) 9%, white) 0%, transparent 60%),
+            #ffffff;
+        color:var(--ink); font-size:14px;
+    }
+    .brand .eyebrow{display:block;font:600 11px var(--sans);text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin-bottom:4px;}
+    .brand h1{font-family:var(--serif);font-weight:700;font-size:27px;margin:0;letter-spacing:-.01em;}
+    .lede{font-size:14px;color:var(--ink-muted);max-width:540px;margin:6px 0 24px;}
+
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+    .stat{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px;text-align:center;}
+    .stat .num{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--accent);}
+    .stat .lbl{font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+
+    .type-card{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--radius-lg);padding:26px;box-shadow:0 1px 2px rgba(24,24,31,.03);}
+    .text-display{
+        font-family:var(--mono); font-size:17px; line-height:1.9;
+        color:var(--ink-faint); letter-spacing:.2px; margin-bottom:20px;
+        min-height:110px;
+    }
+    .text-display span.correct{color:var(--correct);}
+    .text-display span.wrong{color:var(--wrong); background:color-mix(in srgb, var(--wrong) 12%, transparent); border-radius:2px;}
+    .text-display span.current{border-left:2px solid var(--accent); animation:blink 1s step-end infinite;}
+    @keyframes blink{50%{border-color:transparent;}}
+
+    textarea#type-input{
+        width:100%; border:1px solid var(--line); border-radius:var(--radius-md);
+        padding:13px; font-family:var(--mono); font-size:15px; resize:none;
+        outline:none; color:var(--ink); background:var(--paper); min-height:70px;
+    }
+    textarea#type-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);}
+    textarea#type-input:disabled{background:#f9f9fb;}
+
+    .controls{display:flex; justify-content:space-between; align-items:center; margin-top:16px;flex-wrap:wrap;gap:10px;}
+    .pills{display:flex;gap:7px;}
+    .pill{padding:6px 13px;border-radius:99px;font-size:12.5px;border:1px solid var(--line);background:transparent;cursor:pointer;color:var(--ink-muted);font-family:var(--sans);}
+    .pill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600;}
+    .btn-restart{padding:9px 16px;border-radius:var(--radius-md);background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:13.5px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;gap:6px;}
+    .btn-restart:hover{background:color-mix(in srgb, var(--accent) 82%, black);}
+
+    .result-panel{display:none;text-align:center;padding:20px 0;}
+    .result-panel.visible{display:block;}
+    .result-wpm{font-family:var(--serif);font-weight:700;font-size:52px;color:var(--accent);margin:0;}
+    .result-label{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<div class="brand">
+    <span class="eyebrow">Studio SEO — Outils</span>
+    <h1>Test de Vitesse de Frappe</h1>
+</div>
+<p class="lede">Recopiez le texte ci-dessous aussi vite et précisément que possible. Le chronomètre démarre à la première touche.</p>
+
+<div class="stats-row">
+    <div class="stat"><div class="num" id="stat-time">30</div><div class="lbl">Secondes</div></div>
+    <div class="stat"><div class="num" id="stat-wpm">0</div><div class="lbl">Mots / min</div></div>
+    <div class="stat"><div class="num" id="stat-acc">100%</div><div class="lbl">Précision</div></div>
+    <div class="stat"><div class="num" id="stat-errors">0</div><div class="lbl">Erreurs</div></div>
+</div>
+
+<div class="type-card">
+    <div class="text-display" id="text-display"></div>
+
+    <textarea id="type-input" rows="3" placeholder="Cliquez ici et commencez à taper…" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+
+    <div class="result-panel" id="result-panel">
+        <div class="result-label">Résultat final</div>
+        <p class="result-wpm" id="final-wpm">0 MPM</p>
+        <div class="lede" id="final-detail" style="margin:0 0 6px;"></div>
+    </div>
+
+    <div class="controls">
+        <div class="pills" id="pills-duration">
+            <button class="pill active" onclick="setDuration(this,15)">15s</button>
+            <button class="pill" onclick="setDuration(this,30)">30s</button>
+            <button class="pill" onclick="setDuration(this,60)">60s</button>
+        </div>
+        <button class="btn-restart" onclick="restart()"><i class="ti ti-refresh"></i> Nouveau texte</button>
+    </div>
+</div>
+
+<script>
+    const TEXTS = [
+        "La régularité est la clé de tout progrès durable. Chaque jour compte plus que vous ne le pensez, même les petits pas finissent par mener loin.",
+        "Le café du matin a ce pouvoir étrange de transformer une pensée confuse en une idée claire, presque évidente, comme si la caféine ouvrait une porte.",
+        "Un bon design se reconnaît à ce qu'on ne remarque pas ses défauts, seulement le confort tranquille qu'il procure à celui qui l'utilise chaque jour.",
+        "Apprendre à taper vite n'est pas qu'une question de vitesse, c'est surtout une question de fluidité, de rythme, et de confiance dans ses propres doigts.",
+        "La curiosité est souvent le point de départ des meilleures découvertes, bien plus que la certitude ou la recherche obstinée d'une seule bonne réponse.",
+        "Sur le marché du dimanche matin, les étals colorés attirent les passants curieux, entre odeurs de pain chaud et cris joyeux des vendeurs de légumes.",
+        "Écrire un code propre ressemble à ranger une maison avant de recevoir des invités, on ne le fait pas pour soi, mais pour celui qui viendra après.",
+    ];
+
+    let duration = 15;
+    let timeLeft = duration;
+    let timerId = null;
+    let started = false;
+    let currentText = "";
+    let charStates = []; // 'pending' | 'correct' | 'wrong'
+
+    const display = document.getElementById('text-display');
+    const input = document.getElementById('type-input');
+
+    function pickText(){
+        currentText = TEXTS[Math.floor(Math.random() * TEXTS.length)];
+        charStates = new Array(currentText.length).fill('pending');
+        renderText();
+    }
+
+    function renderText(){
+        let html = "";
+        for(let i=0;i<currentText.length;i++){
+            const ch = currentText[i] === " " ? "&nbsp;" : currentText[i];
+            let cls = charStates[i];
+            if(i === input.value.length && cls === 'pending') cls = 'current pending';
+            html += `<span class="${cls}">${ch}</span>`;
+        }
+        display.innerHTML = html;
+    }
+
+    function setDuration(btn, val){
+        duration = val;
+        document.querySelectorAll('#pills-duration .pill').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        restart();
+    }
+
+    input.addEventListener('input', () => {
+        if(!started){
+            started = true;
+            startTimer();
+        }
+        const typed = input.value;
+
+        if(typed.length > currentText.length){
+            input.value = typed.slice(0, currentText.length);
+            return;
+        }
+
+        let errors = 0;
+        for(let i=0;i<typed.length;i++){
+            charStates[i] = typed[i] === currentText[i] ? 'correct' : 'wrong';
+            if(charStates[i] === 'wrong') errors++;
+        }
+        for(let i=typed.length;i<currentText.length;i++){
+            charStates[i] = 'pending';
+        }
+
+        renderText();
+        updateLiveStats(typed.length, errors);
+
+        if(typed.length === currentText.length){
+            finish();
+        }
+    });
+
+    function updateLiveStats(typedLen, errors){
+        const elapsedMin = Math.max((duration - timeLeft) / 60, 1/60);
+        const wpm = Math.round(((typedLen - errors) / 5) / elapsedMin);
+        const acc = typedLen > 0 ? Math.round(((typedLen - errors) / typedLen) * 100) : 100;
+        document.getElementById('stat-wpm').textContent = Math.max(wpm,0);
+        document.getElementById('stat-acc').textContent = acc + '%';
+        document.getElementById('stat-errors').textContent = errors;
+    }
+
+    function startTimer(){
+        timerId = setInterval(() => {
+            timeLeft--;
+            document.getElementById('stat-time').textContent = timeLeft;
+            if(timeLeft <= 0){
+                finish();
+            }
+        }, 1000);
+    }
+
+    function finish(){
+        clearInterval(timerId);
+        input.disabled = true;
+
+        const typedLen = input.value.length;
+        let errors = 0;
+        for(let i=0;i<typedLen;i++){ if(charStates[i]==='wrong') errors++; }
+        const elapsedSec = duration - timeLeft > 0 ? duration - timeLeft : duration;
+        const elapsedMin = elapsedSec / 60;
+        const wpm = Math.round(((typedLen - errors) / 5) / Math.max(elapsedMin, 1/60));
+        const acc = typedLen > 0 ? Math.round(((typedLen - errors) / typedLen) * 100) : 100;
+
+        document.getElementById('final-wpm').textContent = Math.max(wpm,0) + ' MPM';
+        document.getElementById('final-detail').textContent = `${acc}% de précision · ${errors} erreur(s) · ${typedLen} caractères saisis`;
+        document.getElementById('result-panel').classList.add('visible');
+    }
+
+    function restart(){
+        clearInterval(timerId);
+        timeLeft = duration;
+        started = false;
+        input.disabled = false;
+        input.value = "";
+        document.getElementById('stat-time').textContent = duration;
+        document.getElementById('stat-wpm').textContent = '0';
+        document.getElementById('stat-acc').textContent = '100%';
+        document.getElementById('stat-errors').textContent = '0';
+        document.getElementById('result-panel').classList.remove('visible');
+        pickText();
+        input.focus();
+    }
+
+    pickText();
+</script>
+
+</body>
+</html>
